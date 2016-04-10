@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class PodcastListFragment extends Fragment {
     private static String TAG = "@[PodcastListFragment]";
-    private boolean isPodcastListEmpty = true;
+    private boolean isDownloaded = false;
     private ListView podcastListView;
     private PodcastListViewAdapter podcastListAdapter;
 
@@ -45,15 +45,16 @@ public class PodcastListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Log.i(TAG, "PodcastListFragment:onCreateView()");
+
         View rootView = inflater.inflate(R.layout.fragment_podcast_list, container, false);
         podcastListView = (ListView)rootView.findViewById(R.id.podcast_list_view);
 
-
-        //check if podcast list is initialized
-        if(isPodcastListEmpty) {
-            new downloadXmlTask().execute(Constants.ESLPOD_FEED_URL);
-        }else { //just load podcast list when podcast info is already downloaded
+        if(isDownloaded) {
+            //just load podcast list when podcast info is already downloaded
             podcastListView.setAdapter(podcastListAdapter);
+        }else {
+            //check if podcast list is initialized
+            new downloadXmlTask().execute(Constants.ESLPOD_FEED_URL);
         }
 
         return rootView;
@@ -88,7 +89,7 @@ public class PodcastListFragment extends Fragment {
 
             podcastListAdapter = new PodcastListViewAdapter(getContext(), R.layout.podcast_row_layout, result);
             podcastListView.setAdapter(podcastListAdapter);
-            isPodcastListEmpty = false;
+            isDownloaded = true;
         }
 
     }

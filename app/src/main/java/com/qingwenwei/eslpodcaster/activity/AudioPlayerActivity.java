@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.qingwenwei.eslpodcaster.R;
 
 public class AudioPlayerActivity extends AppCompatActivity {
+    final String TAG = "AudioPlayerActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,9 +1,13 @@
 package com.qingwenwei.eslpodcaster.entity;
 
+import android.os.Parcel;
+
+import java.io.Serializable;
+
 /**
  * Created by qingwenwei on 2016-04-09.
  */
-public class PodcastItem {
+public class PodcastItem implements Serializable {
     public final String title;
     public final String subtitle;
     public final String description;
@@ -17,6 +21,15 @@ public class PodcastItem {
         this.pubDate = pubDate;
         this.mp3Url = mp3Url;
     }
+
+    protected PodcastItem(Parcel in) {
+        title = in.readString();
+        subtitle = in.readString();
+        description = in.readString();
+        pubDate = in.readString();
+        mp3Url = in.readString();
+    }
+
 
     public String getTitle() {
         return title;
@@ -44,4 +57,5 @@ public class PodcastItem {
                 "\n[SUBTITLE]:" + subtitle +
                 "\n============\n\n";
     }
+
 }

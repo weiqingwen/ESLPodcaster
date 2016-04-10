@@ -13,6 +13,7 @@ import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.PodcastListViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastItem;
+import com.qingwenwei.eslpodcaster.listener.PodcastItemOnClickListener;
 import com.qingwenwei.eslpodcaster.util.XmlParser;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -48,6 +49,7 @@ public class PodcastListFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_podcast_list, container, false);
         podcastListView = (ListView)rootView.findViewById(R.id.podcast_list_view);
+        podcastListView.setOnItemClickListener(new PodcastItemOnClickListener());
 
         if(isDownloaded) {
             //just load podcast list when podcast info is already downloaded

@@ -67,6 +67,7 @@ public class XmlParser {
     private PodcastItem readItem(XmlPullParser parser) throws IOException, XmlPullParserException {
         String title = null;
         String subtitle = null;
+        String pubDate = null;
 
 //        parser.require(XmlPullParser.START_TAG, null, "item");
 
@@ -88,7 +89,8 @@ public class XmlParser {
 //                Log.i(TAG, "@title: " + readTitle(parser));
 //            }else if(tagName.equals("itunes:summary")){
 //                Log.i(TAG, "@sumry: " + readSummary(parser));
-//            }else if(tagName.equals("pubDate")){
+            }else if(tagName.equals("pubDate")){
+                pubDate = readPubDate(parser);
 //                Log.i(TAG, "@pubda: " + readPubDate(parser));
 //            }else if(tagName.equals("enclosure")){
 //                Log.i(TAG, "@encls: " + readEnclosure(parser));
@@ -101,7 +103,7 @@ public class XmlParser {
 
 
 //        Log.i(TAG,"Finished readItem() " + title);
-        return new PodcastItem(title,subtitle,"","","");
+        return new PodcastItem(title,subtitle,"",pubDate,"");
     }
 
     private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {

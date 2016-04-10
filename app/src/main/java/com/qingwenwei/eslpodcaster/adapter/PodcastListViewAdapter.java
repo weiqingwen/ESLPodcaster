@@ -32,6 +32,7 @@ public class PodcastListViewAdapter extends ArrayAdapter<PodcastItem> {
     private class ViewHolder{
         TextView title;
         TextView subtitle;
+        TextView pubDate;
     }
 
     @Override
@@ -48,6 +49,7 @@ public class PodcastListViewAdapter extends ArrayAdapter<PodcastItem> {
             holder = new ViewHolder();
             holder.title = (TextView)convertView.findViewById(R.id.titleTextView);
             holder.subtitle = (TextView)convertView.findViewById(R.id.subtitleTextView);
+            holder.pubDate = (TextView)convertView.findViewById(R.id.pubDateTextView);
 
             convertView.setTag(holder);
         }else{
@@ -56,6 +58,7 @@ public class PodcastListViewAdapter extends ArrayAdapter<PodcastItem> {
 
         holder.title.setText(item.getTitle());
         holder.subtitle.setText(item.getSubtitle());
+        holder.pubDate.setText(item.getPubDate());
 
         return convertView;
     }

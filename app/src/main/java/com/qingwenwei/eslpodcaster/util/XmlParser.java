@@ -68,6 +68,7 @@ public class XmlParser {
         String title = null;
         String subtitle = null;
         String pubDate = null;
+        String audiFileUrl = null;
 
 //        parser.require(XmlPullParser.START_TAG, null, "item");
 
@@ -92,8 +93,9 @@ public class XmlParser {
             }else if(tagName.equals("pubDate")){
                 pubDate = readPubDate(parser);
 //                Log.i(TAG, "@pubda: " + readPubDate(parser));
-//            }else if(tagName.equals("enclosure")){
-//                Log.i(TAG, "@encls: " + readEnclosure(parser));
+            }else if(tagName.equals("enclosure")){
+                audiFileUrl = readAudioFileUrl(parser);
+//                Log.i(TAG,"!!!!!" + audiFileUrl);
             }else if(tagName.equals("itunes:subtitle")){
                 subtitle = readSubtitle(parser);
 //                Log.i(TAG, "@subtl: " + readSubtitle(parser));
@@ -103,7 +105,7 @@ public class XmlParser {
 
 
 //        Log.i(TAG,"Finished readItem() " + title);
-        return new PodcastItem(title,subtitle,"",pubDate,"");
+        return new PodcastItem(title,subtitle,"",pubDate,audiFileUrl);
     }
 
     private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -126,11 +128,15 @@ public class XmlParser {
         return parser.getText();
     }
 
-    private Map<String,String> readEnclosure(XmlPullParser parser){
-        Map<String,String> mp3 = new HashMap<>();
-        mp3.put("url",parser.getAttributeValue(0));
-        mp3.put("length",parser.getAttributeValue(1));
-        mp3.put("type",parser.getAttributeValue(2));
-        return mp3;
+    private String readAudioFileUrl(XmlPullParser parser){
+        return parser.getAttributeValue(0);
     }
+
+//    private Map<String,String> readEnclosure(XmlPullParser parser){
+//        Map<String,String> mp3 = new HashMap<>();
+//        mp3.put("url",parser.getAttributeValue(0));
+//        mp3.put("length",parser.getAttributeValue(1));
+//        mp3.put("type",parser.getAttributeValue(2));
+//        return mp3;
+//    }
 }

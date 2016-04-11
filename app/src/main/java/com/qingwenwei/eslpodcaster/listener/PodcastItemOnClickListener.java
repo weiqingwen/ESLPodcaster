@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.qingwenwei.eslpodcaster.activity.AudioPlayerActivity;
+import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastItem;
 
 
@@ -16,7 +17,7 @@ import com.qingwenwei.eslpodcaster.entity.PodcastItem;
 public class PodcastItemOnClickListener implements AdapterView.OnItemClickListener {
 
     final String TAG = "@[PodcastItemOnClickListener]";
-    private static final String PODCAST_ITEM_DATA = "PODCAST_ITEM_DATA";
+//    private static final String PODCAST_ITEM_DATA = "PODCAST_ITEM_DATA";
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -25,7 +26,7 @@ public class PodcastItemOnClickListener implements AdapterView.OnItemClickListen
         Log.i(TAG, " title=>" + podcastItem.getTitle());
 
         Intent intent = new Intent(view.getContext(),AudioPlayerActivity.class);
-        intent.putExtra(PODCAST_ITEM_DATA,podcastItem);
+        intent.putExtra(Constants.PODCAST_ITEM_INTENT_TAG,podcastItem);
         view.getContext().startActivity(intent);
     }
 

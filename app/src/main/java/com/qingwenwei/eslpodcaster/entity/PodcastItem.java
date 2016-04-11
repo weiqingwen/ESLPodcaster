@@ -12,14 +12,14 @@ public class PodcastItem implements Serializable {
     public final String subtitle;
     public final String description;
     public final String pubDate;
-    public final String mp3Url;
+    public final String audioFileUrl;
 
-    public PodcastItem(String title, String subtitle, String description, String pubDate, String mp3Url){
+    public PodcastItem(String title, String subtitle, String description, String pubDate, String audioFileUrl){
         this.title = title;
         this.subtitle = subtitle;
         this.description = description;
         this.pubDate = pubDate;
-        this.mp3Url = mp3Url;
+        this.audioFileUrl = audioFileUrl;
     }
 
     protected PodcastItem(Parcel in) {
@@ -27,7 +27,7 @@ public class PodcastItem implements Serializable {
         subtitle = in.readString();
         description = in.readString();
         pubDate = in.readString();
-        mp3Url = in.readString();
+        audioFileUrl = in.readString();
     }
 
 
@@ -47,8 +47,8 @@ public class PodcastItem implements Serializable {
         return pubDate;
     }
 
-    public String getMp3Url() {
-        return mp3Url;
+    public String getAudioFileUrl() {
+        return audioFileUrl;
     }
 
     public String toString(){

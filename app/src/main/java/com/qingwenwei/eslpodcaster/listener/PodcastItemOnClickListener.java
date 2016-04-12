@@ -17,7 +17,6 @@ import com.qingwenwei.eslpodcaster.entity.PodcastItem;
 public class PodcastItemOnClickListener implements AdapterView.OnItemClickListener {
 
     final String TAG = "@[PodcastItemOnClickListener]";
-//    private static final String PODCAST_ITEM_DATA = "PODCAST_ITEM_DATA";
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

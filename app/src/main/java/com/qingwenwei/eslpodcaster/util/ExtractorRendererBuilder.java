@@ -29,7 +29,7 @@ public class ExtractorRendererBuilder implements RendererBuilder{
     }
 
     @Override
-    public void buildRenderers(AudioPlayer player) {
+    public void buildRenderer(AudioPlayer player) {
         ExtractorSampleSource sampleSource = new ExtractorSampleSource(
                 Uri.parse(url),
                 new DefaultUriDataSource(context, userAgent),

@@ -15,4 +15,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/podcast_list_view"
         android:layout_gravity="center_horizontal|bottom" />
+
+    <ViewStub
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/viewStub"
+        android:layout_gravity="right|bottom" />
 </FrameLayout>

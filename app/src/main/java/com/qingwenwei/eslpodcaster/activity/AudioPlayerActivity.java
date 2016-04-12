@@ -9,6 +9,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
+import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastItem;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
@@ -21,6 +22,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private final String USER_AGENT = "ESLPodcaster";
 
     private Button playButton;
+    private Button hideButton;
     private TextView currPosTextView;
     private TextView durationTextView;
     private SeekBar seekBar;
@@ -38,8 +40,9 @@ public class AudioPlayerActivity extends AppCompatActivity {
         playButton = (Button)findViewById(R.id.playButton);
         currPosTextView = (TextView)findViewById(R.id.currPosTextView);
         durationTextView = (TextView)findViewById(R.id.durationTextView);
+        hideButton = (Button)findViewById(R.id.hideButton);
 
-        podcastItem = (PodcastItem)getIntent().getSerializableExtra("PODCAST_ITEM_INTENT_TAG");
+        podcastItem = (PodcastItem)getIntent().getSerializableExtra(Constants.PODCAST_ITEM_INTENT_TAG);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -85,19 +88,25 @@ public class AudioPlayerActivity extends AppCompatActivity {
         });
 
 
+        hideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         preparePlayer();
     }
-
 
     // internal functions
     private Runnable onEverySecond = new Runnable() {
         @Override
         public void run() {
-            if(playIsPlaying){
-                currPosTextView.setText(toMinuteFormat(player.getCurrentPosition()));
-                seekBar.setProgress((int)player.getCurrentPosition());
-                seekBar.postDelayed(onEverySecond, 1000);
-            }
+        if(playIsPlaying){
+            currPosTextView.setText(toMinuteFormat(player.getCurrentPosition()));
+            seekBar.setProgress((int)player.getCurrentPosition());
+            seekBar.postDelayed(onEverySecond, 1000);
+        }
         }
     };
 

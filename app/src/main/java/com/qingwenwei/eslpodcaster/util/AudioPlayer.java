@@ -41,7 +41,7 @@ public class AudioPlayer implements ExoPlayer.Listener{
         }
         rendererBuilder.cancel();
         rendererBuildingState = RENDERER_BUILDING_STATE_BUILDING;
-        rendererBuilder.buildRenderers(this);
+        rendererBuilder.buildRenderer(this);
     }
 
     public void setPlayWhenReady(boolean playWhenReady){

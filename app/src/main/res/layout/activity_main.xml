@@ -9,6 +9,7 @@
     sothree:umanoPanelHeight="68dp"
     sothree:umanoShadowHeight="4dp">
 
+    <!-- MAIN CONTENT -->
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -42,14 +43,29 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
 
-
     </android.support.design.widget.CoordinatorLayout>
 
-    <TextView
+
+    <!--SLIDING LAYOUT-->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center|top"
-        android:text="The Awesome Sliding Up Panel"
-        android:textSize="16sp" />
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="false"
+        android:id="@+id/dragView">
+
+        <Button
+            android:id="@+id/panelPlayButton"
+            android:text="Play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"/>
+
+    </RelativeLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -3,17 +3,17 @@ package com.qingwenwei.eslpodcaster.fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.qingwenwei.eslpodcaster.R;
-import com.qingwenwei.eslpodcaster.adapter.PodcastListViewAdapter;
+import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
-import com.qingwenwei.eslpodcaster.entity.PodcastItem;
-import com.qingwenwei.eslpodcaster.listener.PodcastItemOnClickListener;
+import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.util.XmlParser;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -24,12 +24,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-
 public class PodcastListFragment extends Fragment {
-    private static String TAG = "@[PodcastListFragment]";
+    private final static String TAG = PodcastListFragment.class.getSimpleName();
     private boolean isDownloaded = false;
-    private ListView podcastListView;
-    private PodcastListViewAdapter podcastListAdapter;
+//    private ListView podcastListView;
+//    private PodcastListViewAdapter podcastListAdapter;
+
+
+    //
+    private PodcastEpisodeRecyclerViewAdapter adapter;
 
     public PodcastListFragment(){
         Log.i(TAG,"PodcastListFragment()");
@@ -47,27 +50,46 @@ public class PodcastListFragment extends Fragment {
         // Inflate the layout for this fragment
         Log.i(TAG, "PodcastListFragment:onCreateView()");
 
-        View rootView = inflater.inflate(R.layout.fragment_podcast_list, container, false);
-        podcastListView = (ListView)rootView.findViewById(R.id.podcast_list_view);
-        podcastListView.setOnItemClickListener(new PodcastItemOnClickListener());
+//        View rootView = inflater.inflate(R.layout.fragment_podcast_list, container, false);
+//        podcastListView = (ListView)rootView.findViewById(R.id.podcast_list_view);
+//        podcastListView.setOnItemClickListener(new PodcastItemOnClickListener());
+//
+//        if(isDownloaded) {
+//            //just load podcast list when podcast info is already downloaded
+//            podcastListView.setAdapter(podcastListAdapter);
+//        }else {
+//            //check if podcast list is initialized
+//            new downloadXmlFeedAndLoad().execute(Constants.ESLPOD_FEED_URL);
+//        }
 
+
+        ////////////////
+        // RecyclerView
+        ////////////////
+        RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_podcast_list, container, false);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         if(isDownloaded) {
             //just load podcast list when podcast info is already downloaded
-            podcastListView.setAdapter(podcastListAdapter);
+            recyclerView.setAdapter(adapter);
         }else {
             //check if podcast list is initialized
-            new downloadXmlTask().execute(Constants.ESLPOD_FEED_URL);
+            new downloadXmlFeedAndLoad(recyclerView).execute(Constants.ESLPOD_FEED_URL);
         }
 
-        return rootView;
+        return recyclerView;
+
     }
 
-
     // helpers
-    private class downloadXmlTask extends AsyncTask<String, Integer, ArrayList<PodcastItem>> {
+    private class downloadXmlFeedAndLoad extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
+        private final RecyclerView recyclerView;
+
+        public downloadXmlFeedAndLoad(RecyclerView recyclerView){
+            this.recyclerView = recyclerView;
+        }
 
         @Override
-        protected ArrayList<PodcastItem> doInBackground(String... urls) {
+        protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
             InputStream stream;
             ArrayList result = null;
             try {
@@ -82,15 +104,15 @@ public class PodcastListFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<PodcastItem> result) {
+        protected void onPostExecute(ArrayList<PodcastEpisode> result) {
             Log.i(TAG, "onPostExecute()  size:" + result.size());
 
-//            for(PodcastItem i: result){
-//                Log.i(TAG,""+i);
-//            }
-
-            podcastListAdapter = new PodcastListViewAdapter(getContext(), R.layout.podcast_row_layout, result);
-            podcastListView.setAdapter(podcastListAdapter);
+//            podcastListAdapter = new PodcastListViewAdapter(getContext(), R.layout.podcast_row_layout, result);
+//            isDownloaded = true;
+//            podcastListView.setAdapter(podcastListAdapter);
+//
+            adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(), result);
+            recyclerView.setAdapter(adapter);
             isDownloaded = true;
         }
 

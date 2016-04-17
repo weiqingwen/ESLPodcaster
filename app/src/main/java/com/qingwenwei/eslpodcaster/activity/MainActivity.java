@@ -1,5 +1,6 @@
 package com.qingwenwei.eslpodcaster.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,20 +8,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.fragment.DownloadedFragment;
 import com.qingwenwei.eslpodcaster.fragment.FavoritesFragment;
 import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Sliding panel
     private SlidingUpPanelLayout mLayout;
-    private Button panelPlayButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,22 +41,20 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
+        if (viewPager != null) {
+            setupViewPager(viewPager);
+        }
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
 
-        //disable the back button in the ActionBar
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-
         //Sliding Panel
-        panelPlayButton = (Button)findViewById(R.id.panelPlayButton);
-        mLayout = (SlidingUpPanelLayout) findViewById(R.id.activity_main);
+        mLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_main);
         mLayout.addPanelSlideListener(new PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -70,16 +65,16 @@ public class MainActivity extends AppCompatActivity {
             public void onPanelStateChanged(View panel, PanelState previousState, PanelState newState) {
                 Log.i(TAG, "onPanelStateChanged " + newState);
                 if(newState == PanelState.EXPANDED){
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)panelPlayButton.getLayoutParams();
-                    params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    panelPlayButton.setLayoutParams(params);
+//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)panelPlayButton.getLayoutParams();
+//                    params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
+//                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//                    panelPlayButton.setLayoutParams(params);
 
                 }else if(newState == PanelState.COLLAPSED){
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)panelPlayButton.getLayoutParams();
-                    params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    panelPlayButton.setLayoutParams(params);
+//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)panelPlayButton.getLayoutParams();
+//                    params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+//                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//                    panelPlayButton.setLayoutParams(params);
                 }
 
 
@@ -89,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         mLayout.setFadeOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.i(TAG, "onClick() " + view.getContext().getPackageName());
                 mLayout.setPanelState(PanelState.COLLAPSED);
             }
         });

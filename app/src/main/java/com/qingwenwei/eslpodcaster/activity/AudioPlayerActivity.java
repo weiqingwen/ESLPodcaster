@@ -2,7 +2,6 @@ package com.qingwenwei.eslpodcaster.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
-import com.qingwenwei.eslpodcaster.entity.PodcastItem;
+import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
@@ -28,7 +27,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private SeekBar seekBar;
 
     private AudioPlayer player;
-    private PodcastItem podcastItem;
+    private PodcastEpisode podcastItem;
     private boolean playIsPlaying = false;
 
     @Override
@@ -42,7 +41,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
         durationTextView = (TextView)findViewById(R.id.durationTextView);
         hideButton = (Button)findViewById(R.id.hideButton);
 
-        podcastItem = (PodcastItem)getIntent().getSerializableExtra(Constants.PODCAST_ITEM_INTENT_TAG);
+        podcastItem = (PodcastEpisode)getIntent().getSerializableExtra(Constants.PODCAST_ITEM_INTENT_TAG);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

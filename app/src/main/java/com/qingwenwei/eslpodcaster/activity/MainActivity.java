@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+//        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(false);
+        ab.setHomeButtonEnabled(false);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         if (viewPager != null) {

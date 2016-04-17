@@ -1,7 +1,9 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import java.util.List;
 
 public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<PodcastEpisodeRecyclerViewAdapter.ViewHolder>{
+    private final static String TAG = "PodcastEpisodeRecyclerViewAdapter";
+
     private final TypedValue mTypedValue = new TypedValue();
     private int mBackground;
     private List<PodcastEpisode> mValues;
@@ -21,18 +25,22 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<Podc
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
 
-        public final View mView;
-        public final TextView mTextView;
+//        public final View mView;
+        public final CardView cardView;
+        public final TextView titleTextView;
+        public final TextView subtitleTextView;
 
         public ViewHolder(View view) {
             super(view);
-            mView = view;
-            mTextView = (TextView) view.findViewById(R.id.titleTextView2);
+//            mView = view;
+            cardView = (CardView) view.findViewById(R.id.cardView);
+            titleTextView = (TextView) view.findViewById(R.id.titleTextView);
+            subtitleTextView = (TextView) view.findViewById(R.id.subtitleTextView);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mTextView.getText();
+            return super.toString() + " '" + titleTextView.getText();
         }
     }
 
@@ -50,17 +58,19 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<Podc
     }
 
     @Override
-    public void onBindViewHolder(PodcastEpisodeRecyclerViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(PodcastEpisodeRecyclerViewAdapter.ViewHolder holder, final int position) {
         holder.mBoundString = mValues.get(position).getTitle();
-        holder.mTextView.setText(mValues.get(position).getTitle());
+        holder.titleTextView.setText(mValues.get(position).getTitle());
+        holder.subtitleTextView.setText(mValues.get(position).getSubtitle());
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Context context = v.getContext();
 //                Intent intent = new Intent(context, CheeseDetailActivity.class);
 //                intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
 //                context.startActivity(intent);
+                Log.i(TAG,"Clicked on:" + mValues.get(position));
             }
         });
     }

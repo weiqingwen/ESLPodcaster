@@ -67,6 +67,7 @@ public class PodcastListFragment extends Fragment {
         // RecyclerView
         ////////////////
         RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_podcast_list, container, false);
+//        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         if(isDownloaded) {
             //just load podcast list when podcast info is already downloaded
@@ -105,12 +106,8 @@ public class PodcastListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> result) {
-            Log.i(TAG, "onPostExecute()  size:" + result.size());
+            Log.i(TAG, "onPostExecute()  downloaded items: " + result.size());
 
-//            podcastListAdapter = new PodcastListViewAdapter(getContext(), R.layout.podcast_row_layout, result);
-//            isDownloaded = true;
-//            podcastListView.setAdapter(podcastListAdapter);
-//
             adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(), result);
             recyclerView.setAdapter(adapter);
             isDownloaded = true;

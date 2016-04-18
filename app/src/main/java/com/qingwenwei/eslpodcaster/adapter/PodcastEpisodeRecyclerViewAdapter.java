@@ -8,6 +8,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
@@ -29,13 +30,18 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<Podc
         public final CardView cardView;
         public final TextView titleTextView;
         public final TextView subtitleTextView;
+        public final TextView pubDateTextView;
+        public final ImageView imageView;
 
         public ViewHolder(View view) {
             super(view);
 //            mView = view;
             cardView = (CardView) view.findViewById(R.id.cardView);
+            cardView.setPreventCornerOverlap(false);
             titleTextView = (TextView) view.findViewById(R.id.titleTextView);
             subtitleTextView = (TextView) view.findViewById(R.id.subtitleTextView);
+            pubDateTextView = (TextView) view.findViewById(R.id.pubDateTextView);
+            imageView = (ImageView) view.findViewById(R.id.cardViewCategoryImageView);
         }
 
         @Override
@@ -62,15 +68,13 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<Podc
         holder.mBoundString = mValues.get(position).getTitle();
         holder.titleTextView.setText(mValues.get(position).getTitle());
         holder.subtitleTextView.setText(mValues.get(position).getSubtitle());
+        holder.pubDateTextView.setText(mValues.get(position).getPubDate());
+        holder.imageView.setImageResource(R.drawable.coffee);
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Context context = v.getContext();
-//                Intent intent = new Intent(context, CheeseDetailActivity.class);
-//                intent.putExtra(CheeseDetailActivity.EXTRA_NAME, holder.mBoundString);
-//                context.startActivity(intent);
-                Log.i(TAG,"Clicked on:" + mValues.get(position));
+                Log.i(TAG,"Clicked on:" + mValues.get(position).getTitle());
             }
         });
     }

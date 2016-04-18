@@ -13,23 +13,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by qingwenwei on 2016-04-09.
- */
 public class XmlParser {
 
-    private static String TAG = "@[XmlParser]";
+    private final static String TAG = "XmlParser";
 
     public List<PodcastEpisode> parse(InputStream in) throws XmlPullParserException, IOException {
         XmlPullParser parser = Xml.newPullParser();
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         parser.setInput(in, null);
         parser.nextTag();
-//        readFeed(parser);
         return readFeed(parser);
     }
-
-
 
     private List<PodcastEpisode> readFeed(XmlPullParser parser) throws IOException, XmlPullParserException {
 
@@ -103,7 +97,7 @@ public class XmlParser {
 
 
 //        Log.i(TAG,"Finished readItem() " + title);
-        return new PodcastEpisode(title,subtitle,"",pubDate,audiFileUrl);
+        return new PodcastEpisode(title,subtitle,"",pubDate,audiFileUrl,"","");
     }
 
     private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {

@@ -14,6 +14,7 @@ import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.util.EslPodWebParser;
 import com.qingwenwei.eslpodcaster.util.XmlParser;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -59,7 +60,7 @@ public class PodcastListFragment extends Fragment {
 //            podcastListView.setAdapter(podcastListAdapter);
 //        }else {
 //            //check if podcast list is initialized
-//            new downloadXmlFeedAndLoad().execute(Constants.ESLPOD_FEED_URL);
+//            new downloadInternetEpisodes().execute(Constants.ESLPOD_FEED_URL);
 //        }
 
 
@@ -74,7 +75,7 @@ public class PodcastListFragment extends Fragment {
             recyclerView.setAdapter(adapter);
         }else {
             //check if podcast list is initialized
-            new downloadXmlFeedAndLoad(recyclerView).execute(Constants.ESLPOD_FEED_URL);
+            new downloadInternetEpisodes(recyclerView).execute(Constants.ESLPOD_FEED_URL);
         }
 
         return recyclerView;
@@ -82,25 +83,29 @@ public class PodcastListFragment extends Fragment {
     }
 
     // helpers
-    private class downloadXmlFeedAndLoad extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
+    private class downloadInternetEpisodes extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
         private final RecyclerView recyclerView;
 
-        public downloadXmlFeedAndLoad(RecyclerView recyclerView){
+        public downloadInternetEpisodes(RecyclerView recyclerView){
             this.recyclerView = recyclerView;
         }
 
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
-            InputStream stream;
-            ArrayList result = null;
-            try {
-                stream = downloadUrl(urls[0]);
-                result = (ArrayList) new XmlParser().parse(stream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            }
+//            InputStream stream;
+//            ArrayList result = null;
+//            try {
+//                stream = downloadUrl(urls[0]);
+//                result = (ArrayList) new XmlParser().parse(stream);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } catch (XmlPullParserException e) {
+//                e.printStackTrace();
+//            }
+
+            ArrayList<PodcastEpisode> result =
+                    (ArrayList<PodcastEpisode>) new EslPodWebParser().parserEpisodes(Constants.ESLPOD_ALL_EPISODE_URL + 0);
+
             return result;
         }
 

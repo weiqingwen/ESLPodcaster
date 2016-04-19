@@ -58,7 +58,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<Podc
 
     @Override
     public PodcastEpisodeRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.podcast_episode_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.podcast_episode_item_row, parent, false);
         view.setBackgroundResource(mBackground);
         return new ViewHolder(view);
     }

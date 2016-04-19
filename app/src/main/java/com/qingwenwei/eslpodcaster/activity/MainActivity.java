@@ -1,5 +1,7 @@
 package com.qingwenwei.eslpodcaster.activity;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -30,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+    private int[] tabIcons = {
+            R.drawable.ic_cast_white_36dp,
+            R.drawable.ic_file_download_white_36dp,
+            R.drawable.ic_favorite_white_36dp
+    };
+
     //Sliding panel
     private SlidingUpPanelLayout mLayout;
 
@@ -42,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-//        ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayHomeAsUpEnabled(false);
         ab.setHomeButtonEnabled(false);
 
@@ -54,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+        if(tabLayout != null)
+            setupTabIcons();
 
         //Sliding Panel
         mLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_main);
@@ -93,10 +102,39 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void setupTabIcons(){
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+
+        tabLayout.getTabAt(0).getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(1).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(2).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
+
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PodcastListFragment(), "Podcast");
-        adapter.addFragment(new DownloadedFragment(), "Downloaded");
+        adapter.addFragment(new PodcastListFragment(), "Podcasts");
+        adapter.addFragment(new DownloadedFragment(), "Downloads");
         adapter.addFragment(new FavoritesFragment(), "Favorites");
         viewPager.setAdapter(adapter);
     }
@@ -126,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+//            return mFragmentTitleList.get(position);
+            return null;
         }
     }
 

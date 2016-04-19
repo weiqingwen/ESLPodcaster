@@ -15,25 +15,19 @@ import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.util.EslPodWebParser;
-import com.qingwenwei.eslpodcaster.util.XmlParser;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PodcastListFragment extends Fragment {
-    private final static String TAG = PodcastListFragment.class.getSimpleName();
-    private boolean isDownloaded = false;
-//    private ListView podcastListView;
-//    private PodcastListViewAdapter podcastListAdapter;
+    private final static String TAG = "PodcastListFragment";
+    private boolean dataInitialized = false;
 
+    private RecyclerView recyclerView;
 
-    //
     private PodcastEpisodeRecyclerViewAdapter adapter;
+    private List<PodcastEpisode> episodes;
+    private int currNumEpisodes = 0;
 
     public PodcastListFragment(){
         Log.i(TAG,"PodcastListFragment()");
@@ -42,7 +36,7 @@ public class PodcastListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "PodcastListFragment:onCreate()");
+        Log.i(TAG, "onCreate()");
     }
 
     @Override
@@ -55,7 +49,7 @@ public class PodcastListFragment extends Fragment {
 //        podcastListView = (ListView)rootView.findViewById(R.id.podcast_list_view);
 //        podcastListView.setOnItemClickListener(new PodcastItemOnClickListener());
 //
-//        if(isDownloaded) {
+//        if(dataInitialized) {
 //            //just load podcast list when podcast info is already downloaded
 //            podcastListView.setAdapter(podcastListAdapter);
 //        }else {
@@ -67,70 +61,130 @@ public class PodcastListFragment extends Fragment {
         ////////////////
         // RecyclerView
         ////////////////
-        RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_podcast_list, container, false);
-//        recyclerView.setHasFixedSize(true);
+
+        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_podcast_list, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        if(isDownloaded) {
-            //just load podcast list when podcast info is already downloaded
+//        recyclerView.setHasFixedSize(true);
+
+
+
+
+
+
+        if(dataInitialized) {
+            //just refresh the recyclerView as the episode date was initialized
             recyclerView.setAdapter(adapter);
         }else {
-            //check if podcast list is initialized
-            new downloadInternetEpisodes(recyclerView).execute(Constants.ESLPOD_FEED_URL);
+            //first time download the episode data
+            episodes = new ArrayList<>();
+            adapter = new PodcastEpisodeRecyclerViewAdapter(null,episodes,recyclerView);
+            adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
+            recyclerView.setAdapter(adapter);
+            new DownloadEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
 
         return recyclerView;
 
     }
 
-    // helpers
-    private class downloadInternetEpisodes extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
-        private final RecyclerView recyclerView;
+    ///////////////////////
+    // load more items
+    ///////////////////////
+//    static class LoadingViewHolder extends RecyclerView.EpisodeViewHolder {
+//        public ProgressBar progressBar;
+//
+//        public LoadingViewHolder(View itemView) {
+//            super(itemView);
+//            progressBar = (ProgressBar) itemView.findViewById(R.id.loadMoreProgressBar);
+//        }
+//    }
 
-        public downloadInternetEpisodes(RecyclerView recyclerView){
-            this.recyclerView = recyclerView;
-        }
+
+
+    // helpers
+    private class DownloadEpisodesAsyncTask extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
+//        private final RecyclerView recyclerView;
+//        public DownloadEpisodesAsyncTask(RecyclerView recyclerView){
+//            this.recyclerView = recyclerView;
+//        }
+
+        private static final String TAG = "DownloadEpisodesAsyncTask";
 
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
-//            InputStream stream;
-//            ArrayList result = null;
-//            try {
-//                stream = downloadUrl(urls[0]);
-//                result = (ArrayList) new XmlParser().parse(stream);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } catch (XmlPullParserException e) {
-//                e.printStackTrace();
-//            }
-
-            ArrayList<PodcastEpisode> result =
-                    (ArrayList<PodcastEpisode>) new EslPodWebParser().parserEpisodes(Constants.ESLPOD_ALL_EPISODE_URL + 0);
-
-            return result;
+            ArrayList<PodcastEpisode> episodes =
+                    (ArrayList<PodcastEpisode>) new EslPodWebParser().parserEpisodes(urls[0] + 0);
+            return episodes;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<PodcastEpisode> result) {
-            Log.i(TAG, "onPostExecute()  downloaded items: " + result.size());
+        protected void onPostExecute(final ArrayList<PodcastEpisode> downloadedEpisodes) {
+            Log.i(TAG, "onPostExecute()  downloaded items: " + downloadedEpisodes.size());
 
-            adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(), result);
-            recyclerView.setAdapter(adapter);
-            isDownloaded = true;
+//            adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(), episodes, recyclerView);
+//            recyclerView.setAdapter(adapter);
+
+            episodes = downloadedEpisodes;
+            currNumEpisodes = episodes.size();
+            adapter.updateEpisodes(episodes);
+            dataInitialized = true;
         }
 
     }
 
-    private InputStream downloadUrl(String urlString) throws IOException {
-        URL url = new URL(urlString);
-        HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(10000); // 10 seconds
-        conn.setConnectTimeout(15000); // 15 seconds
-        conn.setRequestMethod("GET");
-        conn.setDoInput(true);
+    private class DownloadMoreEpisodesAsyncTask extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
+        private static final String TAG = "DownloadMoreEpisodesAsyncTask";
 
-        //starts the query
-        conn.connect();
-        InputStream stream = conn.getInputStream();
-        return stream;
+        @Override
+        protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
+            ArrayList<PodcastEpisode> episodes =
+                    (ArrayList<PodcastEpisode>) new EslPodWebParser().parserEpisodes(urls[0] + currNumEpisodes);
+            return episodes;
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<PodcastEpisode> downloadedEpisodes) {
+            Log.i(TAG, "onPostExecute()  downloaded more items: " + downloadedEpisodes.size());
+            episodes.remove(episodes.size() - 1);
+            episodes.addAll(downloadedEpisodes);
+            currNumEpisodes = episodes.size();
+            adapter.updateEpisodes(episodes);
+            adapter.setLoaded();
+        }
+
     }
+
+
+
+    private class LoadMoreEpisodesListener implements PodcastEpisodeRecyclerViewAdapter.OnLoadMoreListener {
+        @Override
+        public void onLoadMore() {
+            Log.i(TAG, "onLoadMore()");
+            episodes.add(null);
+            adapter.updateEpisodes(episodes);
+
+//            adapter.notifyItemInserted(episodes.size());
+
+            new DownloadMoreEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
+        }
+    }
+
+
+
+
+
+//    private InputStream downloadUrl(String urlString) throws IOException {
+//        URL url = new URL(urlString);
+//        HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
+//        conn.setReadTimeout(10000); // 10 seconds
+//        conn.setConnectTimeout(15000); // 15 seconds
+//        conn.setRequestMethod("GET");
+//        conn.setDoInput(true);
+//
+//        //starts the query
+//        conn.connect();
+//        InputStream stream = conn.getInputStream();
+//        return stream;
+//    }
+
 }

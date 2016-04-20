@@ -154,17 +154,13 @@ public class PodcastListFragment extends Fragment {
 
     }
 
-
-
     private class LoadMoreEpisodesListener implements PodcastEpisodeRecyclerViewAdapter.OnLoadMoreListener {
         @Override
         public void onLoadMore() {
             Log.i(TAG, "onLoadMore()");
             episodes.add(null);
             adapter.updateEpisodes(episodes);
-
 //            adapter.notifyItemInserted(episodes.size());
-
             new DownloadMoreEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
     }

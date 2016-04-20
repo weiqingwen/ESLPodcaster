@@ -18,7 +18,6 @@ import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
 import java.util.List;
 
-//public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter<PodcastEpisodeRecyclerViewAdapter.EpisodeViewHolder>{
 public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     private final static String TAG = "PodcastEpisodeRecyclerViewAdapter";
 

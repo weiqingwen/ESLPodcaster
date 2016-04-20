@@ -4,3 +4,4 @@ The Android client of ESLPod.com podcast for English learners. The project is cu
 # Library Used
 + ExoPlayer
 + AndroidSlidingUpPanel
++ Jsoup

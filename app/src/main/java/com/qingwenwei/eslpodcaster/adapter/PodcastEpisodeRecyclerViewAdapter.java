@@ -94,7 +94,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof EpisodeViewHolder) {
             ((EpisodeViewHolder)holder).mBoundString = episodes.get(position).getTitle();
             ((EpisodeViewHolder)holder).titleTextView.setText(episodes.get(position).getTitle());
@@ -104,7 +104,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
             ((EpisodeViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "Clicked on:" + episodes.get(position).getTitle());
+                    Log.i(TAG, "Clicked on: " + episodes.get(holder.getAdapterPosition()).getTitle());
                 }
             });
         }else {

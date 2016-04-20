@@ -29,6 +29,12 @@ public class PodcastListFragment extends Fragment {
     private List<PodcastEpisode> episodes;
     private int currNumEpisodes = 0;
 
+    //load more items
+//    private OnLoadMoreListener onLoadMoreListener;
+    private boolean loadingMoreItems;
+    private int lastVisibleItem, totalItemCount;
+    private int visibleThreshold = 1;// The minimum amount of items to have below your current scroll position before loading more.
+
     public PodcastListFragment(){
         Log.i(TAG,"PodcastListFragment()");
     }
@@ -43,33 +49,33 @@ public class PodcastListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.i(TAG, "PodcastListFragment:onCreateView()");
-
-//        View rootView = inflater.inflate(R.layout.fragment_podcast_list, container, false);
-//        podcastListView = (ListView)rootView.findViewById(R.id.podcast_list_view);
-//        podcastListView.setOnItemClickListener(new PodcastItemOnClickListener());
-//
-//        if(dataInitialized) {
-//            //just load podcast list when podcast info is already downloaded
-//            podcastListView.setAdapter(podcastListAdapter);
-//        }else {
-//            //check if podcast list is initialized
-//            new downloadInternetEpisodes().execute(Constants.ESLPOD_FEED_URL);
-//        }
-
-
-        ////////////////
-        // RecyclerView
-        ////////////////
+        Log.i(TAG, "onCreateView()");
 
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_podcast_list, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 //        recyclerView.setHasFixedSize(true);
 
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    LinearLayoutManager linearLayoutManager = (LinearLayoutManager)recyclerView.getLayoutManager();
+                    totalItemCount = linearLayoutManager.getItemCount();
+                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
-
-
-
+                    Log.i(TAG,"onScrolled() totalItemCount:" + totalItemCount + "   lastVisibleItem:" + lastVisibleItem);
+                    if (!loadingMoreItems){
+                        if( totalItemCount <= lastVisibleItem + visibleThreshold) {
+                             Log.i(TAG,"End has been reached");
+                             if (adapter.getOnLoadMoreListener() != null) {
+                                 adapter.getOnLoadMoreListener().onLoadMore();
+                             }
+                             loadingMoreItems = true;
+                         }
+                    }
+                }
+            }
+        );
 
         if(dataInitialized) {
             //just refresh the recyclerView as the episode date was initialized
@@ -77,37 +83,17 @@ public class PodcastListFragment extends Fragment {
         }else {
             //first time download the episode data
             episodes = new ArrayList<>();
-            adapter = new PodcastEpisodeRecyclerViewAdapter(null,episodes,recyclerView);
+            adapter = new PodcastEpisodeRecyclerViewAdapter(episodes,recyclerView);
             adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
             recyclerView.setAdapter(adapter);
             new DownloadEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
 
         return recyclerView;
-
     }
-
-    ///////////////////////
-    // load more items
-    ///////////////////////
-//    static class LoadingViewHolder extends RecyclerView.EpisodeViewHolder {
-//        public ProgressBar progressBar;
-//
-//        public LoadingViewHolder(View itemView) {
-//            super(itemView);
-//            progressBar = (ProgressBar) itemView.findViewById(R.id.loadMoreProgressBar);
-//        }
-//    }
-
-
 
     // helpers
     private class DownloadEpisodesAsyncTask extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
-//        private final RecyclerView recyclerView;
-//        public DownloadEpisodesAsyncTask(RecyclerView recyclerView){
-//            this.recyclerView = recyclerView;
-//        }
-
         private static final String TAG = "DownloadEpisodesAsyncTask";
 
         @Override
@@ -120,10 +106,6 @@ public class PodcastListFragment extends Fragment {
         @Override
         protected void onPostExecute(final ArrayList<PodcastEpisode> downloadedEpisodes) {
             Log.i(TAG, "onPostExecute()  downloaded items: " + downloadedEpisodes.size());
-
-//            adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(), episodes, recyclerView);
-//            recyclerView.setAdapter(adapter);
-
             episodes = downloadedEpisodes;
             currNumEpisodes = episodes.size();
             adapter.updateEpisodes(episodes);
@@ -149,7 +131,7 @@ public class PodcastListFragment extends Fragment {
             episodes.addAll(downloadedEpisodes);
             currNumEpisodes = episodes.size();
             adapter.updateEpisodes(episodes);
-            adapter.setLoaded();
+            setLoaded();
         }
 
     }
@@ -165,22 +147,7 @@ public class PodcastListFragment extends Fragment {
         }
     }
 
-
-
-
-
-//    private InputStream downloadUrl(String urlString) throws IOException {
-//        URL url = new URL(urlString);
-//        HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
-//        conn.setReadTimeout(10000); // 10 seconds
-//        conn.setConnectTimeout(15000); // 15 seconds
-//        conn.setRequestMethod("GET");
-//        conn.setDoInput(true);
-//
-//        //starts the query
-//        conn.connect();
-//        InputStream stream = conn.getInputStream();
-//        return stream;
-//    }
-
+    public void setLoaded() {
+        this.loadingMoreItems = false;
+    }
 }

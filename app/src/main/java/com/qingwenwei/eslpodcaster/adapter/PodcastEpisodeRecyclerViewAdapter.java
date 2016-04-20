@@ -1,8 +1,6 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -29,13 +27,8 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     //load more items
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
+
     private OnLoadMoreListener onLoadMoreListener;
-    private boolean loadingMoreItems;
-    private int lastVisibleItem, totalItemCount;
-
-    // The minimum amount of items to have below your current scroll position before loading more.
-    private int visibleThreshold = 1;
-
 
     public static class EpisodeViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
@@ -72,35 +65,12 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         }
     }
 
-    //constructor
-    public PodcastEpisodeRecyclerViewAdapter(Context context, List<PodcastEpisode> items, RecyclerView recyclerView) {
-//        context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
+    //adaptor constructor
+    public PodcastEpisodeRecyclerViewAdapter(List<PodcastEpisode> items, RecyclerView recyclerView) {
         mBackground = mTypedValue.resourceId;
         episodes = items;
-
-        //setup onScroll listener to load more items
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
-                .getLayoutManager();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-
-                    Log.i(TAG,"onScrolled() totalItemCount:" + totalItemCount + "   lastVisibleItem:" + lastVisibleItem);
-                    if (!loadingMoreItems
-                        && totalItemCount <= lastVisibleItem + visibleThreshold) {
-                        Log.i(TAG,"End has been reached");
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore();
-                        }
-                        loadingMoreItems = true;
-                    }
-                }
-            }
-        );
     }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -109,10 +79,6 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.podcast_episode_item_row, parent, false);
-//        view.setBackgroundResource(mBackground);
-//        return new EpisodeViewHolder(view);
-
         RecyclerView.ViewHolder vh;
         if(viewType == VIEW_ITEM) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.podcast_episode_item_row, parent, false);
@@ -162,8 +128,8 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         this.onLoadMoreListener = onLoadMoreListener;
     }
 
-    public void setLoaded() {
-        this.loadingMoreItems = false;
+    public OnLoadMoreListener getOnLoadMoreListener() {
+        return onLoadMoreListener;
     }
 
     public void updateEpisodes(List<PodcastEpisode> newEpisodes){

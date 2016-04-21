@@ -29,6 +29,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     private final int VIEW_PROG = 0;
 
     private OnLoadMoreListener onLoadMoreListener;
+    private OnEpisodeClickListener onEpisodeClickListener;
 
     public static class EpisodeViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
@@ -104,7 +105,9 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
             ((EpisodeViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i(TAG, "Clicked on: " + episodes.get(holder.getAdapterPosition()).getTitle());
+                    if(getOnEpisodeClickListener() != null) {
+                        getOnEpisodeClickListener().onEpisodeClick(holder);
+                    }
                 }
             });
         }else {
@@ -117,6 +120,9 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         return episodes.size();
     }
 
+    public List<PodcastEpisode> getEpisodes() {
+        return episodes;
+    }
 
     ///
     // load more items
@@ -136,5 +142,19 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         this.episodes.clear();
         this.episodes.addAll(newEpisodes);
         this.notifyDataSetChanged();
+    }
+
+    ///
+    // load player audio
+    public interface OnEpisodeClickListener{
+        void onEpisodeClick(RecyclerView.ViewHolder holder);
+    }
+
+    public OnEpisodeClickListener getOnEpisodeClickListener() {
+        return onEpisodeClickListener;
+    }
+
+    public void setOnEpisodeClickListener(OnEpisodeClickListener onEpisodeClickListener) {
+        this.onEpisodeClickListener = onEpisodeClickListener;
     }
 }

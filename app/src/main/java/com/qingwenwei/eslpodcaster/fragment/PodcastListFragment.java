@@ -3,6 +3,7 @@ package com.qingwenwei.eslpodcaster.fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -90,6 +91,8 @@ public class PodcastListFragment extends Fragment {
             }
         );
 
+
+
         if(dataInitialized) {
             //just refresh the recyclerView as the episode date was initialized
             recyclerView.setAdapter(adapter);
@@ -98,6 +101,7 @@ public class PodcastListFragment extends Fragment {
             episodes = new ArrayList<>();
             adapter = new PodcastEpisodeRecyclerViewAdapter(episodes,recyclerView);
             adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
+            adapter.setOnEpisodeClickListener(new OnEpisodeClickListener());
             recyclerView.setAdapter(adapter);
             new DownloadEpisodesAsyncTask(false).execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
@@ -109,6 +113,7 @@ public class PodcastListFragment extends Fragment {
     private class DownloadEpisodesAsyncTask extends AsyncTask<String, Integer, ArrayList<PodcastEpisode>> {
         private static final String TAG = "DownloadEpisodesAsyncTask";
         private boolean isRefreshing = false;
+
         //constructor
         public DownloadEpisodesAsyncTask(boolean isRefreshing){
             this.isRefreshing = isRefreshing;
@@ -158,6 +163,7 @@ public class PodcastListFragment extends Fragment {
     }
 
     private class LoadMoreEpisodesListener implements PodcastEpisodeRecyclerViewAdapter.OnLoadMoreListener {
+        private static final String TAG = "LoadMoreEpisodesListener";
         @Override
         public void onLoadMore() {
             Log.i(TAG, "onLoadMore()");
@@ -170,5 +176,14 @@ public class PodcastListFragment extends Fragment {
 
     public void setLoaded() {
         this.loadingMoreItems = false;
+    }
+
+    private class OnEpisodeClickListener implements PodcastEpisodeRecyclerViewAdapter.OnEpisodeClickListener{
+        private static final String TAG = "OnEpisodeClickListener";
+
+        @Override
+        public void onEpisodeClick(RecyclerView.ViewHolder holder) {
+            Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
+        }
     }
 }

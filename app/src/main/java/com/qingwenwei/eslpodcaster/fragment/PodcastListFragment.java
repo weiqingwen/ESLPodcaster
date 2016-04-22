@@ -1,9 +1,10 @@
 package com.qingwenwei.eslpodcaster.fragment;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
+import com.qingwenwei.eslpodcaster.activity.MainActivity;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.util.EslPodWebParser;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,9 @@ public class PodcastListFragment extends Fragment {
     private int lastVisibleItem, totalItemCount;
     private int visibleThreshold = 1;// The minimum amount of items to have below your current scroll position before loading more.
 
+    //MainActivity
+    private Context context;
+
     public PodcastListFragment(){
         Log.i(TAG,"PodcastListFragment()");
     }
@@ -51,14 +57,13 @@ public class PodcastListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Inflate the player_panel_layout for this fragment
         Log.i(TAG, "onCreateView()");
 
-
-//        View drawer = inflater.inflate(R.layout.fragment_podcast_list, container, false);
+//        View drawer = inflater.inflate(R.player_panel_layout.fragment_podcast_list, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_podcast_list, container, false);
         recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.recyclerview);
-//        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_podcast_list, container, false);
+//        recyclerView = (RecyclerView) inflater.inflate(R.player_panel_layout.fragment_podcast_list, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 //        recyclerView.setHasFixedSize(true);
 
@@ -107,6 +112,14 @@ public class PodcastListFragment extends Fragment {
         }
 
         return mSwipeRefreshLayout;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (((MainActivity)getActivity()).getSlidingUpPanelLayout().getChildAt(1).hasOnClickListeners()) {
+            ((MainActivity)getActivity()).getSlidingUpPanelLayout().getChildAt(1).setOnClickListener(null);
+        }
     }
 
     // helpers
@@ -184,6 +197,7 @@ public class PodcastListFragment extends Fragment {
         @Override
         public void onEpisodeClick(RecyclerView.ViewHolder holder) {
             Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
+            ((MainActivity)getActivity()).getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
         }
     }
 }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:layout_alignParentBottom="true"
+    android:background="#158FEF">
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="68dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="#158FEF"-->
+        <!--android:id="@+id/relativeLayout">-->
+
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/slidingPlayButton"
+            android:background="@drawable/ic_play_arrow_white_36dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageButton"
+            android:background="@drawable/ic_replay_10_white_36dp"
+            android:layout_marginEnd="50dp"
+            android:layout_alignTop="@+id/slidingPlayButton"
+            android:layout_toStartOf="@+id/slidingPlayButton" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/imageButton2"
+            android:background="@drawable/ic_forward_10_white_36dp"
+            android:layout_alignTop="@+id/slidingPlayButton"
+            android:layout_toEndOf="@+id/slidingPlayButton"
+            android:layout_marginStart="50dp" />
+
+    <!--</RelativeLayout>-->
+
+</RelativeLayout>

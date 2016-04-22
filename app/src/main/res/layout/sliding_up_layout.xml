@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:id="@+id/dragView">
+
+    <!--android:clickable="true"-->
+    <!--android:focusable="false"-->
+
+
+
+
+
+    <!--COLLAPSED PANEL LAYOUT-->
+    <include layout="@layout/collapsed_panel_layout"
+        android:id="@+id/collapsedPanel"/>
+
+    <!--SCRIPTS TEXTVIEW-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="text"
+        android:id="@+id/slidingUpScriptTextView"
+        android:layout_below="@+id/collapsedPanel"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <!--HIDDEN LAYOUT-->
+    <include layout="@layout/player_panel_layout" />
+
+
+
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="text"-->
+        <!--android:id="@+id/slidingUpScriptTextView"-->
+        <!--android:layout_below="@+id/collapsedPanel"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_above="@+id/relativeLayout"-->
+        <!--android:layout_alignParentEnd="true" />-->
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="68dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="#158FEF"-->
+        <!--android:id="@+id/relativeLayout">-->
+
+
+        <!--<ImageButton-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:id="@+id/slidingPlayButton"-->
+            <!--android:background="@drawable/ic_play_arrow_white_36dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_centerHorizontal="true" />-->
+
+        <!--<ImageButton-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:id="@+id/imageButton"-->
+            <!--android:background="@drawable/ic_replay_10_white_36dp"-->
+            <!--android:layout_marginEnd="50dp"-->
+            <!--android:layout_alignTop="@+id/slidingPlayButton"-->
+            <!--android:layout_toStartOf="@+id/slidingPlayButton" />-->
+
+        <!--<ImageButton-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:id="@+id/imageButton2"-->
+            <!--android:background="@drawable/ic_forward_10_white_36dp"-->
+            <!--android:layout_alignTop="@+id/slidingPlayButton"-->
+            <!--android:layout_toEndOf="@+id/slidingPlayButton"-->
+            <!--android:layout_marginStart="50dp" />-->
+
+    <!--</RelativeLayout>-->
+
+</RelativeLayout>

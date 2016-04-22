@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoPanelHeight="68dp"
-    sothree:umanoShadowHeight="4dp">
+    sothree:umanoShadowHeight="8dp">
 
     <!-- MAIN CONTENT -->
     <android.support.design.widget.CoordinatorLayout
@@ -48,25 +48,7 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <!--SLIDING LAYOUT-->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff"
-        android:orientation="vertical"
-        android:clickable="true"
-        android:focusable="false"
-        android:id="@+id/dragView">
-
-        <Button
-            android:id="@+id/panelPlayButton"
-            android:text="Play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"/>
-
-    </RelativeLayout>
+    <!--SLIDING UP LAYOUT-->
+    <include layout="@layout/sliding_up_layout"/>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

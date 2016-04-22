@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.fragment.DownloadedFragment;
@@ -38,8 +39,13 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.ic_favorite_white_36dp
     };
 
-    //Sliding panel
-    private SlidingUpPanelLayout mLayout;
+    //Sliding up panel player_panel_layout
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+
+    //collapsed panel
+    private View collapsedPanel;
+
+    private TextView slidingUpScriptTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,26 +56,32 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(false);
-        ab.setHomeButtonEnabled(false);
+        if(ab != null){
+            ab.setDisplayHomeAsUpEnabled(false);
+            ab.setHomeButtonEnabled(false);
+        }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if (viewPager != null) {
+        if(viewPager != null){
             setupViewPager(viewPager);
         }
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        if(tabLayout != null){
+            tabLayout.setupWithViewPager(viewPager);
+        }
 
-        if(tabLayout != null)
+        if(tabLayout != null){
             setupTabIcons();
+        }
 
         //Sliding Panel
-        mLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_main);
-        mLayout.addPanelSlideListener(new PanelSlideListener() {
+        slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_main);
+        slidingUpPanelLayout.addPanelSlideListener(new PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
-                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+//                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+
             }
 
             @Override
@@ -92,14 +104,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mLayout.setFadeOnClickListener(new View.OnClickListener() {
+        slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "onClick() " + view.getContext().getPackageName());
-                mLayout.setPanelState(PanelState.COLLAPSED);
+//                slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
             }
         });
 
+
+
+
+        ///
+        // Sliding Up Panel
+        collapsedPanel = findViewById(R.id.collapsedPanel);
+        collapsedPanel.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG,"collapsedPanel onClick()");
+                    toggleSlidingUpPanel();
+                }
+            }
+        );
+
+        slidingUpScriptTextView = (TextView)findViewById(R.id.slidingUpScriptTextView);
+        slidingUpScriptTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "slidingUpScriptTextView");
+            }
+        });
+
+
+
+    }
+
+    private void toggleSlidingUpPanel(){
+        if (slidingUpPanelLayout.getPanelState() == PanelState.COLLAPSED){
+            slidingUpPanelLayout.setPanelState(PanelState.EXPANDED);
+        }else{
+            slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
+        }
     }
 
     // setup tab icons and their color
@@ -111,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(1).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(2).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
+
 
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -135,15 +182,15 @@ public class MainActivity extends AppCompatActivity {
     //setup fragments
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PodcastListFragment(), "Podcasts");
-        adapter.addFragment(new DownloadedFragment(), "Downloads");
-        adapter.addFragment(new FavoritesFragment(), "Favorites");
+        adapter.addFragment(new PodcastListFragment(), "Podcast");
+        adapter.addFragment(new DownloadedFragment(), "Download");
+        adapter.addFragment(new FavoritesFragment(), "Favorite");
         viewPager.setAdapter(adapter);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
+//        private final List<String> mFragmentTitleList = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -161,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
+//            mFragmentTitleList.add(title);
         }
 
         @Override
@@ -173,12 +220,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mLayout != null &&
-                (mLayout.getPanelState() == PanelState.EXPANDED || mLayout.getPanelState() == PanelState.ANCHORED)) {
-            mLayout.setPanelState(PanelState.COLLAPSED);
+        if (slidingUpPanelLayout != null &&
+                (slidingUpPanelLayout.getPanelState() == PanelState.EXPANDED || slidingUpPanelLayout.getPanelState() == PanelState.ANCHORED)) {
+            slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
         } else {
             super.onBackPressed();
         }
+    }
+
+    public SlidingUpPanelLayout getSlidingUpPanelLayout() {
+        return slidingUpPanelLayout;
     }
 }
 

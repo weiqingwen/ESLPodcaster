@@ -1,44 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="68dp"
+    android:layout_height="80dp"
+    android:background="#158FEF"
     android:layout_alignParentBottom="true"
-    android:background="#158FEF">
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="68dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:background="#158FEF"-->
-        <!--android:id="@+id/relativeLayout">-->
+    android:id="@+id/playerPanelLayout">
 
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/slidingPlayButton"
-            android:background="@drawable/ic_play_arrow_white_36dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/slidingPlayButton"
+        android:background="@drawable/ic_play_arrow_white_36dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true" />
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/imageButton"
-            android:background="@drawable/ic_replay_10_white_36dp"
-            android:layout_marginEnd="50dp"
-            android:layout_alignTop="@+id/slidingPlayButton"
-            android:layout_toStartOf="@+id/slidingPlayButton" />
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imageButton"
+        android:background="@drawable/ic_replay_10_white_36dp"
+        android:layout_alignTop="@+id/slidingPlayButton"
+        android:layout_toStartOf="@+id/slidingPlayButton"
+        android:layout_marginEnd="80dp" />
 
-        <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:id="@+id/imageButton2"
-            android:background="@drawable/ic_forward_10_white_36dp"
-            android:layout_alignTop="@+id/slidingPlayButton"
-            android:layout_toEndOf="@+id/slidingPlayButton"
-            android:layout_marginStart="50dp" />
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/imageButton2"
+        android:background="@drawable/ic_forward_10_white_36dp"
+        android:layout_marginStart="80dp"
+        android:layout_alignTop="@+id/slidingPlayButton"
+        android:layout_toEndOf="@+id/slidingPlayButton" />
 
-    <!--</RelativeLayout>-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="00:00"
+        android:textColor="@color/panelWhite"
+        android:id="@+id/slidingUpPanelCurrPosTextView"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="7dp"
+        android:layout_alignBottom="@+id/slidingUpPanelSeekBar"
+        android:layout_toStartOf="@+id/slidingUpPanelSeekBar" />
+
+    <SeekBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/slidingUpPanelSeekBar"
+        android:gravity="center"
+        android:scrollbarStyle="outsideOverlay"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/imageButton"
+        android:layout_alignEnd="@+id/imageButton2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="00:00"
+        android:textColor="@color/panelWhite"
+        android:id="@+id/slidingUpPanelMaxPosTextView"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="7dp"
+        android:layout_alignBottom="@+id/slidingUpPanelSeekBar"
+        android:layout_toEndOf="@+id/slidingUpPanelSeekBar" />
 
 </RelativeLayout>

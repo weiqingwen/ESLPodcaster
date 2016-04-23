@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     //collapsed panel
     private View collapsedPanel;
+    private View collapsedPanelPlayerView;
 
 
     private TextView collapsedPanelTitleTextView;
@@ -139,9 +140,35 @@ public class MainActivity extends AppCompatActivity {
         );
 
         slidingUpScriptTextView = (TextView)findViewById(R.id.slidingUpScriptTextView);
+
+        collapsedPanelPlayerView = findViewById(R.id.playerPanelLayout);
+
+        collapsedPanelTitleTextView = (TextView)findViewById(R.id.collapsedPanelTitleTextView);
+
+        interceptOnTouchListeners();
+    }
+
+    public void loadPlayingPodcast(PodcastEpisode episode){
+        Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
+
+        toggleSlidingUpPanel();
+        collapsedPanelTitleTextView.setText(episode.getTitle());
+        new DownloadEpisodeScriptAsyncTask(episode).execute();
+    }
+
+    //collapse and expand the sliding up panel
+    private void toggleSlidingUpPanel(){
+        if (slidingUpPanelLayout.getPanelState() == PanelState.COLLAPSED){
+            slidingUpPanelLayout.setPanelState(PanelState.EXPANDED);
+        }else{
+            slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
+        }
+    }
+
+    //intercept TextView scrolling
+    private void interceptOnTouchListeners(){
         slidingUpScriptTextView.setMovementMethod(new ScrollingMovementMethod());
         slidingUpScriptTextView.setOnTouchListener(new View.OnTouchListener() {
-
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -163,26 +190,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        collapsedPanelPlayerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
 
-        collapsedPanelTitleTextView = (TextView)findViewById(R.id.collapsedPanelTitleTextView);
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
 
-    }
-
-    public void loadPlayingPodcast(PodcastEpisode episode){
-        Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
-
-        toggleSlidingUpPanel();
-        collapsedPanelTitleTextView.setText(episode.getTitle());
-        new DownloadEpisodeScriptAsyncTask(episode).execute();
-    }
-
-    //collapse and expand the sliding up panel
-    private void toggleSlidingUpPanel(){
-        if (slidingUpPanelLayout.getPanelState() == PanelState.COLLAPSED){
-            slidingUpPanelLayout.setPanelState(PanelState.EXPANDED);
-        }else{
-            slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
-        }
+                // Handle ListView touch events.
+                v.onTouchEvent(event);
+                return true;
+            }
+        });
     }
 
     // setup tab icons and their color

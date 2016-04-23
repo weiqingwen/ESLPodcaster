@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EslPodWebParser {
-    private final static String TAG = "EslPodWebParser";
+public class EslPodListParser {
+    private final static String TAG = "EslPodListParser";
 
-    public List<PodcastEpisode>  parserEpisodes(String url){
+    public List<PodcastEpisode> parseEpisodes(String url){
         List<PodcastEpisode> episodes = new ArrayList<>();
         Document doc;
         try {
@@ -45,7 +45,7 @@ public class EslPodWebParser {
     }
 
     public static void main(String args[]){
-        new EslPodWebParser().parserEpisodes("http://www.eslpod.com/website/show_all.php?low_rec=0");
+//        new EslPodListParser().parseEpisodes("http://www.eslpod.com/website/show_all.php?low_rec=0");
     }
 
 }

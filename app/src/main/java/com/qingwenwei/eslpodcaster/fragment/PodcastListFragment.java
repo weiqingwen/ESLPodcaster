@@ -18,8 +18,7 @@ import com.qingwenwei.eslpodcaster.activity.MainActivity;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.util.EslPodWebParser;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.qingwenwei.eslpodcaster.util.EslPodListParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +134,7 @@ public class PodcastListFragment extends Fragment {
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
             ArrayList<PodcastEpisode> episodes =
-                    (ArrayList<PodcastEpisode>) new EslPodWebParser().parserEpisodes(urls[0] + 0);
+                    (ArrayList<PodcastEpisode>) new EslPodListParser().parseEpisodes(urls[0] + 0);
             return episodes;
         }
 
@@ -160,7 +159,7 @@ public class PodcastListFragment extends Fragment {
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
             ArrayList<PodcastEpisode> episodes =
-                    (ArrayList<PodcastEpisode>) new EslPodWebParser().parserEpisodes(urls[0] + currNumEpisodes);
+                    (ArrayList<PodcastEpisode>) new EslPodListParser().parseEpisodes(urls[0] + currNumEpisodes);
             return episodes;
         }
 
@@ -197,7 +196,9 @@ public class PodcastListFragment extends Fragment {
         @Override
         public void onEpisodeClick(RecyclerView.ViewHolder holder) {
             Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
-            ((MainActivity)getActivity()).getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+//            ((MainActivity)getActivity()).getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            ((MainActivity)getActivity()).loadPlayingPodcast(adapter.getEpisodes().get(holder.getAdapterPosition()));
+
         }
     }
 }

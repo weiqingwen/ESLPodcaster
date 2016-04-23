@@ -2,6 +2,7 @@ package com.qingwenwei.eslpodcaster.activity;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -11,14 +12,21 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
+import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.fragment.DownloadedFragment;
 import com.qingwenwei.eslpodcaster.fragment.FavoritesFragment;
 import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
+import com.qingwenwei.eslpodcaster.util.EslPodListParser;
+import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -45,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     //collapsed panel
     private View collapsedPanel;
 
+
+    private TextView collapsedPanelTitleTextView;
     private TextView slidingUpScriptTextView;
 
     @Override
@@ -129,17 +139,44 @@ public class MainActivity extends AppCompatActivity {
         );
 
         slidingUpScriptTextView = (TextView)findViewById(R.id.slidingUpScriptTextView);
-        slidingUpScriptTextView.setOnClickListener(new View.OnClickListener() {
+        slidingUpScriptTextView.setMovementMethod(new ScrollingMovementMethod());
+        slidingUpScriptTextView.setOnTouchListener(new View.OnTouchListener() {
+
             @Override
-            public void onClick(View v) {
-                Log.i(TAG, "slidingUpScriptTextView");
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle ListView touch events.
+                v.onTouchEvent(event);
+                return true;
             }
         });
 
 
+        collapsedPanelTitleTextView = (TextView)findViewById(R.id.collapsedPanelTitleTextView);
 
     }
 
+    public void loadPlayingPodcast(PodcastEpisode episode){
+        Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
+
+        toggleSlidingUpPanel();
+        collapsedPanelTitleTextView.setText(episode.getTitle());
+        new DownloadEpisodeScriptAsyncTask(episode).execute();
+    }
+
+    //collapse and expand the sliding up panel
     private void toggleSlidingUpPanel(){
         if (slidingUpPanelLayout.getPanelState() == PanelState.COLLAPSED){
             slidingUpPanelLayout.setPanelState(PanelState.EXPANDED);
@@ -230,6 +267,27 @@ public class MainActivity extends AppCompatActivity {
 
     public SlidingUpPanelLayout getSlidingUpPanelLayout() {
         return slidingUpPanelLayout;
+    }
+
+    private class DownloadEpisodeScriptAsyncTask extends AsyncTask<String, Integer, PodcastEpisode> {
+        private static final String TAG = "DownloadEpisodeScriptAsyncTask";
+        private PodcastEpisode episode;
+
+        public DownloadEpisodeScriptAsyncTask(PodcastEpisode episode){
+            this.episode = episode;
+        }
+
+        @Override
+        protected PodcastEpisode doInBackground(String... urls) {
+            new EslPodScriptParser().getEpisodeScript(episode);
+            return this.episode;
+        }
+
+        @Override
+        protected void onPostExecute(final PodcastEpisode scriptedEpisode) {
+            Log.i(TAG,"onPostExecute()" + episode.getContent());
+            slidingUpScriptTextView.setText(Html.fromHtml(episode.getContent()));
+        }
     }
 }
 

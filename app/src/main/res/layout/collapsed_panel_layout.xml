@@ -8,32 +8,32 @@
     android:id="@+id/collapsedPanel">
 
     <ImageView
-        android:layout_width="68dp"
-        android:layout_height="68dp"
-        android:id="@+id/imageView"
-        android:layout_alignParentTop="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/collapsedPanelPodcastIcon"
+        android:background="@drawable/ic_cast_connected_black_36dp"
+        android:layout_marginStart="20dp"
+        android:layout_alignTop="@+id/collapsedPanelPlayButton"
+        android:layout_centerVertical="true"
         android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:text="Title"
-        android:id="@+id/textView2"
-        android:layout_marginTop="20dp"
-        android:layout_toEndOf="@+id/imageView" />
-
-    <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/date"
-        android:layout_below="@+id/textView2"
-        android:layout_toEndOf="@+id/imageView" />
+        android:text="Title"
+        android:textStyle="bold"
+        android:gravity="left"
+        android:maxLines="2"
+        android:singleLine="false"
+        android:id="@+id/collapsedPanelTitleTextView"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/collapsedPanelPlayButton"
+        android:layout_toEndOf="@+id/collapsedPanelPodcastIcon"/>
 
     <ImageButton
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/imageButton3"
+        android:id="@+id/collapsedPanelPlayButton"
         android:background="@drawable/ic_play_circle_outline_black_36dp"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"

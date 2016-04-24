@@ -18,15 +18,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="script"
-        android:id="@+id/slidingUpScriptTextView"
+        android:id="@+id/slidingUpPanelScriptTextView"
         android:scrollbars = "vertical"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/playerPanelLayout"
+        android:layout_above="@+id/slidingUpPanelPlayerLayout"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/collapsedPanel" />
 
     <!--HIDDEN LAYOUT-->
-    <include layout="@layout/player_panel_layout"
-        android:id="@+id/playerPanelLayout" />
+    <include layout="@layout/sliding_up_panel_player_layout"
+        android:id="@+id/slidingUpPanelPlayerLayout" />
 
 </RelativeLayout>

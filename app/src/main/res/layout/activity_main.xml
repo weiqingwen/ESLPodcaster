@@ -49,6 +49,6 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <!--SLIDING UP LAYOUT-->
-    <include layout="@layout/sliding_up_layout"/>
+    <include layout="@layout/panel_layout"/>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

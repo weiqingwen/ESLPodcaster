@@ -22,9 +22,9 @@
             </intent-filter>
         </activity>
 
-        <!--<activity android:name=".activity.AudioPlayerActivity"></activity>-->
+        <!--<activity android:name=".activity.DeprecatedAudioPlayerActivity"></activity>-->
         <activity
-            android:name=".activity.AudioPlayerActivity"
+            android:name=".activity.DeprecatedAudioPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
 

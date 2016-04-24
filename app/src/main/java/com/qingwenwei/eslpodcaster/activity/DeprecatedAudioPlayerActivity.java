@@ -16,8 +16,8 @@ import com.qingwenwei.eslpodcaster.util.RendererBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-public class AudioPlayerActivity extends AppCompatActivity {
-    private final String TAG = "AudioPlayerActivity";
+public class DeprecatedAudioPlayerActivity extends AppCompatActivity {
+    private final String TAG = "DeprecatedAudioPlayerActivity";
     private final String USER_AGENT = "ESLPodcaster";
 
     private Button playButton;
@@ -112,7 +112,7 @@ public class AudioPlayerActivity extends AppCompatActivity {
     private void preparePlayer(){
         if(player == null){
             RendererBuilder rendererBuilder = new ExtractorRendererBuilder(getBaseContext(),USER_AGENT,podcastItem.audioFileUrl);
-            player = new AudioPlayer(rendererBuilder);
+            player = new AudioPlayer(this,rendererBuilder);
             player.prepare();
         }
     }

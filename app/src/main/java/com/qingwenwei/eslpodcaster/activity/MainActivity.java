@@ -17,22 +17,29 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.webkit.WebView;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.qingwenwei.eslpodcaster.R;
+import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.fragment.DownloadedFragment;
 import com.qingwenwei.eslpodcaster.fragment.FavoritesFragment;
 import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
-import com.qingwenwei.eslpodcaster.util.EslPodListParser;
+import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
+import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
+import com.qingwenwei.eslpodcaster.util.RendererBuilder;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -47,16 +54,24 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.ic_favorite_white_36dp
     };
 
-    //Sliding up panel player_panel_layout
+    //Sliding up panel sliding_up_panel_player_layout
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
-    //collapsed panel
+    //collapsed panel views
     private View collapsedPanel;
-    private View collapsedPanelPlayerView;
+    private View slidingUpPanelPlayerView;
 
-
+    //sliding up player
+    private AudioPlayer player;
+//    private boolean playerIsPlaying = false;
     private TextView collapsedPanelTitleTextView;
-    private TextView slidingUpScriptTextView;
+    private TextView slidingUpPanelScriptTextView;
+    private TextView slidingUpPanelCurrPosTextView;
+    private TextView slidingUpPanelMaxPosTextView;
+    private SeekBar slidingUpPanelSeekBar;
+    private ImageButton slidingUpPanelPlayButton;
+    private ImageButton slidingUpPanelReplayButton;
+    private ImageButton slidingUpPanelForwardButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +138,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-        ///
-        // Sliding Up Panel
+        //collapsed panel
         collapsedPanel = findViewById(R.id.collapsedPanel);
         collapsedPanel.setOnClickListener(
             new View.OnClickListener() {
@@ -138,23 +149,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         );
-
-        slidingUpScriptTextView = (TextView)findViewById(R.id.slidingUpScriptTextView);
-
-        collapsedPanelPlayerView = findViewById(R.id.playerPanelLayout);
-
         collapsedPanelTitleTextView = (TextView)findViewById(R.id.collapsedPanelTitleTextView);
 
-        interceptOnTouchListeners();
+
+
+        //find sliding up player views
+        slidingUpPanelPlayerView = findViewById(R.id.slidingUpPanelPlayerLayout);
+        slidingUpPanelScriptTextView = (TextView)findViewById(R.id.slidingUpPanelScriptTextView);
+        slidingUpPanelCurrPosTextView = (TextView)findViewById(R.id.slidingUpPanelCurrPosTextView);
+        slidingUpPanelMaxPosTextView = (TextView)findViewById(R.id.slidingUpPanelMaxPosTextView);
+        slidingUpPanelPlayButton = (ImageButton)findViewById(R.id.slidingUpPanelPlayButton);
+        slidingUpPanelSeekBar = (SeekBar)findViewById(R.id.slidingUpPanelSeekBar);
+        slidingUpPanelReplayButton = (ImageButton)findViewById(R.id.slidingUpPanelReplayButton);
+        slidingUpPanelForwardButton = (ImageButton)findViewById(R.id.slidingUpPanelForwardButton);
+
+        setupSlidingUpPanelPlayerListeners();
+        setupInterceptOnTouchListeners();
     }
 
-    public void loadPlayingPodcast(PodcastEpisode episode){
-        Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
-
-        toggleSlidingUpPanel();
-        collapsedPanelTitleTextView.setText(episode.getTitle());
-        new DownloadEpisodeScriptAsyncTask(episode).execute();
-    }
 
     //collapse and expand the sliding up panel
     private void toggleSlidingUpPanel(){
@@ -166,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //intercept TextView scrolling
-    private void interceptOnTouchListeners(){
-        slidingUpScriptTextView.setMovementMethod(new ScrollingMovementMethod());
-        slidingUpScriptTextView.setOnTouchListener(new View.OnTouchListener() {
+    private void setupInterceptOnTouchListeners(){
+        slidingUpPanelScriptTextView.setMovementMethod(new ScrollingMovementMethod());
+        slidingUpPanelScriptTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -190,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        collapsedPanelPlayerView.setOnTouchListener(new View.OnTouchListener() {
+        slidingUpPanelPlayerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -213,7 +225,84 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // setup tab icons and their color
+    //setup listeners to widgets from Sliding Up Panel player
+    private void setupSlidingUpPanelPlayerListeners(){
+        //register listeners
+        slidingUpPanelSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    if(player.isPlaying()) {
+                        slidingUpPanelCurrPosTextView.setText(toMinuteFormat(progress));
+                        player.seekTo(progress);
+                    }else{
+                        slidingUpPanelCurrPosTextView.setText(toMinuteFormat(progress));
+                        player.seekTo(progress);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //do nothing
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                //do nothing
+            }
+        });
+
+        slidingUpPanelPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"slidingUpPanelPlayButton.setOnClickListener()");
+                if (!player.isPlaying()) {
+                    player.setPlayWhenReady(true);
+                    slidingUpPanelSeekBar.setMax((int) player.getDuration());
+                    slidingUpPanelMaxPosTextView.setText(toMinuteFormat(player.getDuration()));
+                    slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                } else {
+                    player.setPlayWhenReady(false);
+                }
+            }
+        });
+
+        slidingUpPanelReplayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long currPos = player.getCurrentPosition();
+                if(currPos - 10000 < 0){
+                    player.seekTo(0);
+                }else{
+                    player.seekTo(currPos - 10000);
+                }
+
+                if(!player.isPlaying()){
+                    updateSlidingUpPanelSeekBar();
+                }
+            }
+        });
+
+        slidingUpPanelForwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long currPos = player.getCurrentPosition();
+                long duration = player.getDuration();
+                if(currPos + 10000 >= duration) {
+                    player.seekTo(duration);
+                }else{
+                    player.seekTo(currPos + 10000);
+                }
+
+                if(!player.isPlaying()){
+                    updateSlidingUpPanelSeekBar();
+                }
+            }
+        });
+    }
+
+    //setup tab icons and their color
     private void setupTabIcons(){
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
@@ -313,9 +402,83 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final PodcastEpisode scriptedEpisode) {
-            Log.i(TAG,"onPostExecute()" + episode.getContent());
-            slidingUpScriptTextView.setText(Html.fromHtml(episode.getContent()));
+//            Log.i(TAG,"onPostExecute()" + episode.getContent());
+
+            //show episode scripts on the screen
+            slidingUpPanelScriptTextView.setText(Html.fromHtml(episode.getContent()));
         }
+    }
+
+    //player helper method
+    public void loadPlayingPodcast(PodcastEpisode episode){
+        Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
+
+        //toggle sliding-up panel
+        toggleSlidingUpPanel();
+
+        //set play button background image to play image
+        setSlidingUpPanelPlayButtonPlaying();
+
+        //change the sliding-up panel episode title
+        collapsedPanelTitleTextView.setText(episode.getTitle());
+
+        //prepare audio play and update the script in the sliding-up panel
+        preparePlayer(episode);
+        new DownloadEpisodeScriptAsyncTask(episode).execute();
+    }
+
+    public void setSlidingUpPanelPlayButtonPlaying(){
+        slidingUpPanelPlayButton.setImageResource(R.drawable.ic_play_arrow_white_36dp);
+    }
+
+    public void setSlidingUpPanelPlayButtonPause(){
+        slidingUpPanelPlayButton.setImageResource(R.drawable.ic_pause_white_36dp);
+    }
+
+    //player helper method
+    private void preparePlayer(PodcastEpisode episode){
+        Log.i(TAG,"preparePlayer() " + episode.audioFileUrl);
+
+        if(player != null){
+            player.release();
+            player = null;
+        }
+
+        RendererBuilder rendererBuilder = new ExtractorRendererBuilder(
+                getBaseContext(),
+                Constants.USER_AGENT,
+                episode.audioFileUrl);
+        player = new AudioPlayer(this, rendererBuilder);
+        player.prepare();
+    }
+
+    //player helper method
+    private String toMinuteFormat(long millis){
+        return String.format(
+                Locale.getDefault(),
+                "%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(millis),
+                TimeUnit.MILLISECONDS.toSeconds(millis) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+    }
+
+    //player helper method
+    private Runnable onEverySecond = new Runnable() {
+        @Override
+        public void run() {
+            if(player.isPlaying()){
+                slidingUpPanelCurrPosTextView.setText(toMinuteFormat(player.getCurrentPosition()));
+                slidingUpPanelSeekBar.setProgress((int)player.getCurrentPosition());
+                slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+            }
+        }
+    };
+
+    //player helper method
+    private void updateSlidingUpPanelSeekBar(){
+        int currPos = (int) player.getCurrentPosition();
+        slidingUpPanelCurrPosTextView.setText(toMinuteFormat(currPos));
+        slidingUpPanelSeekBar.setProgress(currPos);
     }
 }
 

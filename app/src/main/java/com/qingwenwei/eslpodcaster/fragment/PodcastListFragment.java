@@ -56,13 +56,13 @@ public class PodcastListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the player_panel_layout for this fragment
+        // Inflate the sliding_up_panel_player_layout for this fragment
         Log.i(TAG, "onCreateView()");
 
-//        View drawer = inflater.inflate(R.player_panel_layout.fragment_podcast_list, container, false);
+//        View drawer = inflater.inflate(R.sliding_up_panel_player_layout.fragment_podcast_list, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_podcast_list, container, false);
         recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.recyclerview);
-//        recyclerView = (RecyclerView) inflater.inflate(R.player_panel_layout.fragment_podcast_list, container, false);
+//        recyclerView = (RecyclerView) inflater.inflate(R.sliding_up_panel_player_layout.fragment_podcast_list, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 //        recyclerView.setHasFixedSize(true);
 
@@ -196,8 +196,9 @@ public class PodcastListFragment extends Fragment {
         @Override
         public void onEpisodeClick(RecyclerView.ViewHolder holder) {
             Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
-//            ((MainActivity)getActivity()).getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
-            ((MainActivity)getActivity()).loadPlayingPodcast(adapter.getEpisodes().get(holder.getAdapterPosition()));
+
+            PodcastEpisode episode = adapter.getEpisodes().get(holder.getAdapterPosition());
+            ((MainActivity)getActivity()).loadPlayingPodcast(episode);
 
         }
     }

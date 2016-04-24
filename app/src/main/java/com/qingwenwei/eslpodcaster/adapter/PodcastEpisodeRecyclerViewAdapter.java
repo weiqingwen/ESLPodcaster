@@ -2,7 +2,6 @@ package com.qingwenwei.eslpodcaster.adapter;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,7 +144,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     }
 
     ///
-    // load player audio
+    // episode onClick event
     public interface OnEpisodeClickListener{
         void onEpisodeClick(RecyclerView.ViewHolder holder);
     }

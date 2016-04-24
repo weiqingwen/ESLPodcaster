@@ -4,64 +4,66 @@
     android:layout_height="80dp"
     android:background="#158FEF"
     android:layout_alignParentBottom="true"
-    android:id="@+id/playerPanelLayout">
-
+    android:id="@+id/slidingUpPanelPlayerLayout">
 
     <ImageButton
+        android:id="@+id/slidingUpPanelPlayButton"
+        android:src="@drawable/ic_play_arrow_white_36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/slidingPlayButton"
-        android:background="@drawable/ic_play_arrow_white_36dp"
         android:layout_marginTop="30dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 
     <ImageButton
+        android:id="@+id/slidingUpPanelReplayButton"
+        android:src="@drawable/ic_replay_10_white_36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/imageButton"
-        android:background="@drawable/ic_replay_10_white_36dp"
-        android:layout_alignTop="@+id/slidingPlayButton"
-        android:layout_toStartOf="@+id/slidingPlayButton"
+        android:layout_alignTop="@+id/slidingUpPanelPlayButton"
+        android:layout_toStartOf="@+id/slidingUpPanelPlayButton"
         android:layout_marginEnd="80dp" />
 
     <ImageButton
+        android:id="@+id/slidingUpPanelForwardButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:id="@+id/imageButton2"
-        android:background="@drawable/ic_forward_10_white_36dp"
+        android:src="@drawable/ic_forward_10_white_36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_marginStart="80dp"
-        android:layout_alignTop="@+id/slidingPlayButton"
-        android:layout_toEndOf="@+id/slidingPlayButton" />
+        android:layout_alignTop="@+id/slidingUpPanelPlayButton"
+        android:layout_toEndOf="@+id/slidingUpPanelPlayButton" />
 
     <TextView
+        android:id="@+id/slidingUpPanelCurrPosTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="00:00"
         android:textColor="@color/panelWhite"
-        android:id="@+id/slidingUpPanelCurrPosTextView"
         android:layout_alignParentTop="true"
         android:layout_marginTop="7dp"
         android:layout_alignBottom="@+id/slidingUpPanelSeekBar"
         android:layout_toStartOf="@+id/slidingUpPanelSeekBar" />
 
     <SeekBar
+        android:id="@+id/slidingUpPanelSeekBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/slidingUpPanelSeekBar"
         android:gravity="center"
         android:scrollbarStyle="outsideOverlay"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/imageButton"
-        android:layout_alignEnd="@+id/imageButton2" />
+        android:layout_alignStart="@+id/slidingUpPanelReplayButton"
+        android:layout_alignEnd="@+id/slidingUpPanelForwardButton" />
 
     <TextView
+        android:id="@+id/slidingUpPanelMaxPosTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="00:00"
         android:textColor="@color/panelWhite"
-        android:id="@+id/slidingUpPanelMaxPosTextView"
         android:layout_alignParentTop="true"
         android:layout_marginTop="7dp"
         android:layout_alignBottom="@+id/slidingUpPanelSeekBar"

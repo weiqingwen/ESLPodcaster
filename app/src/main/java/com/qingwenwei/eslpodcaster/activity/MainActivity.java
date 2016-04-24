@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
@@ -61,9 +60,11 @@ public class MainActivity extends AppCompatActivity {
     private View collapsedPanel;
     private View slidingUpPanelPlayerView;
 
+    private ImageButton collapsedPanelPlayButton;
+    private ImageButton collapsedPanelMenuButton;
+
     //sliding up player
     private AudioPlayer player;
-//    private boolean playerIsPlaying = false;
     private TextView collapsedPanelTitleTextView;
     private TextView slidingUpPanelScriptTextView;
     private TextView slidingUpPanelCurrPosTextView;
@@ -107,33 +108,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
 //                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
-
             }
 
             @Override
             public void onPanelStateChanged(View panel, PanelState previousState, PanelState newState) {
                 Log.i(TAG, "onPanelStateChanged " + newState);
                 if(newState == PanelState.EXPANDED){
-//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)panelPlayButton.getLayoutParams();
-//                    params.removeRule(RelativeLayout.ALIGN_PARENT_TOP);
-//                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//                    panelPlayButton.setLayoutParams(params);
-
+                    collapsedPanelPlayButton.setVisibility(View.INVISIBLE);
+                    collapsedPanelMenuButton.setVisibility(View.VISIBLE);
                 }else if(newState == PanelState.COLLAPSED){
-//                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)panelPlayButton.getLayoutParams();
-//                    params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-//                    panelPlayButton.setLayoutParams(params);
+                    collapsedPanelPlayButton.setVisibility(View.VISIBLE);
+                    collapsedPanelMenuButton.setVisibility(View.INVISIBLE);
                 }
-
-
             }
         });
 
         slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "onClick() " + view.getContext().getPackageName());
+                Log.i(TAG, "OnClickListener() " + view.getContext().getPackageName());
 //                slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
             }
         });
@@ -150,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
             }
         );
         collapsedPanelTitleTextView = (TextView)findViewById(R.id.collapsedPanelTitleTextView);
-
-
+        collapsedPanelPlayButton = (ImageButton)findViewById(R.id.collapsedPanelPlayButton);
+        collapsedPanelMenuButton = (ImageButton)findViewById(R.id.collapsedPanelMenuButton);
 
         //find sliding up player views
         slidingUpPanelPlayerView = findViewById(R.id.slidingUpPanelPlayerLayout);
@@ -166,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         setupSlidingUpPanelPlayerListeners();
         setupInterceptOnTouchListeners();
     }
-
 
     //collapse and expand the sliding up panel
     private void toggleSlidingUpPanel(){
@@ -311,8 +303,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(1).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
         tabLayout.getTabAt(2).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
-
-
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

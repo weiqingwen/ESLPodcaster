@@ -4,10 +4,12 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
@@ -223,13 +226,15 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanelSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    if(player.isPlaying()) {
-                        slidingUpPanelCurrPosTextView.setText(toMinuteFormat(progress));
-                        player.seekTo(progress);
-                    }else{
-                        slidingUpPanelCurrPosTextView.setText(toMinuteFormat(progress));
-                        player.seekTo(progress);
+                if(player != null){
+                    if (fromUser) {
+                        if(player.isPlaying()) {
+                            slidingUpPanelCurrPosTextView.setText(toMinuteFormat(progress));
+                            player.seekTo(progress);
+                        }else{
+                            slidingUpPanelCurrPosTextView.setText(toMinuteFormat(progress));
+                            player.seekTo(progress);
+                        }
                     }
                 }
             }
@@ -248,14 +253,19 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanelPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG,"slidingUpPanelPlayButton.setOnClickListener()");
-                if (!player.isPlaying()) {
-                    player.setPlayWhenReady(true);
-                    slidingUpPanelSeekBar.setMax((int) player.getDuration());
-                    slidingUpPanelMaxPosTextView.setText(toMinuteFormat(player.getDuration()));
-                    slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
-                } else {
-                    player.setPlayWhenReady(false);
+                Log.i(TAG,"slidingUpPanelPlayButton.OnClickListener()");
+                if(player != null){
+                    if (!player.isPlaying()) {
+                        player.setPlayWhenReady(true);
+//                        slidingUpPanelSeekBar.setMax((int) player.getDuration());
+//                        slidingUpPanelMaxPosTextView.setText(toMinuteFormat(player.getDuration()));
+                        updateSlidingUpPanelSeekBar();
+                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                    } else {
+                        player.setPlayWhenReady(false);
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -263,15 +273,19 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanelReplayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long currPos = player.getCurrentPosition();
-                if(currPos - 10000 < 0){
-                    player.seekTo(0);
-                }else{
-                    player.seekTo(currPos - 10000);
-                }
+                if(player != null){
+                    long currPos = player.getCurrentPosition();
+                    if(currPos - 10000 < 0){
+                        player.seekTo(0);
+                    }else{
+                        player.seekTo(currPos - 10000);
+                    }
 
-                if(!player.isPlaying()){
-                    updateSlidingUpPanelSeekBar();
+                    if(!player.isPlaying()){
+                        updateSlidingUpPanelSeekBar();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -279,16 +293,40 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanelForwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long currPos = player.getCurrentPosition();
-                long duration = player.getDuration();
-                if(currPos + 10000 >= duration) {
-                    player.seekTo(duration);
-                }else{
-                    player.seekTo(currPos + 10000);
-                }
+                if(player != null){
+                    long currPos = player.getCurrentPosition();
+                    long duration = player.getDuration();
+                    if(currPos + 10000 >= duration) {
+                        player.seekTo(duration);
+                    }else{
+                        player.seekTo(currPos + 10000);
+                    }
 
-                if(!player.isPlaying()){
-                    updateSlidingUpPanelSeekBar();
+                    if(!player.isPlaying()){
+                        updateSlidingUpPanelSeekBar();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        collapsedPanelPlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"collapsedPanelPlayButton.OnClickListener()");
+                if(player != null){
+                    if (!player.isPlaying()) {
+                        player.setPlayWhenReady(true);
+//                        slidingUpPanelSeekBar.setMax((int) player.getDuration());
+//                        slidingUpPanelMaxPosTextView.setText(toMinuteFormat(player.getDuration()));
+                        updateSlidingUpPanelSeekBar();
+                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                    } else {
+                        player.setPlayWhenReady(false);
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -296,24 +334,27 @@ public class MainActivity extends AppCompatActivity {
 
     //setup tab icons and their color
     private void setupTabIcons(){
+        final String colorSelected = "#edf4fa";
+        final String colorUnselected = "#b7cbda";
+
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
 
-        tabLayout.getTabAt(0).getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(1).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(2).getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor(colorSelected), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(1).getIcon().setColorFilter(Color.parseColor(colorUnselected), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(2).getIcon().setColorFilter(Color.parseColor(colorUnselected), PorterDuff.Mode.SRC_IN);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                tab.getIcon().setColorFilter(Color.parseColor(colorSelected), PorterDuff.Mode.SRC_IN);
 
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(Color.parseColor("#dddddd"), PorterDuff.Mode.SRC_IN);
+                tab.getIcon().setColorFilter(Color.parseColor(colorUnselected), PorterDuff.Mode.SRC_IN);
             }
 
             @Override
@@ -334,7 +375,6 @@ public class MainActivity extends AppCompatActivity {
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
-//        private final List<String> mFragmentTitleList = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -352,12 +392,10 @@ public class MainActivity extends AppCompatActivity {
 
         public void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
-//            mFragmentTitleList.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-//            return mFragmentTitleList.get(position);
             return null;
         }
     }
@@ -403,6 +441,9 @@ public class MainActivity extends AppCompatActivity {
     public void loadPlayingPodcast(PodcastEpisode episode){
         Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
 
+        //download and update the script TextView
+        new DownloadEpisodeScriptAsyncTask(episode).execute();
+
         //toggle sliding-up panel
         toggleSlidingUpPanel();
 
@@ -414,15 +455,20 @@ public class MainActivity extends AppCompatActivity {
 
         //prepare audio play and update the script in the sliding-up panel
         preparePlayer(episode);
-        new DownloadEpisodeScriptAsyncTask(episode).execute();
+
+        //set currText and maxText 00:00
+        slidingUpPanelCurrPosTextView.setText("00:00");
+        slidingUpPanelMaxPosTextView.setText("00:00");
     }
 
     public void setSlidingUpPanelPlayButtonPlaying(){
         slidingUpPanelPlayButton.setImageResource(R.drawable.ic_play_arrow_white_36dp);
+        collapsedPanelPlayButton.setImageResource(R.drawable.ic_play_circle_outline_black_36dp);
     }
 
     public void setSlidingUpPanelPlayButtonPause(){
         slidingUpPanelPlayButton.setImageResource(R.drawable.ic_pause_white_36dp);
+        collapsedPanelPlayButton.setImageResource(R.drawable.ic_pause_circle_outline_black_36dp);
     }
 
     //player helper method
@@ -466,8 +512,15 @@ public class MainActivity extends AppCompatActivity {
 
     //player helper method
     private void updateSlidingUpPanelSeekBar(){
+        int max = (int) player.getDuration();
+        slidingUpPanelSeekBar.setMax(max);
+
+        int duration = (int) player.getDuration();
+        slidingUpPanelMaxPosTextView.setText(toMinuteFormat(duration));
+
         int currPos = (int) player.getCurrentPosition();
         slidingUpPanelCurrPosTextView.setText(toMinuteFormat(currPos));
+
         slidingUpPanelSeekBar.setProgress(currPos);
     }
 }

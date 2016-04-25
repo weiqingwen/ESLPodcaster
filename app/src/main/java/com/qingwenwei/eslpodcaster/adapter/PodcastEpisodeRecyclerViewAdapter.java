@@ -36,16 +36,16 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         public final TextView titleTextView;
         public final TextView subtitleTextView;
         public final TextView pubDateTextView;
-        public final ImageView imageView;
+        public final ImageView iconImageView;
 
         public EpisodeViewHolder(View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.cardView);
             cardView.setPreventCornerOverlap(false);
-            titleTextView = (TextView) view.findViewById(R.id.titleTextView);
-            subtitleTextView = (TextView) view.findViewById(R.id.subtitleTextView);
-            pubDateTextView = (TextView) view.findViewById(R.id.pubDateTextView);
-            imageView = (ImageView) view.findViewById(R.id.cardViewCategoryImageView);
+            titleTextView = (TextView) view.findViewById(R.id.cardViewTitleTextView);
+            subtitleTextView = (TextView) view.findViewById(R.id.cardViewSubtitleTextView);
+            pubDateTextView = (TextView) view.findViewById(R.id.cardViewPubDateTextView);
+            iconImageView = (ImageView) view.findViewById(R.id.cardViewIconImageView);
         }
 
         @Override
@@ -100,7 +100,29 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
             ((EpisodeViewHolder)holder).titleTextView.setText(episodes.get(position).getTitle());
             ((EpisodeViewHolder)holder).subtitleTextView.setText(episodes.get(position).getSubtitle());
             ((EpisodeViewHolder)holder).pubDateTextView.setText(episodes.get(position).getPubDate());
-            ((EpisodeViewHolder)holder).imageView.setImageResource(R.drawable.coffee);
+
+            if(episodes.get(position).getCategory().toLowerCase().contains("relationships")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.relationship);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("dining")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.dining);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("english caf")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.coffee);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("daily life")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.daily);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("shopping")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.shopping);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("health/medicine")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.health);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("travel")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.travel);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("transportation")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.transportation);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("business")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.business);
+            }else if(episodes.get(position).getCategory().toLowerCase().contains("entertainment")) {
+                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.entertainment);
+            }
+
             ((EpisodeViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -109,6 +131,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
                     }
                 }
             });
+
         }else {
             ((ProgressViewHolder)holder).progressBar.setIndeterminate(true);
         }

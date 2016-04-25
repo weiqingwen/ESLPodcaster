@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#68b3d9</color>
-    <color name="colorPrimaryDark">#58A2DF</color>
-    <color name="colorAccent">#e9fde3</color>
-    <color name="panelWhite">#c7d2dc</color>
+    <color name="colorPrimary">#4294ca</color>
+    <color name="colorPrimaryDark">#3288b6</color>
+    <color name="colorAccent">#ebeef1</color>
+
+    <!--primary font color-->
+    <color name="colorFontPrimaryLight">#EFF1F6</color>
+    <color name="colorFontPrimaryDark">#020d29</color>
+
+    <!--player panel colors-->
+    <color name="colorPlayerPanelBackground">#7B8BC6</color>
+    <color name="colorPlayerPanelText">#c1d6e6</color>
+
+    <!--cardView colors-->
+    <color name="cardRed">#DE576C</color>
+    <color name="cardGreen">#5ACF9C</color>
+    <color name="cardPurple">#7B8BC6</color>
+    <color name="cardYellow">#F1B136</color>
+    <color name="cardGray">#A7C3CB</color>
+    <color name="cardOrange">#FF8C66</color>
+
+    <color name="cardD">#ebeef1</color>
+
+
 </resources>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"
     android:paddingTop="6dp"
@@ -23,49 +24,50 @@
             android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/cardViewIconImageView"
                 android:layout_width="match_parent"
+                android:layout_height="80dp"
                 android:src="@drawable/coffee"
                 android:scaleType="centerCrop"
-                android:layout_height="80dp"
-                android:id="@+id/cardViewCategoryImageView" />
+                android:adjustViewBounds="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"/>
 
             <TextView
+                android:id="@+id/cardViewTitleTextView"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:id="@+id/titleTextView"
-                android:text="title"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_width="84dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceListItem"
-                android:layout_below="@+id/cardViewCategoryImageView"
+                android:layout_width="wrap_content"
+                android:adjustViewBounds="true"
+                android:layout_below="@+id/cardViewIconImageView"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true" />
+                <!--android:textAppearance="?attr/textAppearanceListItem"-->
 
             <TextView
+                android:id="@+id/cardViewPubDateTextView"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="date"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/pubDateTextView"
-                android:layout_below="@+id/titleTextView"
+                android:layout_below="@+id/cardViewTitleTextView"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true" />
 
             <TextView
+                android:id="@+id/cardViewSubtitleTextView"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="8dp"
-                android:id="@+id/subtitleTextView"
-                android:text="sub"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@+id/pubDateTextView" />
+                android:layout_below="@+id/cardViewPubDateTextView" />
 
         </RelativeLayout>
 

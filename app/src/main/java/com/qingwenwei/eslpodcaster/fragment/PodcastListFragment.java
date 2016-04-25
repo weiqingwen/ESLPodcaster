@@ -41,7 +41,7 @@ public class PodcastListFragment extends Fragment {
     private int visibleThreshold = 1;// The minimum amount of items to have below your current scroll position before loading more.
 
     //MainActivity
-    private Context context;
+//    private Context context;
 
     public PodcastListFragment(){
         Log.i(TAG,"PodcastListFragment()");
@@ -94,8 +94,6 @@ public class PodcastListFragment extends Fragment {
                 }
             }
         );
-
-
 
         if(dataInitialized) {
             //just refresh the recyclerView as the episode date was initialized
@@ -199,7 +197,6 @@ public class PodcastListFragment extends Fragment {
 
             PodcastEpisode episode = adapter.getEpisodes().get(holder.getAdapterPosition());
             ((MainActivity)getActivity()).loadPlayingPodcast(episode);
-
         }
     }
 }

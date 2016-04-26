@@ -11,8 +11,9 @@ public class PodcastEpisode implements Serializable {
     public String webUrl;
     public String category;
 
-    public PodcastEpisode(){
-
+    public PodcastEpisode(String title, String subtitle){
+        this.title = title;
+        this.subtitle = subtitle;
     }
 
     public PodcastEpisode(String title, String subtitle, String content, String pubDate, String audioFileUrl, String webUrl, String category){

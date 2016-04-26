@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:id="@+id/dragView">
+
+    <!--android:clickable="true"-->
+    <!--android:focusable="false"-->
+
+    <!--COLLAPSED PANEL LAYOUT-->
+    <include layout="@layout/panel_layout_collapsed_bar"
+        android:id="@+id/collapsedPanel"/>
+
+    <!--SCRIPTS TEXT LAYOUT-->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/slidingUpPanelPlayerLayout"
+        android:layout_below="@+id/collapsedPanel">
+
+        <!--SCRIPTS-->
+        <TextView
+            android:id="@+id/slidingUpPanelScriptTextView"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:scrollbars = "vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/lower_shadow_bar" />
+
+        <!--LOWER SHADOW BAR-->
+        <View
+            android:id="@+id/lower_shadow_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/shadow_bar_lower"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+        </View>
+    </RelativeLayout>
+
+    <!--HIDDEN LAYOUT-->
+    <include layout="@layout/panel_layout_sliding_up_player"
+        android:id="@+id/slidingUpPanelPlayerLayout" />
+
+</RelativeLayout>

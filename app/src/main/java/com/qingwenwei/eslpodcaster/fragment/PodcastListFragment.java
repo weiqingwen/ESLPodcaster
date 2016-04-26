@@ -1,6 +1,5 @@
 package com.qingwenwei.eslpodcaster.fragment;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,15 +53,14 @@ public class PodcastListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the sliding_up_panel_player_layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the panel_layout_sliding_up_player for this fragment
         Log.i(TAG, "onCreateView()");
 
-//        View drawer = inflater.inflate(R.sliding_up_panel_player_layout.fragment_podcast_list, container, false);
-        mSwipeRefreshLayout = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_podcast_list, container, false);
-        recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.recyclerview);
-//        recyclerView = (RecyclerView) inflater.inflate(R.sliding_up_panel_player_layout.fragment_podcast_list, container, false);
+//        View drawer = inflater.inflate(R.panel_layout_sliding_up_player.fragment_podcasts, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_podcasts, container, false);
+        recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.podcastRecyclerView);
+//        recyclerView = (RecyclerView) inflater.inflate(R.panel_layout_sliding_up_player.fragment_podcasts, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 //        recyclerView.setHasFixedSize(true);
 
@@ -147,7 +145,6 @@ public class PodcastListFragment extends Fragment {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         }
-
     }
 
     //load more items async task

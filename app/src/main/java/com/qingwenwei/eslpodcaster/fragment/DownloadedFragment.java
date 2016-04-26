@@ -24,8 +24,8 @@ public class DownloadedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the sliding_up_panel_player_layout for this fragment
-        return inflater.inflate(R.layout.fragment_downloaded, container, false);
+        // Inflate the panel_layout_sliding_up_player for this fragment
+        return inflater.inflate(R.layout.fragment_downloads, container, false);
     }
 
 }

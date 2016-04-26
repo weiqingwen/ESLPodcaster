@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.ic_favorite_white_36dp
     };
 
-    //Sliding up panel sliding_up_panel_player_layout
+    //Sliding up panel panel_layout_sliding_up_player
     private SlidingUpPanelLayout slidingUpPanelLayout;
 
     //collapsed panel views

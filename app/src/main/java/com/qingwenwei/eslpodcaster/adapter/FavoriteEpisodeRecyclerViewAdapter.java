@@ -2,6 +2,7 @@ package com.qingwenwei.eslpodcaster.adapter;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,23 +20,8 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     private List<PodcastEpisode> episodes;
 
     //adaptor constructor
-    public FavoriteEpisodeRecyclerViewAdapter(List<PodcastEpisode> items, RecyclerView recyclerView) {
+    public FavoriteEpisodeRecyclerViewAdapter(List<PodcastEpisode> items) {
         episodes = generateFakeData();
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return episodes.size();
     }
 
     public static class FavoritesViewHolder extends RecyclerView.ViewHolder {
@@ -53,6 +39,22 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         public String toString() {
             return super.toString() + " '" + titleTextView.getText();
         }
+    }
+
+    @Override
+    public FavoritesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_favorites_list, parent, false);
+        return new FavoritesViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        ((FavoritesViewHolder)holder).titleTextView.setText("" + episodes.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return episodes.size();
     }
 
     private List<PodcastEpisode> generateFakeData(){

@@ -4,12 +4,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +18,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageButton collapsedPanelPlayButton;
     private ImageButton collapsedPanelMenuButton;
+    private ImageView collapsedPanelPodcastIcon;
 
     //sliding up player
     private AudioPlayer player;
@@ -119,9 +119,13 @@ public class MainActivity extends AppCompatActivity {
                 if(newState == PanelState.EXPANDED){
                     collapsedPanelPlayButton.setVisibility(View.INVISIBLE);
                     collapsedPanelMenuButton.setVisibility(View.VISIBLE);
+                    collapsedPanelPodcastIcon.clearColorFilter();
+                    collapsedPanelPodcastIcon.setImageResource(R.drawable.ic_keyboard_arrow_down_black_36dp);
                 }else if(newState == PanelState.COLLAPSED){
                     collapsedPanelPlayButton.setVisibility(View.VISIBLE);
                     collapsedPanelMenuButton.setVisibility(View.INVISIBLE);
+                    collapsedPanelPodcastIcon.clearColorFilter();
+                    collapsedPanelPodcastIcon.setImageResource(R.drawable.ic_keyboard_arrow_up_black_36dp);
                 }
             }
         });
@@ -145,9 +149,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         );
+
+        //collapsed panel views
         collapsedPanelTitleTextView = (TextView)findViewById(R.id.collapsedPanelTitleTextView);
         collapsedPanelPlayButton = (ImageButton)findViewById(R.id.collapsedPanelPlayButton);
         collapsedPanelMenuButton = (ImageButton)findViewById(R.id.collapsedPanelMenuButton);
+        collapsedPanelPodcastIcon = (ImageView)findViewById(R.id.collapsedPanelPodcastIcon);
 
         //find sliding up player views
         slidingUpPanelPlayerView = findViewById(R.id.slidingUpPanelPlayerLayout);

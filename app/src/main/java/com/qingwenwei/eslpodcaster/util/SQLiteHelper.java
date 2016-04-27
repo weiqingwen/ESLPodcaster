@@ -8,8 +8,6 @@ public class SQLiteHelper extends SQLiteOpenHelper{
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "eslpodcaster.db";
 
-
-
     private static final String SQL_CREATE_ITEMS =
             "CREATE TABLE books ( " +
             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -18,9 +16,6 @@ public class SQLiteHelper extends SQLiteOpenHelper{
 
     private static final String SQL_DELETE_ITEMS =
             "DROP TABLE IF EXISTS " + "books";
-
-
-
 
     public SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

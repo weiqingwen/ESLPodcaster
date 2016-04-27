@@ -15,10 +15,13 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -337,6 +340,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        collapsedPanelMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
+                showOptionPopupMenu(v);
+            }
+        });
     }
 
     //setup tab icons and their color
@@ -530,5 +541,20 @@ public class MainActivity extends AppCompatActivity {
 
         slidingUpPanelSeekBar.setProgress(currPos);
     }
+
+    private void showOptionPopupMenu(View v){
+        PopupMenu popupMenu = new PopupMenu(getApplicationContext(),v);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.i(TAG,"You have clicked on: " + item.getTitle());
+                return false;
+            }
+        });
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.option_popup_menu,popupMenu.getMenu());
+        popupMenu.show();
+    }
+
 }
 

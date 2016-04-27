@@ -22,7 +22,6 @@ public class EslPodScriptParser {
                 if (pod.text().contains("Audio Index:")){
 
                 }else{
-//                    episode.setContent(pod.select("span.pod_body").html());
                     episode.setContent(pod.html());
                 }
             }
@@ -31,11 +30,4 @@ public class EslPodScriptParser {
             e.printStackTrace();
         }
     }
-
-//    public static void main(String args[]){
-//        PodcastEpisode ep = new PodcastEpisode();
-//        ep.setWebUrl("show_podcast.php?issue_id=18245607");
-//        new EslPodScriptParser().getEpisodeScript(ep);
-//        System.out.println("@" + ep.getContent());
-//    }
 }

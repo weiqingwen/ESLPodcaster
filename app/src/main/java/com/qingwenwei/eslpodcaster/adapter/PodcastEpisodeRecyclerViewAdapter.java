@@ -40,7 +40,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
         public EpisodeViewHolder(View view) {
             super(view);
-            cardView = (CardView) view.findViewById(R.id.cardView);
+            cardView = (CardView) view.findViewById(R.id.podcastCardView);
             cardView.setPreventCornerOverlap(false);
             titleTextView = (TextView) view.findViewById(R.id.cardViewTitleTextView);
             subtitleTextView = (TextView) view.findViewById(R.id.cardViewSubtitleTextView);
@@ -81,7 +81,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         if(viewType == VIEW_ITEM) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_podcast_list, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_podcasts_list, parent, false);
             view.setBackgroundResource(mBackground);
             vh = new EpisodeViewHolder(view);
         }else{

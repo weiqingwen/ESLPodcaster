@@ -1,11 +1,9 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
@@ -49,7 +47,9 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        ((FavoritesViewHolder)holder).titleTextView.setText("" + episodes.get(position));
+        ((FavoritesViewHolder)holder).mBoundString = episodes.get(position).getTitle();
+        ((FavoritesViewHolder)holder).titleTextView.setText("" + episodes.get(position).getTitle());
+        ((FavoritesViewHolder)holder).subtitleTextView.setText("" + episodes.get(position).getSubtitle());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     private List<PodcastEpisode> generateFakeData(){
         List<PodcastEpisode> episodes =  new ArrayList<>();
         for(int i = 1; i < 11; i ++){
-            PodcastEpisode ep = new PodcastEpisode("title:" + i, "subtitle:" + i);
+            PodcastEpisode ep = new PodcastEpisode("favorite title: " + i, "favorite subtitle: " + i);
             episodes.add(ep);
         }
         return episodes;

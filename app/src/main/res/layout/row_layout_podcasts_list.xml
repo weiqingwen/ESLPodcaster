@@ -17,7 +17,7 @@
         card_view:cardCornerRadius="5dp"
         card_view:cardPreventCornerOverlap="false"
         android:foreground="?selectableItemBackground"
-        android:id="@+id/cardView">
+        android:id="@+id/podcastCardView">
 
         <RelativeLayout
             android:layout_width="match_parent"

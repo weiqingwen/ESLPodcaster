@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#58ab8c</color>
     <color name="colorPrimaryDark">#42816a</color>
-    <color name="colorAccent">#ebeef1</color>
+    <color name="colorAccent">#f3faf5</color>
 
     <!--primary font color-->
     <color name="colorFontPrimaryLight">#EFF1F6</color>
@@ -20,7 +20,9 @@
     <color name="cardGray">#A7C3CB</color>
     <color name="cardOrange">#FF8C66</color>
 
-    <color name="cardD">#ebeef1</color>
+    <!--tab icons color-->
+    <color name="colorTabIconSelected">#f3faf5</color>
+    <color name="colorTabIconUnSelected">#badcc1</color>
 
 
 </resources>

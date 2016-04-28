@@ -1,5 +1,7 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -26,6 +28,8 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     //load more items
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
+
+    private Context context;
 
     private OnLoadMoreListener onLoadMoreListener;
     private OnEpisodeClickListener onEpisodeClickListener;
@@ -66,11 +70,11 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     }
 
     //adaptor constructor
-    public PodcastEpisodeRecyclerViewAdapter(List<PodcastEpisode> items, RecyclerView recyclerView) {
-        mBackground = mTypedValue.resourceId;
-        episodes = items;
+    public PodcastEpisodeRecyclerViewAdapter(Context context, List<PodcastEpisode> items, RecyclerView recyclerView) {
+        this.context = context;
+        this.mBackground = mTypedValue.resourceId;
+        this.episodes = items;
     }
-
 
     @Override
     public int getItemViewType(int position) {
@@ -101,27 +105,39 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
             ((EpisodeViewHolder)holder).subtitleTextView.setText(episodes.get(position).getSubtitle());
             ((EpisodeViewHolder)holder).pubDateTextView.setText(episodes.get(position).getPubDate());
 
-            if(episodes.get(position).getCategory().toLowerCase().contains("relationships")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.relationship);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("dining")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.dining);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("english caf")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.coffee);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("daily life")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.daily);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("shopping")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.shopping);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("health/medicine")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.health);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("travel")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.travel);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("transportation")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.transportation);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("business")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.business);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("entertainment")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.entertainment);
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ((Activity)context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if(episodes.get(position).getCategory().toLowerCase().contains("relationships")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_relationship);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("dining")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_dining);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("english caf")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_coffee);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("daily life")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_daily);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("shopping")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_shopping);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("health/medicine")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_health);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("travel")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_travel);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("transportation")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_transportation);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("business")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_business);
+                            }else if(episodes.get(position).getCategory().toLowerCase().contains("entertainment")) {
+                                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_entertainment);
+                            }
+
+                        }
+                    });
+                }
+            }).start();
 
             ((EpisodeViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -146,7 +162,6 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         return episodes;
     }
 
-    ///
     // load more items
     public interface OnLoadMoreListener {
         void onLoadMore();
@@ -166,7 +181,6 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         this.notifyDataSetChanged();
     }
 
-    ///
     // episode onClick event
     public interface OnEpisodeClickListener{
         void onEpisodeClick(RecyclerView.ViewHolder holder);

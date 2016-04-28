@@ -11,6 +11,10 @@ public class PodcastEpisode implements Serializable {
     public String webUrl;
     public String category;
 
+    public PodcastEpisode(){
+        super();
+    }
+
     public PodcastEpisode(String title, String subtitle){
         this.title = title;
         this.subtitle = subtitle;

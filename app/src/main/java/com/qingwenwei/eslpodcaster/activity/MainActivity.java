@@ -1,6 +1,5 @@
 package com.qingwenwei.eslpodcaster.activity;
 
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +36,7 @@ import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
+import com.qingwenwei.eslpodcaster.util.SQLiteHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import io.github.skyhacker2.sqliteonweb.SQLiteOnWeb;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
 
     private int[] tabIcons = {
-            R.drawable.ic_cast_white_36dp,
+            R.drawable.ic_rss_feed_white_36dp,
             R.drawable.ic_file_download_white_36dp,
             R.drawable.ic_favorite_white_36dp
     };
@@ -80,6 +83,12 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton slidingUpPanelReplayButton;
     private ImageButton slidingUpPanelForwardButton;
 
+    //current playing episode
+    private PodcastEpisode playingEpisode;
+
+    //Popup option menu
+    private PopupMenu popupMenu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,9 +111,6 @@ public class MainActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         if(tabLayout != null){
             tabLayout.setupWithViewPager(viewPager);
-        }
-
-        if(tabLayout != null){
             setupTabIcons();
         }
 
@@ -171,6 +177,10 @@ public class MainActivity extends AppCompatActivity {
 
         setupSlidingUpPanelPlayerListeners();
         setupInterceptOnTouchListeners();
+
+
+        //SQLite browser
+        SQLiteOnWeb.init(this).start();
     }
 
     //collapse and expand the sliding up panel
@@ -345,34 +355,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
-                showOptionPopupMenu(v);
+
+                if(popupMenu == null){
+                    setupOptionPopupMenu(v);
+                }
+                popupMenu.show();
             }
         });
     }
 
     //setup tab icons and their color
     private void setupTabIcons(){
-        final String colorSelected = "#edf4fa";
-        final String colorUnselected = "#b7cbda";
+        final int colorSelected = ContextCompat.getColor(getApplicationContext(), R.color.colorTabIconSelected);
+        final int colorUnselected = ContextCompat.getColor(getApplicationContext(), R.color.colorTabIconUnSelected);
 
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
 
-        tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor(colorSelected), PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(1).getIcon().setColorFilter(Color.parseColor(colorUnselected), PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(2).getIcon().setColorFilter(Color.parseColor(colorUnselected), PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(0).getIcon().setColorFilter(colorSelected, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(1).getIcon().setColorFilter(colorUnselected, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(2).getIcon().setColorFilter(colorUnselected, PorterDuff.Mode.SRC_IN);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(Color.parseColor(colorSelected), PorterDuff.Mode.SRC_IN);
-
+                tab.getIcon().setColorFilter(colorSelected, PorterDuff.Mode.SRC_IN);
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(Color.parseColor(colorUnselected), PorterDuff.Mode.SRC_IN);
+                tab.getIcon().setColorFilter(colorUnselected, PorterDuff.Mode.SRC_IN);
             }
 
             @Override
@@ -389,6 +402,54 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFragment(new DownloadedFragment(), "Download");
         adapter.addFragment(new FavoritesFragment(), "Favorite");
         viewPager.setAdapter(adapter);
+    }
+
+    private void setupOptionPopupMenu(View v){
+        popupMenu = new PopupMenu(getApplicationContext(),v);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                String title = item.getTitle().toString().toLowerCase();
+                Log.i(TAG,"onMenuItemClick() " + title);
+
+                switch (title){
+                    case "add to favorites": {
+                        if(playingEpisode != null) {
+                            SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+                            long newRowId = db.addEpisode(playingEpisode);
+                            Log.i(TAG, "newRowId:" + newRowId);
+                            if(newRowId == -1){
+                                Toast.makeText(MainActivity.this,
+                                        "This episode is already in the favorites list",
+                                        Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(MainActivity.this,
+                                        "This episode is added to favorites list",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        }
+                    }
+
+                    case "get all favorites": {
+                        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+                        db.getAllEpisodes();
+                        break;
+                    }
+
+                    case "delete all favorites": {
+                        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+                        db.deleteAllEpisodes();
+                        break;
+                    }
+                }
+
+                return true;
+            }
+        });
+
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.option_popup_menu,popupMenu.getMenu());
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -420,8 +481,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (slidingUpPanelLayout != null &&
-                (slidingUpPanelLayout.getPanelState() == PanelState.EXPANDED || slidingUpPanelLayout.getPanelState() == PanelState.ANCHORED)) {
+        if (slidingUpPanelLayout != null
+                && (slidingUpPanelLayout.getPanelState() == PanelState.EXPANDED
+                        || slidingUpPanelLayout.getPanelState() == PanelState.ANCHORED)) {
             slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
         } else {
             super.onBackPressed();
@@ -477,6 +539,9 @@ public class MainActivity extends AppCompatActivity {
         //set currText and maxText 00:00
         slidingUpPanelCurrPosTextView.setText("00:00");
         slidingUpPanelMaxPosTextView.setText("00:00");
+
+        //setup the current playing episode
+        this.playingEpisode = episode;
     }
 
     public void setSlidingUpPanelPlayButtonPlaying(){
@@ -541,20 +606,5 @@ public class MainActivity extends AppCompatActivity {
 
         slidingUpPanelSeekBar.setProgress(currPos);
     }
-
-    private void showOptionPopupMenu(View v){
-        PopupMenu popupMenu = new PopupMenu(getApplicationContext(),v);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Log.i(TAG,"You have clicked on: " + item.getTitle());
-                return false;
-            }
-        });
-        MenuInflater inflater = popupMenu.getMenuInflater();
-        inflater.inflate(R.menu.option_popup_menu,popupMenu.getMenu());
-        popupMenu.show();
-    }
-
 }
 

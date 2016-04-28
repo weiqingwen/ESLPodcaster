@@ -1,6 +1,8 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +21,19 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     //adaptor constructor
     public FavoriteEpisodeRecyclerViewAdapter(List<PodcastEpisode> items) {
-        episodes = generateFakeData();
+        episodes = new ArrayList<>();
     }
 
     public static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
+        public final CardView cardView;
         public final TextView titleTextView;
         public final TextView subtitleTextView;
 
         public FavoritesViewHolder(View view) {
             super(view);
+            cardView = (CardView) view.findViewById(R.id.favoriteCardView);
+//            cardView.setPreventCornerOverlap(false);
             titleTextView = (TextView) view.findViewById(R.id.favoriteTitleTextView);
             subtitleTextView = (TextView) view.findViewById(R.id.favoriteSubtitleTextView);
         }
@@ -50,6 +55,21 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         ((FavoritesViewHolder)holder).mBoundString = episodes.get(position).getTitle();
         ((FavoritesViewHolder)holder).titleTextView.setText("" + episodes.get(position).getTitle());
         ((FavoritesViewHolder)holder).subtitleTextView.setText("" + episodes.get(position).getSubtitle());
+
+        ((FavoritesViewHolder)holder).cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.i(TAG,"long clicked");
+                return true;
+            }
+        });
+
+        ((FavoritesViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"clicked");
+            }
+        });
     }
 
     @Override
@@ -57,12 +77,9 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         return episodes.size();
     }
 
-    private List<PodcastEpisode> generateFakeData(){
-        List<PodcastEpisode> episodes =  new ArrayList<>();
-        for(int i = 1; i < 11; i ++){
-            PodcastEpisode ep = new PodcastEpisode("favorite title: " + i, "favorite subtitle: " + i);
-            episodes.add(ep);
-        }
-        return episodes;
+    public void updateEpisodes(List<PodcastEpisode> newEpisodes){
+        this.episodes.clear();
+        this.episodes.addAll(newEpisodes);
+        this.notifyDataSetChanged();
     }
 }

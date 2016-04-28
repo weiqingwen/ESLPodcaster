@@ -57,10 +57,10 @@ public class PodcastListFragment extends Fragment {
         // Inflate the panel_layout_sliding_up_player for this fragment
         Log.i(TAG, "onCreateView()");
 
-//        View drawer = inflater.inflate(R.panel_layout_sliding_up_player.fragment_podcasts, container, false);
         mSwipeRefreshLayout = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_podcasts, container, false);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+
         recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.podcastRecyclerView);
-//        recyclerView = (RecyclerView) inflater.inflate(R.panel_layout_sliding_up_player.fragment_podcasts, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 //        recyclerView.setHasFixedSize(true);
 
@@ -99,7 +99,7 @@ public class PodcastListFragment extends Fragment {
         }else {
             //first time download the episode data
             episodes = new ArrayList<>();
-            adapter = new PodcastEpisodeRecyclerViewAdapter(episodes,recyclerView);
+            adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(),episodes,recyclerView);
             adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
             adapter.setOnEpisodeClickListener(new OnEpisodeClickListener());
             recyclerView.setAdapter(adapter);

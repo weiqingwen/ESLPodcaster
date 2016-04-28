@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/dropdown_menu1"
+        android:id="@+id/menuItemDownload"
         android:title="Download"
         android:visible="true" />
     <item
-        android:id="@+id/dropdown_menu2"
+        android:id="@+id/menuItemAddToFavorites"
         android:title="Add to favorites"
+        android:visible="true" />
+    <item
+        android:id="@+id/menuItemGetAllFavorites"
+        android:title="Get All Favorites"
+        android:visible="true" />
+    <item
+        android:id="@+id/menuItemDeleteAllDownloads"
+        android:title="Delete All Downloads"
+        android:visible="true" />
+    <item
+        android:id="@+id/menuItemDeleteAllFavorites"
+        android:title="Delete All Favorites"
         android:visible="true" />
 </menu>

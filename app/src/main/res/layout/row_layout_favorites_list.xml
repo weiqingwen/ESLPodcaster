@@ -13,38 +13,49 @@
         card_view:cardUseCompatPadding="true"
         card_view:cardCornerRadius="5dp"
         card_view:cardPreventCornerOverlap="false"
+        android:foreground="?selectableItemBackground"
         android:id="@+id/favoriteCardView">
 
         <RelativeLayout
-            android:background="?android:attr/selectableItemBackground"
-            android:focusable="true"
-            android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/favoriteIconImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_favorite_white_36dp"
+                android:scaleType="center"
+                android:tint="@color/cardRed"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignBottom="@+id/favoriteSubtitleTextView" />
 
             <TextView
                 android:id="@+id/favoriteTitleTextView"
                 android:text="title"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="8dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true" />
+                android:layout_toEndOf="@+id/favoriteIconImageView" />
 
             <TextView
                 android:id="@+id/favoriteSubtitleTextView"
                 android:text="subtitle"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="8dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_below="@+id/favoriteTitleTextView"
-                android:layout_alignParentStart="true"/>
+                android:layout_toEndOf="@+id/favoriteIconImageView" />
 
         </RelativeLayout>
 

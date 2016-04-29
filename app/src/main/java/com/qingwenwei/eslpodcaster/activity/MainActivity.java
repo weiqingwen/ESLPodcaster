@@ -35,6 +35,7 @@ import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
+import com.qingwenwei.eslpodcaster.util.Mp3Downloader;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
 import com.qingwenwei.eslpodcaster.util.SQLiteHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -440,6 +441,11 @@ public class MainActivity extends AppCompatActivity {
                     case "delete all favorites": {
                         SQLiteHelper db = new SQLiteHelper(getApplicationContext());
                         db.deleteAllEpisodes();
+                        break;
+                    }
+
+                    case "delete all downloads": {
+                        new Mp3Downloader().startDownload();
                         break;
                     }
                 }

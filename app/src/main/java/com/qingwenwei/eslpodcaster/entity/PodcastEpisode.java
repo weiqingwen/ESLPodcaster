@@ -11,6 +11,7 @@ public class PodcastEpisode implements Serializable {
     public String webUrl;
     public String category;
 
+
     public PodcastEpisode(){
         super();
     }

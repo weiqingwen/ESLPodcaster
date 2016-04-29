@@ -445,7 +445,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     case "delete all downloads": {
-                        new Mp3Downloader().startDownload();
+                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
+                        new Mp3Downloader().startDownload(playingEpisode);
                         break;
                     }
                 }

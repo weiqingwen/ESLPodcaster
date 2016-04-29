@@ -10,6 +10,8 @@ public class PodcastEpisode implements Serializable {
     public String audioFileUrl;
     public String webUrl;
     public String category;
+    public boolean downloaded = false;
+    public boolean favoured = false;
 
 
     public PodcastEpisode(){
@@ -87,8 +89,24 @@ public class PodcastEpisode implements Serializable {
         this.category = category;
     }
 
+    public boolean isDownloaded() {
+        return downloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        this.downloaded = downloaded;
+    }
+
+    public boolean isFavoured() {
+        return favoured;
+    }
+
+    public void setFavoured(boolean favoured) {
+        this.favoured = favoured;
+    }
+
     public String toString(){
-        return "\n\n@===========" +
+        return "\n\n@====================" +
                         "\nTitle: " + title +
                         "\ndate: " + pubDate +
                         "\nCat: " + category +

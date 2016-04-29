@@ -15,4 +15,6 @@ public class Constants {
     public static final String PODCAST_ITEM_INTENT_TAG = "PODCAST_ITEM_INTENT_TAG";
 
     public static final String ROOT_DIRECTORY_NAME = "ESLPodcaster";
+
+    public static final String AUDIO_DIRECTORY_NAME = "Audio";
 }

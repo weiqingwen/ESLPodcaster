@@ -35,7 +35,6 @@ import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
-import com.qingwenwei.eslpodcaster.util.Mp3Downloader;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
 import com.qingwenwei.eslpodcaster.util.SQLiteHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -49,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.skyhacker2.sqliteonweb.SQLiteOnWeb;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
 
     private Toolbar toolbar;
@@ -278,10 +277,8 @@ public class MainActivity extends AppCompatActivity {
                 if(player != null){
                     if (!player.isPlaying()) {
                         player.setPlayWhenReady(true);
-//                        slidingUpPanelSeekBar.setMax((int) player.getDuration());
-//                        slidingUpPanelMaxPosTextView.setText(toMinuteFormat(player.getDuration()));
-                        updateSlidingUpPanelSeekBar();
                         slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                        updateSlidingUpPanelSeekBar();
                     } else {
                         player.setPlayWhenReady(false);
                     }
@@ -339,10 +336,8 @@ public class MainActivity extends AppCompatActivity {
                 if(player != null){
                     if (!player.isPlaying()) {
                         player.setPlayWhenReady(true);
-//                        slidingUpPanelSeekBar.setMax((int) player.getDuration());
-//                        slidingUpPanelMaxPosTextView.setText(toMinuteFormat(player.getDuration()));
-                        updateSlidingUpPanelSeekBar();
                         slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                        updateSlidingUpPanelSeekBar();
                     } else {
                         player.setPlayWhenReady(false);
                     }
@@ -414,39 +409,55 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG,"onMenuItemClick() " + title);
 
                 switch (title){
+                    case "download":{
+//                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
+//                        new Mp3Downloader().startDownload(playingEpisode);
+                        if(playingEpisode != null) {
+                            SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+                            PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
+                            originalEpisode.setDownloaded(true);
+                            boolean updated = db.smartUpdate(originalEpisode);
+                            db.close();
+                            Log.i(TAG, "download smartUpdate() " + updated);
+                        }
+
+
+                        break;
+                    }
+
                     case "add to favorites": {
                         if(playingEpisode != null) {
                             SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-                            long newRowId = db.addEpisode(playingEpisode);
-                            Log.i(TAG, "newRowId:" + newRowId);
-                            if(newRowId == -1){
-                                Toast.makeText(MainActivity.this,
-                                        "This episode is already in the favorites list",
-                                        Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(MainActivity.this,
-                                        "This episode is added to favorites list",
-                                        Toast.LENGTH_SHORT).show();
-                            }
+                            PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
+                            originalEpisode.setFavoured(true);
+                            boolean updated = db.smartUpdate(originalEpisode);
+                            db.close();
+                            Log.i(TAG, "add to favorite smartUpdate() " + updated);
                             break;
                         }
                     }
 
-                    case "get all favorites": {
+                    //helpers
+                    case "get all episodes": {
                         SQLiteHelper db = new SQLiteHelper(getApplicationContext());
                         db.getAllEpisodes();
                         break;
                     }
 
-                    case "delete all favorites": {
+                    case "delete all episodes": {
                         SQLiteHelper db = new SQLiteHelper(getApplicationContext());
                         db.deleteAllEpisodes();
                         break;
                     }
 
                     case "delete all downloads": {
-                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
-                        new Mp3Downloader().startDownload(playingEpisode);
+//                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
+//                        new Mp3Downloader().startDownload(playingEpisode);
+
+                        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+                        int i = (int) db.addEpisode(playingEpisode);
+                        db.close();
+                        Log.i(TAG, "add anyway " + i);
                         break;
                     }
                 }

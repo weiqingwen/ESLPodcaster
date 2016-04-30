@@ -23,7 +23,13 @@ public class PodcastEpisode implements Serializable {
         this.subtitle = subtitle;
     }
 
-    public PodcastEpisode(String title, String subtitle, String content, String pubDate, String audioFileUrl, String webUrl, String category){
+    public PodcastEpisode(String title,
+                          String subtitle,
+                          String content,
+                          String pubDate,
+                          String audioFileUrl,
+                          String webUrl,
+                          String category){
         this.title = title;
         this.subtitle = subtitle;
         this.content = content;
@@ -31,6 +37,26 @@ public class PodcastEpisode implements Serializable {
         this.audioFileUrl = audioFileUrl;
         this.webUrl = webUrl;
         this.category = category;
+    }
+
+    public PodcastEpisode(String title,
+                          String subtitle,
+                          String content,
+                          String pubDate,
+                          String audioFileUrl,
+                          String webUrl,
+                          String category,
+                          boolean downloaded,
+                          boolean favoured){
+        this.title = title;
+        this.subtitle = subtitle;
+        this.content = content;
+        this.pubDate = pubDate;
+        this.audioFileUrl = audioFileUrl;
+        this.webUrl = webUrl;
+        this.category = category;
+        this.downloaded = downloaded;
+        this.favoured = favoured;
     }
 
     public String getTitle() {
@@ -106,13 +132,15 @@ public class PodcastEpisode implements Serializable {
     }
 
     public String toString(){
-        return "\n\n@====================" +
+        return "\n\n@============================================================" +
                         "\nTitle: " + title +
                         "\ndate: " + pubDate +
                         "\nCat: " + category +
                         "\nsub: " + subtitle +
-                        "\nfile: " + audioFileUrl +
-                        "\nweb: " + webUrl;
+                        "\naudio: " + audioFileUrl +
+                        "\nweb: " + webUrl +
+                        "\ndownloaded: " + downloaded +
+                        "\nfavoured: " + favoured;
     }
 
 }

@@ -13,12 +13,12 @@
         android:title="---------------"
         android:visible="true" />
     <item
-        android:id="@+id/menuItemGetAllFavorites"
-        android:title="Get All Favorites"
+        android:id="@+id/menuItemGetAllEpisodes"
+        android:title="Get All Episodes"
         android:visible="true" />
     <item
-        android:id="@+id/menuItemDeleteAllFavorites"
-        android:title="Delete All Favorites"
+        android:id="@+id/menuItemDeleteAllEpisodes"
+        android:title="Delete All Episodes"
         android:visible="true" />
     <item
         android:id="@+id/menuItemDeleteAllDownloads"

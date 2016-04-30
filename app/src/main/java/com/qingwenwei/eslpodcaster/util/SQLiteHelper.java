@@ -18,24 +18,37 @@ public class SQLiteHelper extends SQLiteOpenHelper{
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "eslpodcaster.db";
 
-    private static final String SQL_CREATE_ITEMS =
-            "CREATE TABLE episodes ( " +
-            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "title TEXT, "+
-            "subtitle TEXT )";
-
-    private static final String SQL_DELETE_ITEMS =
-            "DROP TABLE IF EXISTS " + "episodes";
-
-    // Books table name
+    // PodcastEpisode Table name
     private static final String TABLE_EPISODES = "episodes";
-    private static final String TABLE_DOWNLOADS = "downloads";
 
-    // Books Table Columns names
+    // PodcastEpisodes Table Columns names
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
     private static final String KEY_SUBTITLE = "subtitle";
+    private static final String KEY_CONTENT= "content";
+    private static final String KEY_CATEGORY = "category";
+    private static final String KEY_PUB_DATE = "pub_date";
+    private static final String KEY_AUDIO_URL = "audio_url";
+    private static final String KEY_WEB_URL = "web_url";
+    private static final String KEY_DOWNLOADED = "downloaded";
+    private static final String KEY_FAVOURED = "favoured";
 
+    //queries
+    private static final String SQL_CREATE_ITEMS =
+            "CREATE TABLE " + TABLE_EPISODES + " ( " +
+            KEY_ID          + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            KEY_TITLE       + " TEXT, " +
+            KEY_SUBTITLE    + " TEXT, " +
+            KEY_CONTENT     + " TEXT, " +
+            KEY_CATEGORY    + " TEXT, " +
+            KEY_PUB_DATE    + " TEXT, " +
+            KEY_AUDIO_URL   + " TEXT, " +
+            KEY_WEB_URL     + " TEXT, " +
+            KEY_DOWNLOADED  + " INTEGER, " +
+            KEY_FAVOURED    + " INTEGER )";
+
+    private static final String SQL_DELETE_ITEMS =
+            "DROP TABLE IF EXISTS " + TABLE_EPISODES;
 
     public SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,29 +70,146 @@ public class SQLiteHelper extends SQLiteOpenHelper{
     public long addEpisode(PodcastEpisode episode){
         Log.i(TAG, "addEpisode() " + episode.getTitle());
 
+        // original episode
+        PodcastEpisode originalEpisode = getEpisode(episode.getTitle());
+
         //episode already exists
-        if(getEpisode(episode.getTitle()) != null){
-            return -1;
+        if(originalEpisode != null){
+            return -2;
         }
 
         SQLiteDatabase db = this.getWritableDatabase();
 
+        //build episode entry
         ContentValues values = new ContentValues();
-        values.put(KEY_TITLE, episode.getTitle()); // get title
-        values.put(KEY_SUBTITLE, episode.getSubtitle()); // get subtitle
+        values.put(KEY_TITLE, episode.getTitle());
+        values.put(KEY_SUBTITLE, episode.getSubtitle());
+        values.put(KEY_CONTENT, episode.getContent());
+        values.put(KEY_CATEGORY, episode.getCategory());
+        values.put(KEY_PUB_DATE, episode.getPubDate());
+        values.put(KEY_AUDIO_URL, episode.getAudioFileUrl());
+        values.put(KEY_WEB_URL, episode.getWebUrl());
+
+        if(episode.isDownloaded()){
+            values.put(KEY_DOWNLOADED, 1);
+        }else{
+            values.put(KEY_DOWNLOADED, 0);
+        }
+
+        if(episode.isFavoured()){
+            values.put(KEY_FAVOURED, 1);
+        }else{
+            values.put(KEY_FAVOURED, 0);
+        }
 
         long newRowId; //new primary key
         newRowId = db.insert(TABLE_EPISODES, null, values);
-
         db.close();
+
         return newRowId;
+    }
+
+    public int updateEpisode(PodcastEpisode episode){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //build episode entry
+        ContentValues values = new ContentValues();
+        values.put(KEY_TITLE, episode.getTitle());
+        values.put(KEY_SUBTITLE, episode.getSubtitle());
+        values.put(KEY_CONTENT, episode.getContent());
+        values.put(KEY_CATEGORY, episode.getCategory());
+        values.put(KEY_PUB_DATE, episode.getPubDate());
+        values.put(KEY_AUDIO_URL, episode.getAudioFileUrl());
+        values.put(KEY_WEB_URL, episode.getWebUrl());
+
+        if(episode.isDownloaded()){
+            values.put(KEY_DOWNLOADED, 1);
+        }else{
+            values.put(KEY_DOWNLOADED, 0);
+        }
+
+        if(episode.isFavoured()){
+            values.put(KEY_FAVOURED, 1);
+        }else{
+            values.put(KEY_FAVOURED, 0);
+        }
+
+        int i = db.update(TABLE_EPISODES, //table
+                values, // column/value
+                KEY_TITLE + " = ?", // selections
+                new String[] {episode.getTitle()}); //selection args
+
+        return i;
+    }
+
+    public boolean smartUpdate(PodcastEpisode newEpisode){
+        long exist = addEpisode(newEpisode);
+
+        // -2 means episode exist, update the original attributes
+        if(exist == -2){
+            PodcastEpisode originalEpisode = getEpisode(newEpisode.getTitle());
+
+            String title = originalEpisode.getTitle().equals(newEpisode.getTitle()) ?
+                    originalEpisode.getTitle() : newEpisode.getTitle();
+
+            String subtitle = originalEpisode.getSubtitle().equals(newEpisode.getSubtitle()) ?
+                    originalEpisode.getSubtitle() : newEpisode.getSubtitle();
+
+            String content = originalEpisode.getContent().equals(newEpisode.getContent()) ?
+                    originalEpisode.getContent() : newEpisode.getContent();
+
+            String category = originalEpisode.getCategory().equals(newEpisode.getCategory()) ?
+                    originalEpisode.getCategory() : newEpisode.getCategory();
+
+            String pubDate = originalEpisode.getPubDate().equals(newEpisode.getPubDate()) ?
+                    originalEpisode.getPubDate() : newEpisode.getPubDate();
+
+            String audioURL = originalEpisode.getAudioFileUrl().equals(newEpisode.getAudioFileUrl()) ?
+                    originalEpisode.getAudioFileUrl() : newEpisode.getAudioFileUrl();
+
+            String webURL = originalEpisode.getWebUrl().equals(newEpisode.getWebUrl()) ?
+                    originalEpisode.getWebUrl() : newEpisode.getWebUrl();
+
+            boolean isDownloaded = originalEpisode.isDownloaded() == (newEpisode.isDownloaded()) ?
+                    originalEpisode.isDownloaded() : newEpisode.isDownloaded();
+
+            boolean isFavoured = originalEpisode.isFavoured() == (newEpisode.isFavoured()) ?
+                    originalEpisode.isFavoured() : newEpisode.isFavoured();
+
+            // build a PodcastEpisode for updating
+            PodcastEpisode episode = new PodcastEpisode(
+                    title,
+                    subtitle,
+                    content,
+                    pubDate,
+                    audioURL,
+                    webURL,
+                    category,
+                    isDownloaded,
+                    isFavoured);
+
+            updateEpisode(episode);
+            return true;
+        }
+
+        return false;
     }
 
     public PodcastEpisode getEpisode(String title){
 
         SQLiteDatabase db = this.getWritableDatabase();
-        String[] projection = {KEY_ID,KEY_TITLE,KEY_SUBTITLE};
-        Cursor cursor = db.query(TABLE_EPISODES,projection,"title = ?",new String[] { String.valueOf(title) },null,null,null);
+        String[] projection = {KEY_ID,
+                KEY_TITLE,
+                KEY_SUBTITLE,
+                KEY_CONTENT,
+                KEY_CATEGORY,
+                KEY_PUB_DATE,
+                KEY_AUDIO_URL,
+                KEY_WEB_URL,
+                KEY_DOWNLOADED,
+                KEY_FAVOURED};
+
+        Cursor cursor = db.query(TABLE_EPISODES,projection,"title = ?",new String[]{title},null,null,null);
 
         if (cursor.getCount() != 0){
             cursor.moveToFirst();
@@ -88,23 +218,56 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             PodcastEpisode episode = new PodcastEpisode();
             episode.setTitle(cursor.getString(1));
             episode.setSubtitle(cursor.getString(2));
+            episode.setContent(cursor.getString(3));
+            episode.setCategory(cursor.getString(4));
+            episode.setPubDate(cursor.getString(5));
+            episode.setAudioFileUrl(cursor.getString(6));
+            episode.setWebUrl(cursor.getString(7));
+            int downloaded = cursor.getInt(8);
+            int favoured = cursor.getInt(9);
 
-            Log.i(TAG, "getEpisode() title:" + cursor.getString(1) + " subtitle:" + cursor.getString(2));
+            if(downloaded == 1) {
+                episode.setDownloaded(true);
+            }else{
+                episode.setDownloaded(false);
+            }
 
+            if(favoured == 1) {
+                episode.setFavoured(true);
+            }else{
+                episode.setFavoured(false);
+            }
+
+            Log.i(TAG, "getEpisode() title:" + cursor.getString(1));
+
+            db.close();
             return episode;
         }else{
+            db.close();
             return null;
         }
     }
 
-    public void deletEpisode(PodcastEpisode episode){
+    public void deleteEpisode(PodcastEpisode episode){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_EPISODES,
                 KEY_TITLE + " = ?",
-                new String[] { String.valueOf(episode.getTitle()) });
+                new String[] {episode.getTitle()});
         db.close();
 
-        Log.d("deleteBook()", episode.getTitle());
+        Log.i("deleteBook()", episode.getTitle());
+    }
+
+    public List<PodcastEpisode> getAllFavouredEpisodes(){
+        List<PodcastEpisode> episodes = getAllEpisodes();
+        List<PodcastEpisode> favouredEpisodes = new ArrayList<>();
+        for(PodcastEpisode ep : episodes){
+            if(ep.isFavoured()){
+                favouredEpisodes.add(ep);
+            }
+        }
+        Log.i(TAG,"getAllFavouredEpisodes() size:" + favouredEpisodes.size());
+        return favouredEpisodes;
     }
 
     public List<PodcastEpisode> getAllEpisodes(){
@@ -122,6 +285,25 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                 episode = new PodcastEpisode();
                 episode.setTitle(cursor.getString(1));
                 episode.setSubtitle(cursor.getString(2));
+                episode.setContent(cursor.getString(3));
+                episode.setCategory(cursor.getString(4));
+                episode.setPubDate(cursor.getString(5));
+                episode.setAudioFileUrl(cursor.getString(6));
+                episode.setWebUrl(cursor.getString(7));
+                int downloaded = cursor.getInt(8);
+                int favoured = cursor.getInt(9);
+
+                if(downloaded == 1) {
+                    episode.setDownloaded(true);
+                }else{
+                    episode.setDownloaded(false);
+                }
+
+                if(favoured == 1) {
+                    episode.setFavoured(true);
+                }else{
+                    episode.setFavoured(false);
+                }
 
                 // add episode to list
                 episodes.add(episode);
@@ -139,8 +321,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
 
     public void deleteAllEpisodes(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from "+ TABLE_EPISODES);
-//        db.delete(TABLE_EPISODES,null,null);
+        db.execSQL("delete from "+ TABLE_EPISODES); //instead, db.delete(TABLE_EPISODES,null,null);
         Log.i(TAG,"deleteAllEpisodes()");
     }
 

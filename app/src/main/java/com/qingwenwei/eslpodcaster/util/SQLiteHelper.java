@@ -143,10 +143,15 @@ public class SQLiteHelper extends SQLiteOpenHelper{
     }
 
     public boolean smartUpdate(PodcastEpisode newEpisode){
-        long exist = addEpisode(newEpisode);
+        long rowID = addEpisode(newEpisode);
+
+        // error occurred when inserting a new row
+        if(rowID == -1 || rowID < -2){
+            return false;
+        }
 
         // -2 means episode exist, update the original attributes
-        if(exist == -2){
+        if(rowID == -2){
             PodcastEpisode originalEpisode = getEpisode(newEpisode.getTitle());
 
             String title = originalEpisode.getTitle().equals(newEpisode.getTitle()) ?
@@ -189,10 +194,9 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                     isFavoured);
 
             updateEpisode(episode);
-            return true;
         }
 
-        return false;
+        return true;
     }
 
     public PodcastEpisode getEpisode(String title){

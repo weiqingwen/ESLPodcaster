@@ -35,6 +35,7 @@ import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
+import com.qingwenwei.eslpodcaster.util.Mp3Downloader;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
 import com.qingwenwei.eslpodcaster.util.SQLiteHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -413,14 +414,14 @@ public class MainActivity extends AppCompatActivity{
 //                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
 //                        new Mp3Downloader().startDownload(playingEpisode);
                         if(playingEpisode != null) {
-                            SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-                            PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
-                            originalEpisode.setDownloaded(true);
-                            boolean updated = db.smartUpdate(originalEpisode);
-                            db.close();
-                            Log.i(TAG, "download smartUpdate() " + updated);
+                            downloadEpisode(playingEpisode);
+//                            SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+//                            PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
+//                            originalEpisode.setDownloaded(true);
+//                            boolean updated = db.smartUpdate(originalEpisode);
+//                            db.close();
+//                            Log.i(TAG, "download smartUpdate() " + updated);
                         }
-
 
                         break;
                     }
@@ -451,9 +452,6 @@ public class MainActivity extends AppCompatActivity{
                     }
 
                     case "delete all downloads": {
-//                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
-//                        new Mp3Downloader().startDownload(playingEpisode);
-
                         SQLiteHelper db = new SQLiteHelper(getApplicationContext());
                         int i = (int) db.addEpisode(playingEpisode);
                         db.close();
@@ -623,6 +621,22 @@ public class MainActivity extends AppCompatActivity{
         slidingUpPanelCurrPosTextView.setText(toMinuteFormat(currPos));
 
         slidingUpPanelSeekBar.setProgress(currPos);
+    }
+
+    private void downloadEpisode(PodcastEpisode episode){
+        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
+        new Mp3Downloader().startDownload(playingEpisode);
+
+//        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+//        PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
+//        originalEpisode.setDownloaded(true);
+//        boolean result = db.smartUpdate(originalEpisode);
+//        db.close();
+//        Log.i(TAG, "download smartUpdate() " + result);
+    }
+
+    private void favourEpisode(PodcastEpisode episode){
+
     }
 }
 

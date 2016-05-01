@@ -24,6 +24,7 @@ public class Mp3Downloader {
 
     class DownloadFileAsyncTask extends AsyncTask<String, Integer, String> {
         String fileName;
+
         @Override
         protected String doInBackground(String... urlStr) {
             try {

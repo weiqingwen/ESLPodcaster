@@ -1,7 +1,9 @@
 package com.qingwenwei.eslpodcaster.util;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
@@ -17,8 +19,18 @@ import java.net.URLConnection;
 public class Mp3Downloader {
     private static final String TAG = "Mp3Downloader";
 
-    public void startDownload(PodcastEpisode episode){
-        String audioUrl = episode.getAudioFileUrl();
+    private Context context;
+    private PodcastEpisode playingEpisode;
+
+    // Constructor
+    public Mp3Downloader(Context context, PodcastEpisode playingEpisode){
+        this.context = context;
+        this.playingEpisode = playingEpisode;
+    }
+
+    public void startDownload(){
+        String audioUrl = playingEpisode.getAudioFileUrl();
+        Toast.makeText(context,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
         new DownloadFileAsyncTask().execute(audioUrl);
     }
 
@@ -64,6 +76,23 @@ public class Mp3Downloader {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+
+            // modify original states of the episode
+            String playingTitle = playingEpisode.getTitle();
+            SQLiteHelper db = new SQLiteHelper(context);
+            PodcastEpisode originalEpisode = db.getEpisode(playingTitle);
+            boolean result;
+            if(originalEpisode != null) {
+                originalEpisode.setDownloaded(true);
+                result = db.smartUpdate(originalEpisode);
+            }else{
+                playingEpisode.setDownloaded(true);
+                result = db.smartUpdate(playingEpisode);
+            }
+
+            db.close();
+            Log.i(TAG, "Finished downloading " + playingTitle + " smartUpdate() " + result);
+            Toast.makeText(context,"Finished downloading " + playingTitle, Toast.LENGTH_LONG).show();
         }
     }
 }

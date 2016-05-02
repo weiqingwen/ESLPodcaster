@@ -1,5 +1,6 @@
 package com.qingwenwei.eslpodcaster.activity;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -411,29 +412,15 @@ public class MainActivity extends AppCompatActivity{
 
                 switch (title){
                     case "download":{
-//                        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
-//                        new Mp3Downloader().startDownload(playingEpisode);
                         if(playingEpisode != null) {
-                            downloadEpisode(playingEpisode);
-//                            SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-//                            PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
-//                            originalEpisode.setDownloaded(true);
-//                            boolean updated = db.smartUpdate(originalEpisode);
-//                            db.close();
-//                            Log.i(TAG, "download smartUpdate() " + updated);
+                            downloadEpisode(getApplicationContext(),playingEpisode);
                         }
-
                         break;
                     }
 
                     case "add to favorites": {
                         if(playingEpisode != null) {
-                            SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-                            PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
-                            originalEpisode.setFavoured(true);
-                            boolean updated = db.smartUpdate(originalEpisode);
-                            db.close();
-                            Log.i(TAG, "add to favorite smartUpdate() " + updated);
+                            favourEpisode(playingEpisode);
                             break;
                         }
                     }
@@ -623,20 +610,27 @@ public class MainActivity extends AppCompatActivity{
         slidingUpPanelSeekBar.setProgress(currPos);
     }
 
-    private void downloadEpisode(PodcastEpisode episode){
-        Toast.makeText(MainActivity.this,"Downloading " + playingEpisode.getTitle(), Toast.LENGTH_SHORT).show();
-        new Mp3Downloader().startDownload(playingEpisode);
-
-//        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-//        PodcastEpisode originalEpisode = db.getEpisode(playingEpisode.getTitle());
-//        originalEpisode.setDownloaded(true);
-//        boolean result = db.smartUpdate(originalEpisode);
-//        db.close();
-//        Log.i(TAG, "download smartUpdate() " + result);
+    private void downloadEpisode(Context context, PodcastEpisode episode){
+        new Mp3Downloader(context,episode).startDownload();
     }
 
     private void favourEpisode(PodcastEpisode episode){
+        String playingTitle = episode.getTitle();
+        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
+        PodcastEpisode originalEpisode = db.getEpisode(playingTitle);
+        boolean result;
+        if(originalEpisode != null) {
+            originalEpisode.setFavoured(true);
+            result = db.smartUpdate(originalEpisode);
+        }else{
+            episode.setFavoured(true);
+            result = db.smartUpdate(episode);
+        }
 
+        db.close();
+        Toast.makeText(getApplicationContext(),"Added " + playingTitle + " to favorite list", Toast.LENGTH_LONG).show();
+
+        Log.i(TAG, "Added " + playingTitle + "to favorite list smartUpdate() " + result);
     }
 }
 

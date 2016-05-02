@@ -67,14 +67,14 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+
+    /*
+    adders and updaters
+     */
     public long addEpisode(PodcastEpisode episode){
         Log.i(TAG, "addEpisode() " + episode.getTitle());
 
-        // original episode
-        PodcastEpisode originalEpisode = getEpisode(episode.getTitle());
-
-        //episode already exists
-        if(originalEpisode != null){
+        if(hasEpisode(episode.getTitle())){
             return -2;
         }
 
@@ -138,6 +138,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                 values, // column/value
                 KEY_TITLE + " = ?", // selections
                 new String[] {episode.getTitle()}); //selection args
+        db.close();
 
         return i;
     }
@@ -146,7 +147,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         long rowID = addEpisode(newEpisode);
 
         // error occurred when inserting a new row
-        if(rowID == -1 || rowID < -2){
+        if(rowID == -1){
             return false;
         }
 
@@ -199,6 +200,9 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         return true;
     }
 
+    /*
+    getters
+     */
     public PodcastEpisode getEpisode(String title){
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -244,22 +248,14 @@ public class SQLiteHelper extends SQLiteOpenHelper{
 
             Log.i(TAG, "getEpisode() title:" + cursor.getString(1));
 
+            cursor.close();
             db.close();
             return episode;
         }else{
+            cursor.close();
             db.close();
             return null;
         }
-    }
-
-    public void deleteEpisode(PodcastEpisode episode){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_EPISODES,
-                KEY_TITLE + " = ?",
-                new String[] {episode.getTitle()});
-        db.close();
-
-        Log.i("deleteBook()", episode.getTitle());
     }
 
     public List<PodcastEpisode> getAllFavouredEpisodes(){
@@ -283,10 +279,9 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-        PodcastEpisode episode = null;
         if (cursor.moveToFirst()) {
             do {
-                episode = new PodcastEpisode();
+                PodcastEpisode episode = new PodcastEpisode();
                 episode.setTitle(cursor.getString(1));
                 episode.setSubtitle(cursor.getString(2));
                 episode.setContent(cursor.getString(3));
@@ -314,8 +309,10 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             } while (cursor.moveToNext());
         }
 
-        Log.i(TAG,"getAllEpisodes() size:" + episodes.size());
+        cursor.close();
+        db.close();
 
+        Log.i(TAG,"getAllEpisodes() size:" + episodes.size());
         for(PodcastEpisode ep : episodes){
             Log.i(TAG," @episode => " + ep.getTitle());
         }
@@ -323,9 +320,38 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         return episodes;
     }
 
+    public boolean hasEpisode(String title){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_EPISODES + " WHERE " + KEY_TITLE + " =?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{title});
+        boolean hasEpisode = false;
+        if(cursor.moveToFirst()){
+            hasEpisode = true;
+        }
+        cursor.close();
+        db.close();
+        return hasEpisode;
+    }
+
+    /*
+    deletes
+     */
+    public void deleteEpisode(PodcastEpisode episode){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_EPISODES,
+                KEY_TITLE + " = ?",
+                new String[] {episode.getTitle()});
+        db.close();
+
+        Log.i("deleteBook()", episode.getTitle());
+    }
+
     public void deleteAllEpisodes(){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from "+ TABLE_EPISODES); //instead, db.delete(TABLE_EPISODES,null,null);
+        db.close();
+
         Log.i(TAG,"deleteAllEpisodes()");
     }
 

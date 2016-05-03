@@ -29,7 +29,8 @@
                 android:tint="@color/cardRed"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:layout_alignBottom="@+id/favoriteSubtitleTextView" />
+                android:layout_alignBottom="@+id/favoriteSubtitleTextView"
+                android:layout_alignParentLeft="true" />
 
             <TextView
                 android:id="@+id/favoriteTitleTextView"
@@ -42,7 +43,8 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/favoriteIconImageView" />
+                android:layout_toEndOf="@+id/favoriteIconImageView"
+                android:layout_toRightOf="@+id/favoriteIconImageView" />
 
             <TextView
                 android:id="@+id/favoriteSubtitleTextView"
@@ -55,7 +57,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_below="@+id/favoriteTitleTextView"
-                android:layout_toEndOf="@+id/favoriteIconImageView" />
+                android:layout_toEndOf="@+id/favoriteIconImageView"
+                android:layout_toRightOf="@+id/favoriteIconImageView" />
 
         </RelativeLayout>
 

@@ -29,7 +29,8 @@
                 android:tint="@color/cardRed"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:layout_alignBottom="@+id/downloadSubtitleTextView" />
+                android:layout_alignBottom="@+id/downloadSubtitleTextView"
+                android:layout_alignParentLeft="true" />
 
             <TextView
                 android:id="@+id/downloadTitleTextView"
@@ -42,7 +43,8 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceListItem"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/downloadIconImageView" />
+                android:layout_toEndOf="@+id/downloadIconImageView"
+                android:layout_toRightOf="@+id/downloadIconImageView" />
 
             <TextView
                 android:id="@+id/downloadSubtitleTextView"
@@ -55,7 +57,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_below="@+id/downloadTitleTextView"
-                android:layout_toEndOf="@+id/downloadIconImageView" />
+                android:layout_toEndOf="@+id/downloadIconImageView"
+                android:layout_toRightOf="@+id/downloadIconImageView" />
 
         </RelativeLayout>
 

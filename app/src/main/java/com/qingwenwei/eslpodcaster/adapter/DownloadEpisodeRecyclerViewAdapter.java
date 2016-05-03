@@ -19,7 +19,8 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     //adaptor constructor
     public DownloadEpisodeRecyclerViewAdapter(List<PodcastEpisode> items) {
-        episodes = generateFakeData();
+//        episodes = generateFakeData();
+        episodes = new ArrayList<>();
     }
 
     public static class DownloadViewHolder extends RecyclerView.ViewHolder {
@@ -57,12 +58,18 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         return episodes.size();
     }
 
-    private List<PodcastEpisode> generateFakeData(){
-        List<PodcastEpisode> episodes =  new ArrayList<>();
-        for(int i = 1; i < 11; i ++){
-            PodcastEpisode ep = new PodcastEpisode("download title: " + i, "download subtitle: " + i);
-            episodes.add(ep);
-        }
-        return episodes;
+    public void updateEpisodes(List<PodcastEpisode> newEpisodes){
+        this.episodes.clear();
+        this.episodes.addAll(newEpisodes);
+        this.notifyDataSetChanged();
     }
+
+//    private List<PodcastEpisode> generateFakeData(){
+//        List<PodcastEpisode> episodes =  new ArrayList<>();
+//        for(int i = 1; i < 11; i ++){
+//            PodcastEpisode ep = new PodcastEpisode("download title: " + i, "download subtitle: " + i);
+//            episodes.add(ep);
+//        }
+//        return episodes;
+//    }
 }

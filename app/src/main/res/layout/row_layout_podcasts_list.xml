@@ -30,21 +30,22 @@
                 android:scaleType="centerCrop"
                 android:adjustViewBounds="true"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"/>
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
 
             <TextView
                 android:id="@+id/cardViewTitleTextView"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:textSize="16sp"
-                android:textStyle="bold"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:adjustViewBounds="true"
                 android:layout_below="@+id/cardViewIconImageView"
+                android:textAppearance="?attr/textAppearanceListItem"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true" />
-                <!--android:textAppearance="?attr/textAppearanceListItem"-->
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true" />
 
             <TextView
                 android:id="@+id/cardViewPubDateTextView"
@@ -55,7 +56,9 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_below="@+id/cardViewTitleTextView"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true" />
 
             <TextView
                 android:id="@+id/cardViewSubtitleTextView"
@@ -64,9 +67,9 @@
                 android:paddingBottom="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textAppearance="?attr/textAppearanceListItem"
                 android:layout_alignParentEnd="true"
-                android:layout_below="@+id/cardViewPubDateTextView" />
+                android:layout_below="@+id/cardViewPubDateTextView"
+                android:layout_alignParentRight="true" />
 
         </RelativeLayout>
 

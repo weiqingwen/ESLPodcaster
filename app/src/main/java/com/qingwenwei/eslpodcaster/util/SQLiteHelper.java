@@ -270,6 +270,18 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         return favouredEpisodes;
     }
 
+    public List<PodcastEpisode> getAllDownloadEpisodes(){
+        List<PodcastEpisode> episodes = getAllEpisodes();
+        List<PodcastEpisode> downloadedEpisodes = new ArrayList<>();
+        for(PodcastEpisode ep : episodes){
+            if(ep.isDownloaded()){
+                downloadedEpisodes.add(ep);
+            }
+        }
+        Log.i(TAG,"getAllFavouredEpisodes() size:" + downloadedEpisodes.size());
+        return downloadedEpisodes;
+    }
+
     public List<PodcastEpisode> getAllEpisodes(){
         List<PodcastEpisode> episodes = new ArrayList<>();
 

@@ -35,13 +35,13 @@ public class FavoritesFragment extends Fragment {
         Log.i(TAG, "onCreateView()");
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_favorites, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        new getAllFavouredEpisodesAsyncTask().execute();
+        new GetAllFavouredEpisodesAsyncTask().execute();
         recyclerView.setAdapter(adapter);
         return recyclerView;
     }
 
-    private class getAllFavouredEpisodesAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
-        private static final String TAG = "getAllFavouredEpisodesAsyncTask";
+    private class GetAllFavouredEpisodesAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
+        private static final String TAG = "GetAllFavouredEpisodesAsyncTask";
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(Void... params) {
             SQLiteHelper db = new SQLiteHelper(getContext());

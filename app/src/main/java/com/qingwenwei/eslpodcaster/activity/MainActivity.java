@@ -57,6 +57,12 @@ public class MainActivity extends AppCompatActivity{
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+    private Fragment[] fragments = {
+            new PodcastListFragment(),
+            new DownloadedFragment(),
+            new FavoritesFragment()
+    };
+
     private int[] tabIcons = {
             R.drawable.ic_rss_feed_white_36dp,
             R.drawable.ic_file_download_white_36dp,
@@ -89,7 +95,9 @@ public class MainActivity extends AppCompatActivity{
     private PodcastEpisode playingEpisode;
 
     //Popup option menu
-    private PopupMenu popupMenu;
+    private PopupMenu optionPopupMenu;
+//    private PopupMenu downloadPopupMenu;
+//    private PopupMenu favoritePopupMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +153,6 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "OnClickListener() " + view.getContext().getPackageName());
-//                slidingUpPanelLayout.setPanelState(PanelState.COLLAPSED);
             }
         });
 
@@ -354,10 +361,10 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
 
-                if(popupMenu == null){
+                if(optionPopupMenu == null){
                     setupOptionPopupMenu(v);
                 }
-                popupMenu.show();
+                optionPopupMenu.show();
             }
         });
     }
@@ -379,6 +386,8 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.getIcon().setColorFilter(colorSelected, PorterDuff.Mode.SRC_IN);
+                int tabPosition = tab.getPosition();
+                viewPager.setCurrentItem(tabPosition);
             }
 
             @Override
@@ -391,20 +400,55 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+
+        tabLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, ""+v);
+            }
+        });
     }
 
     //setup fragments
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PodcastListFragment(), "Podcast");
-        adapter.addFragment(new DownloadedFragment(), "Download");
-        adapter.addFragment(new FavoritesFragment(), "Favorite");
+
+        adapter.addFragment(fragments[0], "Podcast");
+        adapter.addFragment(fragments[1], "Download");
+        adapter.addFragment(fragments[2], "Favorite");
         viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.i(TAG,"onPageSelected()" + position);
+                switch(position){
+                    case 1:{
+                        ((DownloadedFragment)fragments[1]).update();
+                        break;
+                    }
+                    case 2:{
+                        ((FavoritesFragment)fragments[2]).update();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void setupOptionPopupMenu(View v){
-        popupMenu = new PopupMenu(getApplicationContext(),v);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+        optionPopupMenu = new PopupMenu(getApplicationContext(),v);
+        optionPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 String title = item.getTitle().toString().toLowerCase();
@@ -420,7 +464,7 @@ public class MainActivity extends AppCompatActivity{
 
                     case "add to favorites": {
                         if(playingEpisode != null) {
-                            favourEpisode(playingEpisode);
+                            setEpisodeFavorite(playingEpisode,true);
                             break;
                         }
                     }
@@ -451,9 +495,15 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        MenuInflater inflater = popupMenu.getMenuInflater();
-        inflater.inflate(R.menu.option_popup_menu,popupMenu.getMenu());
+        MenuInflater inflater = optionPopupMenu.getMenuInflater();
+        inflater.inflate(R.menu.option_popup_menu, optionPopupMenu.getMenu());
     }
+
+//    private void setupFavoritePopupMenu(View v){
+//        optionPopupMenu = new PopupMenu(getApplicationContext(),v);
+//        MenuInflater inflater = favoritePopupMenu.getMenuInflater();
+//        inflater.inflate(R.menu.favorite_popup_menu, favoritePopupMenu.getMenu());
+//    }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -614,23 +664,32 @@ public class MainActivity extends AppCompatActivity{
         new Mp3Downloader(context,episode).startDownload();
     }
 
-    private void favourEpisode(PodcastEpisode episode){
-        String playingTitle = episode.getTitle();
+    private void deleteDownloadedEpisode(PodcastEpisode episode){
+
+    }
+
+    private void setEpisodeFavorite(PodcastEpisode episode, boolean favor){
+        String title = episode.getTitle();
         SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-        PodcastEpisode originalEpisode = db.getEpisode(playingTitle);
+        PodcastEpisode originalEpisode = db.getEpisode(title);
         boolean result;
         if(originalEpisode != null) {
-            originalEpisode.setFavoured(true);
+            originalEpisode.setFavoured(favor);
             result = db.smartUpdate(originalEpisode);
         }else{
-            episode.setFavoured(true);
+            episode.setFavoured(favor);
             result = db.smartUpdate(episode);
         }
 
         db.close();
-        Toast.makeText(getApplicationContext(),"Added " + playingTitle + " to favorite list", Toast.LENGTH_LONG).show();
 
-        Log.i(TAG, "Added " + playingTitle + "to favorite list smartUpdate() " + result);
+        if(favor) {
+            Toast.makeText(getApplicationContext(), "Added " + title + " to favorite list", Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(getApplicationContext(), "Removed " + title + " to favorite list", Toast.LENGTH_LONG).show();
+        }
+
+        Log.i(TAG, favor + " favour " + title + "to favorite list smartUpdate() " + result);
     }
 }
 

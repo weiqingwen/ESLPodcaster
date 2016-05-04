@@ -1,6 +1,11 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,20 +21,22 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     private final static String TAG = "DownloadEpisodeRecyclerViewAdapter";
 
     private List<PodcastEpisode> episodes;
+    private Context context;
 
     //adaptor constructor
-    public DownloadEpisodeRecyclerViewAdapter(List<PodcastEpisode> items) {
-//        episodes = generateFakeData();
+    public DownloadEpisodeRecyclerViewAdapter() {
         episodes = new ArrayList<>();
     }
 
     public static class DownloadViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
+        public final CardView cardView;
         public final TextView titleTextView;
         public final TextView subtitleTextView;
 
         public DownloadViewHolder(View view) {
             super(view);
+            cardView = (CardView) view.findViewById(R.id.downloadCardView);
             titleTextView = (TextView) view.findViewById(R.id.downloadTitleTextView);
             subtitleTextView = (TextView) view.findViewById(R.id.downloadSubtitleTextView);
         }
@@ -42,15 +49,25 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_downloads_list, parent, false);
+        this.context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.row_layout_downloads_list, parent, false);
         return new DownloadViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((DownloadViewHolder)holder).mBoundString = episodes.get(position).getTitle();
-        ((DownloadViewHolder)holder).titleTextView.setText("" + episodes.get(position).getTitle());
-        ((DownloadViewHolder)holder).subtitleTextView.setText("" + episodes.get(position).getSubtitle());
+        final PodcastEpisode episode = episodes.get(position);
+        ((DownloadViewHolder)holder).mBoundString = episode.getTitle();
+        ((DownloadViewHolder)holder).titleTextView.setText(episode.getTitle());
+        ((DownloadViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
+
+        ((DownloadViewHolder)holder).cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showPopupMenu(episode);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -64,12 +81,19 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         this.notifyDataSetChanged();
     }
 
-//    private List<PodcastEpisode> generateFakeData(){
-//        List<PodcastEpisode> episodes =  new ArrayList<>();
-//        for(int i = 1; i < 11; i ++){
-//            PodcastEpisode ep = new PodcastEpisode("download title: " + i, "download subtitle: " + i);
-//            episodes.add(ep);
-//        }
-//        return episodes;
-//    }
+    private void showPopupMenu(final PodcastEpisode episode){
+        CharSequence items[] = new CharSequence[] {
+                "Favour this episode",
+                "Delete this episode"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setItems(items, new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.i(TAG,episode.getTitle() + " which:" + which);
+            }
+        });
+        builder.show();
+    }
+
+
 }

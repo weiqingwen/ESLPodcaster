@@ -1,5 +1,8 @@
 package com.qingwenwei.eslpodcaster.adapter;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,10 +21,11 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     private final static String TAG = "FavoriteEpisodeRecyclerViewAdapter";
 
     private List<PodcastEpisode> episodes;
+    private Context context;
 
     //adaptor constructor
-    public FavoriteEpisodeRecyclerViewAdapter(List<PodcastEpisode> items) {
-        episodes = new ArrayList<>();
+    public FavoriteEpisodeRecyclerViewAdapter() {
+        this.episodes = new ArrayList<>();
     }
 
     public static class FavoritesViewHolder extends RecyclerView.ViewHolder {
@@ -33,7 +37,6 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         public FavoritesViewHolder(View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.favoriteCardView);
-//            cardView.setPreventCornerOverlap(false);
             titleTextView = (TextView) view.findViewById(R.id.favoriteTitleTextView);
             subtitleTextView = (TextView) view.findViewById(R.id.favoriteSubtitleTextView);
         }
@@ -46,20 +49,22 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public FavoritesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_favorites_list, parent, false);
+        this.context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.row_layout_favorites_list, parent, false);
         return new FavoritesViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        ((FavoritesViewHolder)holder).mBoundString = episodes.get(position).getTitle();
-        ((FavoritesViewHolder)holder).titleTextView.setText("" + episodes.get(position).getTitle());
-        ((FavoritesViewHolder)holder).subtitleTextView.setText("" + episodes.get(position).getSubtitle());
+        final PodcastEpisode episode = episodes.get(position);
+        ((FavoritesViewHolder)holder).mBoundString = episode.getTitle();
+        ((FavoritesViewHolder)holder).titleTextView.setText(episode.getTitle());
+        ((FavoritesViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
 
         ((FavoritesViewHolder)holder).cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Log.i(TAG,"long clicked");
+                showPopupMenu(episode);
                 return true;
             }
         });
@@ -81,5 +86,19 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         this.episodes.clear();
         this.episodes.addAll(newEpisodes);
         this.notifyDataSetChanged();
+    }
+
+    private void showPopupMenu(final PodcastEpisode episode){
+        CharSequence items[] = new CharSequence[] {
+                "Download this episode",
+                "Disfavour this episode"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setItems(items, new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.i(TAG,episode.getTitle() + " which:" + which);
+            }
+        });
+        builder.show();
     }
 }

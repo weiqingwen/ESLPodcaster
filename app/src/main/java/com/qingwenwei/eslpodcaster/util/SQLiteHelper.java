@@ -278,7 +278,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                 downloadedEpisodes.add(ep);
             }
         }
-        Log.i(TAG,"getAllFavouredEpisodes() size:" + downloadedEpisodes.size());
+        Log.i(TAG,"getAllDownloadEpisodes() size:" + downloadedEpisodes.size());
         return downloadedEpisodes;
     }
 

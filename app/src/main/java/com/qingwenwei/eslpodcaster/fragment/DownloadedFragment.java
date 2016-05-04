@@ -26,9 +26,8 @@ public class DownloadedFragment extends Fragment {
 
     public DownloadedFragment() {
         // Required empty public constructor
-        adapter = new DownloadEpisodeRecyclerViewAdapter(null);
+        adapter = new DownloadEpisodeRecyclerViewAdapter();
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,9 +35,12 @@ public class DownloadedFragment extends Fragment {
         Log.i(TAG, "onCreateView()");
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_downloads, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        new GetAllDownloadedEpisodesAsyncTask().execute();
-        recyclerView.setAdapter(adapter);
+        update();
         return recyclerView;
+    }
+
+    public void update(){
+        new GetAllDownloadedEpisodesAsyncTask().execute();
     }
 
     private class GetAllDownloadedEpisodesAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>> {
@@ -53,6 +55,7 @@ public class DownloadedFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
             adapter.updateEpisodes(podcastEpisodes);
+            recyclerView.setAdapter(adapter);
             Log.i(TAG," data size:" + podcastEpisodes.size());
         }
     }

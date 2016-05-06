@@ -17,13 +17,13 @@ import com.qingwenwei.eslpodcaster.activity.MainActivity;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.util.EslPodListParser;
+import com.qingwenwei.eslpodcaster.util.PodcastEpisodeListParser;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PodcastListFragment extends Fragment {
-    private final static String TAG = "PodcastListFragment";
+public class PodcastFragment extends Fragment {
+    private final static String TAG = "PodcastFragment";
     private boolean dataInitialized = false;
 
     private RecyclerView recyclerView;
@@ -42,8 +42,8 @@ public class PodcastListFragment extends Fragment {
     //MainActivity
 //    private Context context;
 
-    public PodcastListFragment(){
-        Log.i(TAG,"PodcastListFragment()");
+    public PodcastFragment(){
+        Log.i(TAG,"PodcastFragment()");
     }
 
     @Override
@@ -130,7 +130,7 @@ public class PodcastListFragment extends Fragment {
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
             ArrayList<PodcastEpisode> episodes =
-                    (ArrayList<PodcastEpisode>) new EslPodListParser().parseEpisodes(urls[0] + 0);
+                    (ArrayList<PodcastEpisode>) new PodcastEpisodeListParser().parseEpisodes(urls[0] + 0);
             return episodes;
         }
 
@@ -154,7 +154,7 @@ public class PodcastListFragment extends Fragment {
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
             ArrayList<PodcastEpisode> episodes =
-                    (ArrayList<PodcastEpisode>) new EslPodListParser().parseEpisodes(urls[0] + currNumEpisodes);
+                    (ArrayList<PodcastEpisode>) new PodcastEpisodeListParser().parseEpisodes(urls[0] + currNumEpisodes);
             return episodes;
         }
 

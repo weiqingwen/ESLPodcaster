@@ -14,17 +14,19 @@ import android.view.ViewGroup;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.util.SQLiteHelper;
+import com.qingwenwei.eslpodcaster.listener.PodcastEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.sqlite.SQLiteDatabaseManager;
 
 import java.util.ArrayList;
 
-public class DownloadedFragment extends Fragment {
-    private static final String TAG = "DownloadedFragment";
+public class DownloadFragment extends Fragment {
+    private static final String TAG = "DownloadFragment";
 
     private RecyclerView recyclerView;
     private DownloadEpisodeRecyclerViewAdapter adapter;
+//    private SQLiteDatabaseManager db;
 
-    public DownloadedFragment() {
+    public DownloadFragment() {
         // Required empty public constructor
         adapter = new DownloadEpisodeRecyclerViewAdapter();
     }
@@ -33,13 +35,19 @@ public class DownloadedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
+//        db = new SQLiteDatabaseManager(getContext());
+
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_downloads, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        update();
+        recyclerView.setAdapter(adapter);
         return recyclerView;
     }
 
-    public void update(){
+    public void setHandler(PodcastEpisodeStatusChangeHandler handler){
+        adapter.setHandler(handler);
+    }
+
+    public void refresh(){
         new GetAllDownloadedEpisodesAsyncTask().execute();
     }
 
@@ -47,7 +55,7 @@ public class DownloadedFragment extends Fragment {
         private static final String TAG = "GetAllDownloadedEpisodesAsyncTask";
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(Void... params) {
-            SQLiteHelper db = new SQLiteHelper(getContext());
+            SQLiteDatabaseManager db = new SQLiteDatabaseManager(getContext());
             ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>) db.getAllDownloadEpisodes();
             return episodes;
         }
@@ -55,7 +63,6 @@ public class DownloadedFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
             adapter.updateEpisodes(podcastEpisodes);
-            recyclerView.setAdapter(adapter);
             Log.i(TAG," data size:" + podcastEpisodes.size());
         }
     }

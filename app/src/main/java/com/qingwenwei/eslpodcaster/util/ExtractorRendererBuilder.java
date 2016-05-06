@@ -10,9 +10,6 @@ import com.google.android.exoplayer.extractor.ExtractorSampleSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.google.android.exoplayer.upstream.DefaultUriDataSource;
 
-/**
- * Created by qingwenwei on 2016-04-10.
- */
 public class ExtractorRendererBuilder implements RendererBuilder{
 
     private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;

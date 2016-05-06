@@ -23,9 +23,9 @@ public class AudioPlayer implements ExoPlayer.Listener{
     private static final int PLAYER_STATE_ENDED = 5;
 
     private ExoPlayer player;
+    private Context context;
     private RendererBuilder rendererBuilder;
     private int rendererBuildingState;
-    private Context context;
     private boolean isPlaying = false;
 
     public AudioPlayer(Context context, RendererBuilder rendererBuilder){
@@ -85,18 +85,6 @@ public class AudioPlayer implements ExoPlayer.Listener{
     @Override
     public void onPlayerStateChanged(boolean b, int state) {
         Log.i(TAG, "onPlayerStateChanged: " + state);
-
-//        switch(state){
-//            case PLAYER_STATE_READY:
-//                if (isPlaying) {
-//                    ((MainActivity) context).setSlidingUpPanelPlayButtonPause();
-//                    Log.i(TAG, "onPlayerStateChanged() isPlaying " + isPlaying);
-//                }else{
-//                    ((MainActivity) context).setSlidingUpPanelPlayButtonPlaying();
-//                    Log.i(TAG, "onPlayerStateChanged() not isPlaying " + isPlaying);
-//                }
-//                break;
-//        }
     }
 
     @Override

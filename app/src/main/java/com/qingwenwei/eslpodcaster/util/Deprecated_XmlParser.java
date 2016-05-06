@@ -13,9 +13,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XmlParser {
+public class Deprecated_XmlParser {
 
-    private final static String TAG = "XmlParser";
+    private final static String TAG = "Deprecated_XmlParser";
 
     public List<PodcastEpisode> parse(InputStream in) throws XmlPullParserException, IOException {
         XmlPullParser parser = Xml.newPullParser();
@@ -97,7 +97,7 @@ public class XmlParser {
 
 
 //        Log.i(TAG,"Finished readItem() " + title);
-        return new PodcastEpisode(title,subtitle,"",pubDate,audiFileUrl,"","");
+        return new PodcastEpisode(title,subtitle,"",pubDate,audiFileUrl,"","","");
     }
 
     private String readTitle(XmlPullParser parser) throws IOException, XmlPullParserException {

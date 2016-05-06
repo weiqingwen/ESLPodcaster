@@ -12,8 +12,8 @@ import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLiteHelper extends SQLiteOpenHelper{
-    private static final String TAG = "SQLiteHelper";
+public class Deprecated_SQLiteHelper extends SQLiteOpenHelper{
+    private static final String TAG = "SQLiteFavoritesDatabaseManager";
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "eslpodcaster.db";
@@ -50,9 +50,9 @@ public class SQLiteHelper extends SQLiteOpenHelper{
     private static final String SQL_DELETE_ITEMS =
             "DROP TABLE IF EXISTS " + TABLE_EPISODES;
 
-    public SQLiteHelper(Context context){
+    public Deprecated_SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.i(TAG,"SQLiteHelper constructor()");
+        Log.i(TAG,"SQLiteFavoritesDatabaseManager constructor()");
     }
 
     @Override
@@ -90,17 +90,17 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         values.put(KEY_AUDIO_URL, episode.getAudioFileUrl());
         values.put(KEY_WEB_URL, episode.getWebUrl());
 
-        if(episode.isDownloaded()){
-            values.put(KEY_DOWNLOADED, 1);
-        }else{
-            values.put(KEY_DOWNLOADED, 0);
-        }
-
-        if(episode.isFavoured()){
-            values.put(KEY_FAVOURED, 1);
-        }else{
-            values.put(KEY_FAVOURED, 0);
-        }
+//        if(episode.isDownloaded()){
+//            values.put(KEY_DOWNLOADED, 1);
+//        }else{
+//            values.put(KEY_DOWNLOADED, 0);
+//        }
+//
+//        if(episode.isFavoured()){
+//            values.put(KEY_FAVOURED, 1);
+//        }else{
+//            values.put(KEY_FAVOURED, 0);
+//        }
 
         long newRowId; //new primary key
         newRowId = db.insert(TABLE_EPISODES, null, values);
@@ -122,17 +122,17 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         values.put(KEY_AUDIO_URL, episode.getAudioFileUrl());
         values.put(KEY_WEB_URL, episode.getWebUrl());
 
-        if(episode.isDownloaded()){
-            values.put(KEY_DOWNLOADED, 1);
-        }else{
-            values.put(KEY_DOWNLOADED, 0);
-        }
-
-        if(episode.isFavoured()){
-            values.put(KEY_FAVOURED, 1);
-        }else{
-            values.put(KEY_FAVOURED, 0);
-        }
+//        if(episode.isDownloaded()){
+//            values.put(KEY_DOWNLOADED, 1);
+//        }else{
+//            values.put(KEY_DOWNLOADED, 0);
+//        }
+//
+//        if(episode.isFavoured()){
+//            values.put(KEY_FAVOURED, 1);
+//        }else{
+//            values.put(KEY_FAVOURED, 0);
+//        }
 
         int i = db.update(TABLE_EPISODES, //table
                 values, // column/value
@@ -176,25 +176,25 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             String webURL = originalEpisode.getWebUrl().equals(newEpisode.getWebUrl()) ?
                     originalEpisode.getWebUrl() : newEpisode.getWebUrl();
 
-            boolean isDownloaded = originalEpisode.isDownloaded() == (newEpisode.isDownloaded()) ?
-                    originalEpisode.isDownloaded() : newEpisode.isDownloaded();
+//            boolean isDownloaded = originalEpisode.isDownloaded() == (newEpisode.isDownloaded()) ?
+//                    originalEpisode.isDownloaded() : newEpisode.isDownloaded();
+//
+//            boolean isFavoured = originalEpisode.isFavoured() == (newEpisode.isFavoured()) ?
+//                    originalEpisode.isFavoured() : newEpisode.isFavoured();
+//
+//            // build a PodcastEpisode for updating
+//            PodcastEpisode episode = new PodcastEpisode(
+//                    title,
+//                    subtitle,
+//                    content,
+//                    pubDate,
+//                    audioURL,
+//                    webURL,
+//                    category,
+//                    isDownloaded,
+//                    isFavoured);
 
-            boolean isFavoured = originalEpisode.isFavoured() == (newEpisode.isFavoured()) ?
-                    originalEpisode.isFavoured() : newEpisode.isFavoured();
-
-            // build a PodcastEpisode for updating
-            PodcastEpisode episode = new PodcastEpisode(
-                    title,
-                    subtitle,
-                    content,
-                    pubDate,
-                    audioURL,
-                    webURL,
-                    category,
-                    isDownloaded,
-                    isFavoured);
-
-            updateEpisode(episode);
+//            updateEpisode(episode);
         }
 
         return true;
@@ -234,17 +234,17 @@ public class SQLiteHelper extends SQLiteOpenHelper{
             int downloaded = cursor.getInt(8);
             int favoured = cursor.getInt(9);
 
-            if(downloaded == 1) {
-                episode.setDownloaded(true);
-            }else{
-                episode.setDownloaded(false);
-            }
-
-            if(favoured == 1) {
-                episode.setFavoured(true);
-            }else{
-                episode.setFavoured(false);
-            }
+//            if(downloaded == 1) {
+//                episode.setDownloaded(true);
+//            }else{
+//                episode.setDownloaded(false);
+//            }
+//
+//            if(favoured == 1) {
+//                episode.setFavoured(true);
+//            }else{
+//                episode.setFavoured(false);
+//            }
 
             Log.i(TAG, "getEpisode() title:" + cursor.getString(1));
 
@@ -258,29 +258,29 @@ public class SQLiteHelper extends SQLiteOpenHelper{
         }
     }
 
-    public List<PodcastEpisode> getAllFavouredEpisodes(){
-        List<PodcastEpisode> episodes = getAllEpisodes();
-        List<PodcastEpisode> favouredEpisodes = new ArrayList<>();
-        for(PodcastEpisode ep : episodes){
-            if(ep.isFavoured()){
-                favouredEpisodes.add(ep);
-            }
-        }
-        Log.i(TAG,"getAllFavouredEpisodes() size:" + favouredEpisodes.size());
-        return favouredEpisodes;
-    }
-
-    public List<PodcastEpisode> getAllDownloadEpisodes(){
-        List<PodcastEpisode> episodes = getAllEpisodes();
-        List<PodcastEpisode> downloadedEpisodes = new ArrayList<>();
-        for(PodcastEpisode ep : episodes){
-            if(ep.isDownloaded()){
-                downloadedEpisodes.add(ep);
-            }
-        }
-        Log.i(TAG,"getAllDownloadEpisodes() size:" + downloadedEpisodes.size());
-        return downloadedEpisodes;
-    }
+//    public List<PodcastEpisode> getAllFavouredEpisodes(){
+//        List<PodcastEpisode> episodes = getAllEpisodes();
+//        List<PodcastEpisode> favouredEpisodes = new ArrayList<>();
+//        for(PodcastEpisode ep : episodes){
+//            if(ep.isFavoured()){
+//                favouredEpisodes.add(ep);
+//            }
+//        }
+//        Log.i(TAG,"getAllFavouredEpisodes() size:" + favouredEpisodes.size());
+//        return favouredEpisodes;
+//    }
+//
+//    public List<PodcastEpisode> getAllDownloadEpisodes(){
+//        List<PodcastEpisode> episodes = getAllEpisodes();
+//        List<PodcastEpisode> downloadedEpisodes = new ArrayList<>();
+//        for(PodcastEpisode ep : episodes){
+//            if(ep.isDownloaded()){
+//                downloadedEpisodes.add(ep);
+//            }
+//        }
+//        Log.i(TAG,"getAllDownloadEpisodes() size:" + downloadedEpisodes.size());
+//        return downloadedEpisodes;
+//    }
 
     public List<PodcastEpisode> getAllEpisodes(){
         List<PodcastEpisode> episodes = new ArrayList<>();
@@ -304,17 +304,17 @@ public class SQLiteHelper extends SQLiteOpenHelper{
                 int downloaded = cursor.getInt(8);
                 int favoured = cursor.getInt(9);
 
-                if(downloaded == 1) {
-                    episode.setDownloaded(true);
-                }else{
-                    episode.setDownloaded(false);
-                }
-
-                if(favoured == 1) {
-                    episode.setFavoured(true);
-                }else{
-                    episode.setFavoured(false);
-                }
+//                if(downloaded == 1) {
+//                    episode.setDownloaded(true);
+//                }else{
+//                    episode.setDownloaded(false);
+//                }
+//
+//                if(favoured == 1) {
+//                    episode.setFavoured(true);
+//                }else{
+//                    episode.setFavoured(false);
+//                }
 
                 // add episode to list
                 episodes.add(episode);
@@ -326,7 +326,7 @@ public class SQLiteHelper extends SQLiteOpenHelper{
 
         Log.i(TAG,"getAllEpisodes() size:" + episodes.size());
         for(PodcastEpisode ep : episodes){
-            Log.i(TAG," @episode => " + ep.getTitle());
+            Log.i(TAG,"---------> " + ep.getTitle());
         }
 
         return episodes;

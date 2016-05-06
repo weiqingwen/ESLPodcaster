@@ -3,16 +3,14 @@ package com.qingwenwei.eslpodcaster.entity;
 import java.io.Serializable;
 
 public class PodcastEpisode implements Serializable {
-    public String title;
-    public String subtitle;
-    public String content;
-    public String pubDate;
-    public String audioFileUrl;
-    public String webUrl;
-    public String category;
-    public boolean downloaded = false;
-    public boolean favoured = false;
-
+    private String title;
+    private String subtitle;
+    private String content;
+    private String pubDate;
+    private String audioFileUrl;
+    private String webUrl;
+    private String category;
+    private String localAudioFile;
 
     public PodcastEpisode(){
         super();
@@ -23,31 +21,16 @@ public class PodcastEpisode implements Serializable {
         this.subtitle = subtitle;
     }
 
-    public PodcastEpisode(String title,
-                          String subtitle,
-                          String content,
-                          String pubDate,
-                          String audioFileUrl,
-                          String webUrl,
-                          String category){
-        this.title = title;
-        this.subtitle = subtitle;
-        this.content = content;
-        this.pubDate = pubDate;
-        this.audioFileUrl = audioFileUrl;
-        this.webUrl = webUrl;
-        this.category = category;
-    }
+    public PodcastEpisode(
+            String title,
+            String subtitle,
+            String content,
+            String pubDate,
+            String audioFileUrl,
+            String webUrl,
+            String category,
+            String localAudioFile){
 
-    public PodcastEpisode(String title,
-                          String subtitle,
-                          String content,
-                          String pubDate,
-                          String audioFileUrl,
-                          String webUrl,
-                          String category,
-                          boolean downloaded,
-                          boolean favoured){
         this.title = title;
         this.subtitle = subtitle;
         this.content = content;
@@ -55,8 +38,7 @@ public class PodcastEpisode implements Serializable {
         this.audioFileUrl = audioFileUrl;
         this.webUrl = webUrl;
         this.category = category;
-        this.downloaded = downloaded;
-        this.favoured = favoured;
+        this.localAudioFile = localAudioFile;
     }
 
     public String getTitle() {
@@ -115,20 +97,12 @@ public class PodcastEpisode implements Serializable {
         this.category = category;
     }
 
-    public boolean isDownloaded() {
-        return downloaded;
+    public String getLocalAudioFile() {
+        return localAudioFile;
     }
 
-    public void setDownloaded(boolean downloaded) {
-        this.downloaded = downloaded;
-    }
-
-    public boolean isFavoured() {
-        return favoured;
-    }
-
-    public void setFavoured(boolean favoured) {
-        this.favoured = favoured;
+    public void setLocalAudioFile(String localAudioFile) {
+        this.localAudioFile = localAudioFile;
     }
 
     public String toString(){
@@ -137,10 +111,9 @@ public class PodcastEpisode implements Serializable {
                         "\ndate: " + pubDate +
                         "\nCat: " + category +
                         "\nsub: " + subtitle +
-                        "\naudio: " + audioFileUrl +
+                        "\naudio_url: " + audioFileUrl +
                         "\nweb: " + webUrl +
-                        "\ndownloaded: " + downloaded +
-                        "\nfavoured: " + favoured;
+                        "\nlocal_audio: " + localAudioFile;
     }
 
 }

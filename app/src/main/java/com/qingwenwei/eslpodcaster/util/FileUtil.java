@@ -48,8 +48,8 @@ public class FileUtil {
     }
 
     public static String guessFileName(String url){
-        String fileExtenstion = MimeTypeMap.getFileExtensionFromUrl(url);
-        String fileName = URLUtil.guessFileName(url, null, fileExtenstion);
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(url);
+        String fileName = URLUtil.guessFileName(url, null, fileExtension);
         System.out.println("FileUtil: guessFileName() " + fileName);
         return fileName;
     }
@@ -69,5 +69,10 @@ public class FileUtil {
         }
         System.out.println("FileUtil: directoryExist() directory does not exist.");
         return false;
+    }
+
+    public static boolean deleteFile(String path){
+        File file = new File(path);
+        return file.delete();
     }
 }

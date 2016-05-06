@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.listener.PodcastEpisodeStatusChangeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,15 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     private List<PodcastEpisode> episodes;
     private Context context;
+    private PodcastEpisodeStatusChangeHandler handler;
 
     //adaptor constructor
     public DownloadEpisodeRecyclerViewAdapter() {
         episodes = new ArrayList<>();
+    }
+
+    public void setHandler(PodcastEpisodeStatusChangeHandler handler) {
+        this.handler = handler;
     }
 
     public static class DownloadViewHolder extends RecyclerView.ViewHolder {
@@ -90,6 +96,17 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.i(TAG,episode.getTitle() + " which:" + which);
+                switch (which){
+                    case 0:{
+                        handler.setEpisodeFavoured(episode,true);
+                        break;
+                    }
+
+                    case 1:{
+                        handler.setEpisodeDownloaded(episode,false);
+                        break;
+                    }
+                }
             }
         });
         builder.show();

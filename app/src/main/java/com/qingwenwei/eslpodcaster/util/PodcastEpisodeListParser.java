@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EslPodListParser {
-    private final static String TAG = "EslPodListParser";
+public class PodcastEpisodeListParser {
+    private final static String TAG = "PodcastEpisodeListParser";
 
     public List<PodcastEpisode> parseEpisodes(String url){
         List<PodcastEpisode> episodes = new ArrayList<>();
@@ -35,7 +35,8 @@ public class EslPodListParser {
                 int end = pod.text().lastIndexOf("Tags:");
                 String subTitle= pod.text().substring(17 + start, end);
 
-                episodes.add(new PodcastEpisode(title, subTitle, "", date, file, web, cat));
+                PodcastEpisode newEpisode = new PodcastEpisode(title, subTitle, "", date, file, web, cat, "");
+                episodes.add(newEpisode);
             }
 
         } catch (IOException e) {
@@ -45,7 +46,7 @@ public class EslPodListParser {
     }
 
     public static void main(String args[]){
-//        new EslPodListParser().parseEpisodes("http://www.eslpod.com/website/show_all.php?low_rec=0");
+//        new PodcastEpisodeListParser().parseEpisodes("http://www.eslpod.com/website/show_all.php?low_rec=0");
     }
 
 }

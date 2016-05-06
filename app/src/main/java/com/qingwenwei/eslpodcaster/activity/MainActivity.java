@@ -1,6 +1,7 @@
 package com.qingwenwei.eslpodcaster.activity;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,15 +31,16 @@ import android.widget.Toast;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.fragment.DownloadedFragment;
-import com.qingwenwei.eslpodcaster.fragment.FavoritesFragment;
-import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
+import com.qingwenwei.eslpodcaster.fragment.DownloadFragment;
+import com.qingwenwei.eslpodcaster.fragment.FavoriteFragment;
+import com.qingwenwei.eslpodcaster.fragment.PodcastFragment;
+import com.qingwenwei.eslpodcaster.listener.PodcastEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.sqlite.SQLiteDatabaseManager;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
-import com.qingwenwei.eslpodcaster.util.EslPodScriptParser;
+import com.qingwenwei.eslpodcaster.util.EpisodeDownloadManager;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
-import com.qingwenwei.eslpodcaster.util.Mp3Downloader;
+import com.qingwenwei.eslpodcaster.util.PodcastEpisodeScriptParser;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
-import com.qingwenwei.eslpodcaster.util.SQLiteHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -50,18 +52,13 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.skyhacker2.sqliteonweb.SQLiteOnWeb;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements PodcastEpisodeStatusChangeHandler{
+
     private static final String TAG = "MainActivity";
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-
-    private Fragment[] fragments = {
-            new PodcastListFragment(),
-            new DownloadedFragment(),
-            new FavoritesFragment()
-    };
 
     private int[] tabIcons = {
             R.drawable.ic_rss_feed_white_36dp,
@@ -80,6 +77,8 @@ public class MainActivity extends AppCompatActivity{
     private ImageButton collapsedPanelMenuButton;
     private ImageView collapsedPanelPodcastIcon;
 
+    private boolean scriptLoaded = false;
+
     //sliding up player
     private AudioPlayer player;
     private TextView collapsedPanelTitleTextView;
@@ -96,14 +95,33 @@ public class MainActivity extends AppCompatActivity{
 
     //Popup option menu
     private PopupMenu optionPopupMenu;
-//    private PopupMenu downloadPopupMenu;
-//    private PopupMenu favoritePopupMenu;
+
+    private Fragment podcastFragment;
+    private Fragment downloadFragment;
+    private Fragment favoriteFragment;
+
+    //database
+//    private SQLiteDatabaseManager db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //initialize fragments
+        podcastFragment = new PodcastFragment();
+        downloadFragment = new DownloadFragment();
+        favoriteFragment = new FavoriteFragment();
+        ((FavoriteFragment)favoriteFragment).setHandler(this);
+        ((DownloadFragment)downloadFragment).setHandler(this);
+
+//        //initialize database utility
+//        db = new SQLiteDatabaseManager(getApplicationContext());
+
+        //orientation
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        //setup tabs
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -124,7 +142,7 @@ public class MainActivity extends AppCompatActivity{
             setupTabIcons();
         }
 
-        //Sliding Panel
+        //setup sliding up panel
         slidingUpPanelLayout = (SlidingUpPanelLayout)findViewById(R.id.activity_main);
         slidingUpPanelLayout.addPanelSlideListener(new PanelSlideListener() {
             @Override
@@ -137,7 +155,9 @@ public class MainActivity extends AppCompatActivity{
                 Log.i(TAG, "onPanelStateChanged " + newState);
                 if(newState == PanelState.EXPANDED){
                     collapsedPanelPlayButton.setVisibility(View.INVISIBLE);
-                    collapsedPanelMenuButton.setVisibility(View.VISIBLE);
+                    if(scriptLoaded) {
+                        collapsedPanelMenuButton.setVisibility(View.VISIBLE);
+                    }
                     collapsedPanelPodcastIcon.clearColorFilter();
                     collapsedPanelPodcastIcon.setImageResource(R.drawable.ic_keyboard_arrow_down_black_36dp);
                 }else if(newState == PanelState.COLLAPSED){
@@ -409,15 +429,21 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    //setup fragments
+    //setup ViewPager with fragments and listeners
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        adapter.addFragment(fragments[0], "Podcast");
-        adapter.addFragment(fragments[1], "Download");
-        adapter.addFragment(fragments[2], "Favorite");
-        viewPager.setAdapter(adapter);
+//        ((FavoriteFragment)favoriteFragment).setPodcastEpisodeStatusChangeHandler(this);
 
+        adapter.addFragment(podcastFragment, "Podcast");
+        adapter.addFragment(downloadFragment, "Download");
+        adapter.addFragment(favoriteFragment, "Favorite");
+
+//        adapter.addFragment(new PodcastFragment(), "Podcast");
+//        adapter.addFragment(new DownloadFragment(), "Download");
+//        adapter.addFragment(new FavoriteFragment(), "Favorite");
+
+        viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -429,11 +455,13 @@ public class MainActivity extends AppCompatActivity{
                 Log.i(TAG,"onPageSelected()" + position);
                 switch(position){
                     case 1:{
-                        ((DownloadedFragment)fragments[1]).update();
+                        //refresh the download list
+                        ((DownloadFragment)downloadFragment).refresh();
                         break;
                     }
                     case 2:{
-                        ((FavoritesFragment)fragments[2]).update();
+                        //refresh the favorite list
+                        ((FavoriteFragment)favoriteFragment).refresh();
                         break;
                     }
                 }
@@ -457,36 +485,36 @@ public class MainActivity extends AppCompatActivity{
                 switch (title){
                     case "download":{
                         if(playingEpisode != null) {
-                            downloadEpisode(getApplicationContext(),playingEpisode);
+                            setEpisodeDownloaded(playingEpisode,true);
                         }
                         break;
                     }
 
                     case "add to favorites": {
                         if(playingEpisode != null) {
-                            setEpisodeFavorite(playingEpisode,true);
-                            break;
+                            setEpisodeFavoured(playingEpisode,true);
                         }
+                        break;
                     }
 
                     //helpers
                     case "get all episodes": {
-                        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-                        db.getAllEpisodes();
+//                        Deprecated_SQLiteHelper db = new Deprecated_SQLiteHelper(getApplicationContext());
+//                        db.getAllEpisodes();
                         break;
                     }
 
                     case "delete all episodes": {
-                        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-                        db.deleteAllEpisodes();
+//                        Deprecated_SQLiteHelper db = new Deprecated_SQLiteHelper(getApplicationContext());
+//                        db.deleteAllEpisodes();
                         break;
                     }
 
                     case "delete all downloads": {
-                        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-                        int i = (int) db.addEpisode(playingEpisode);
-                        db.close();
-                        Log.i(TAG, "add anyway " + i);
+//                        Deprecated_SQLiteHelper db = new Deprecated_SQLiteHelper(getApplicationContext());
+//                        int i = (int) db.addEpisode(playingEpisode);
+//                        db.close();
+//                        Log.i(TAG, "add anyway " + i);
                         break;
                     }
                 }
@@ -498,12 +526,6 @@ public class MainActivity extends AppCompatActivity{
         MenuInflater inflater = optionPopupMenu.getMenuInflater();
         inflater.inflate(R.menu.option_popup_menu, optionPopupMenu.getMenu());
     }
-
-//    private void setupFavoritePopupMenu(View v){
-//        optionPopupMenu = new PopupMenu(getApplicationContext(),v);
-//        MenuInflater inflater = favoritePopupMenu.getMenuInflater();
-//        inflater.inflate(R.menu.favorite_popup_menu, favoritePopupMenu.getMenu());
-//    }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -557,7 +579,7 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         protected PodcastEpisode doInBackground(String... urls) {
-            new EslPodScriptParser().getEpisodeScript(episode);
+            new PodcastEpisodeScriptParser().getEpisodeScript(episode);
             return this.episode;
         }
 
@@ -567,12 +589,18 @@ public class MainActivity extends AppCompatActivity{
 
             //show episode scripts on the screen
             slidingUpPanelScriptTextView.setText(Html.fromHtml(episode.getContent()));
+            collapsedPanelPlayButton.setVisibility(View.INVISIBLE);
+            collapsedPanelMenuButton.setVisibility(View.VISIBLE);
+            scriptLoaded = true;
         }
     }
 
     //player helper method
     public void loadPlayingPodcast(PodcastEpisode episode){
         Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
+
+        //reset script loaded state
+        scriptLoaded = false;
 
         //download and update the script TextView
         new DownloadEpisodeScriptAsyncTask(episode).execute();
@@ -609,7 +637,7 @@ public class MainActivity extends AppCompatActivity{
 
     //player helper method
     private void preparePlayer(PodcastEpisode episode){
-        Log.i(TAG,"preparePlayer() " + episode.audioFileUrl);
+        Log.i(TAG,"preparePlayer() " + episode.getAudioFileUrl());
 
         if(player != null){
             player.release();
@@ -619,7 +647,7 @@ public class MainActivity extends AppCompatActivity{
         RendererBuilder rendererBuilder = new ExtractorRendererBuilder(
                 getBaseContext(),
                 Constants.USER_AGENT,
-                episode.audioFileUrl);
+                episode.getAudioFileUrl());
         player = new AudioPlayer(this, rendererBuilder);
         player.prepare();
     }
@@ -660,36 +688,38 @@ public class MainActivity extends AppCompatActivity{
         slidingUpPanelSeekBar.setProgress(currPos);
     }
 
-    private void downloadEpisode(Context context, PodcastEpisode episode){
-        new Mp3Downloader(context,episode).startDownload();
-    }
-
-    private void deleteDownloadedEpisode(PodcastEpisode episode){
-
-    }
-
-    private void setEpisodeFavorite(PodcastEpisode episode, boolean favor){
+    /*
+    PodcastEpisodeOnStatusChangeListener override methods
+     */
+    @Override
+    public void setEpisodeFavoured(PodcastEpisode episode, boolean favor) {
         String title = episode.getTitle();
-        SQLiteHelper db = new SQLiteHelper(getApplicationContext());
-        PodcastEpisode originalEpisode = db.getEpisode(title);
-        boolean result;
-        if(originalEpisode != null) {
-            originalEpisode.setFavoured(favor);
-            result = db.smartUpdate(originalEpisode);
+        SQLiteDatabaseManager db = new SQLiteDatabaseManager(getApplicationContext());
+        Context context = getApplicationContext();
+        if(favor){
+            db.addFavoriteEpisode(episode);
+            Toast.makeText(context, "Favoured " + title, Toast.LENGTH_LONG).show();
         }else{
-            episode.setFavoured(favor);
-            result = db.smartUpdate(episode);
+            db.deleteFavoriteEpisode(episode);
+            Toast.makeText(context, "Disfavoured " + title, Toast.LENGTH_LONG).show();
         }
-
         db.close();
 
-        if(favor) {
-            Toast.makeText(getApplicationContext(), "Added " + title + " to favorite list", Toast.LENGTH_LONG).show();
+        ((FavoriteFragment)favoriteFragment).refresh();
+    }
+
+    @Override
+    public void setEpisodeDownloaded(PodcastEpisode episode, boolean downloaded) {
+        Context context = getApplicationContext();
+        if(downloaded){
+            Toast.makeText(context,"Downloading " + episode.getTitle(), Toast.LENGTH_LONG).show();
+            new EpisodeDownloadManager(context).downloadEpisode(episode);
         }else{
-            Toast.makeText(getApplicationContext(), "Removed " + title + " to favorite list", Toast.LENGTH_LONG).show();
+            new EpisodeDownloadManager(context).deleteEpisode(episode);
+            Toast.makeText(context,"Deleted " + episode.getTitle(), Toast.LENGTH_LONG).show();
         }
 
-        Log.i(TAG, favor + " favour " + title + "to favorite list smartUpdate() " + result);
+        ((DownloadFragment)downloadFragment).refresh();
     }
 }
 

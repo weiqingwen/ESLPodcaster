@@ -10,11 +10,11 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
-public class EslPodScriptParser {
-    private final static String TAG = "EslPodListParser";
+public class PodcastEpisodeScriptParser {
+    private final static String TAG = "PodcastEpisodeListParser";
 
     public void getEpisodeScript(PodcastEpisode episode){
-        Document doc = null;
+        Document doc;
         try {
             doc = Jsoup.connect(Constants.ESLPOD_BASE_EPISODE_URL + "/" + episode.getWebUrl()).get();
             Elements pods = doc.select("table.podcast_table_home:has(span.pod_body)");

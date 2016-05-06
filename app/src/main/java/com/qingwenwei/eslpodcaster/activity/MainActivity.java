@@ -30,12 +30,12 @@ import android.widget.Toast;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
+import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.fragment.DownloadFragment;
 import com.qingwenwei.eslpodcaster.fragment.FavoriteFragment;
 import com.qingwenwei.eslpodcaster.fragment.PodcastFragment;
-import com.qingwenwei.eslpodcaster.listener.PodcastEpisodeStatusChangeHandler;
-import com.qingwenwei.eslpodcaster.sqlite.SQLiteDatabaseManager;
+import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EpisodeDownloadManager;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.skyhacker2.sqliteonweb.SQLiteOnWeb;
 
-public class MainActivity extends AppCompatActivity implements PodcastEpisodeStatusChangeHandler{
+public class MainActivity extends AppCompatActivity implements OnEpisodeStatusChangeHandler {
 
     private static final String TAG = "MainActivity";
 

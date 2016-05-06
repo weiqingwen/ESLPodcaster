@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.FavoriteEpisodeRecyclerViewAdapter;
+import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.listener.PodcastEpisodeStatusChangeHandler;
-import com.qingwenwei.eslpodcaster.sqlite.SQLiteDatabaseManager;
+import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
 
 import java.util.ArrayList;
 
@@ -41,7 +41,7 @@ public class FavoriteFragment extends Fragment {
         return recyclerView;
     }
 
-    public void setHandler(PodcastEpisodeStatusChangeHandler handler){
+    public void setHandler(OnEpisodeStatusChangeHandler handler){
         adapter.setHandler(handler);
     }
 

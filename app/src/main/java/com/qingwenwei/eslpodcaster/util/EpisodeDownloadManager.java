@@ -5,8 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.sqlite.SQLiteDatabaseManager;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;

@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.listener.PodcastEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,14 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     private List<PodcastEpisode> episodes;
     private Context context;
-    private PodcastEpisodeStatusChangeHandler handler;
+    private OnEpisodeStatusChangeHandler handler;
 
     //adaptor constructor
     public DownloadEpisodeRecyclerViewAdapter() {
         episodes = new ArrayList<>();
     }
 
-    public void setHandler(PodcastEpisodeStatusChangeHandler handler) {
+    public void setHandler(OnEpisodeStatusChangeHandler handler) {
         this.handler = handler;
     }
 

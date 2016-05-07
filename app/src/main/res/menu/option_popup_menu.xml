@@ -8,20 +8,20 @@
         android:id="@+id/menuItemAddToFavorites"
         android:title="Add to favorites"
         android:visible="true" />
-    <item
-        android:id="@+id/aaa"
-        android:title="---------------"
-        android:visible="true" />
-    <item
-        android:id="@+id/menuItemGetAllEpisodes"
-        android:title="Get All Episodes"
-        android:visible="true" />
-    <item
-        android:id="@+id/menuItemDeleteAllEpisodes"
-        android:title="Delete All Episodes"
-        android:visible="true" />
-    <item
-        android:id="@+id/menuItemDeleteAllDownloads"
-        android:title="Delete All Downloads"
-        android:visible="true" />
+    <!--<item-->
+        <!--android:id="@+id/aaa"-->
+        <!--android:title="-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;"-->
+        <!--android:visible="true" />-->
+    <!--<item-->
+        <!--android:id="@+id/menuItemGetAllEpisodes"-->
+        <!--android:title="Get All Episodes"-->
+        <!--android:visible="true" />-->
+    <!--<item-->
+        <!--android:id="@+id/menuItemDeleteAllEpisodes"-->
+        <!--android:title="Delete All Episodes"-->
+        <!--android:visible="true" />-->
+    <!--<item-->
+        <!--android:id="@+id/menuItemDeleteAllDownloads"-->
+        <!--android:title="Delete All Downloads"-->
+        <!--android:visible="true" />-->
 </menu>

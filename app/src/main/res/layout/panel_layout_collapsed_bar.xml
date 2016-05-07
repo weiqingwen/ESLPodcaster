@@ -15,7 +15,9 @@
         android:layout_marginStart="10dp"
         android:layout_alignTop="@+id/collapsedPanelPlayButton"
         android:layout_centerVertical="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp" />
         <!--android:background="@drawable/ic_keyboard_arrow_up_black_36dp"-->
 
     <TextView
@@ -29,7 +31,9 @@
         android:paddingLeft="10dp"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@+id/collapsedPanelPlayButton"
-        android:layout_toEndOf="@+id/collapsedPanelPodcastIcon"/>
+        android:layout_toEndOf="@+id/collapsedPanelPodcastIcon"
+        android:layout_toLeftOf="@+id/collapsedPanelPlayButton"
+        android:layout_toRightOf="@+id/collapsedPanelPodcastIcon" />
 
     <ImageButton
         android:id="@+id/collapsedPanelPlayButton"
@@ -39,7 +43,9 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp" />
+        android:layout_marginEnd="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp" />
 
     <ImageButton
         android:id="@+id/collapsedPanelMenuButton"
@@ -49,6 +55,7 @@
         android:src="@drawable/ic_more_vert_black_36dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_alignTop="@+id/collapsedPanelPlayButton"
-        android:layout_toEndOf="@+id/collapsedPanelTitleTextView" />
+        android:layout_toEndOf="@+id/collapsedPanelTitleTextView"
+        android:layout_toRightOf="@+id/collapsedPanelTitleTextView" />
 
 </RelativeLayout>

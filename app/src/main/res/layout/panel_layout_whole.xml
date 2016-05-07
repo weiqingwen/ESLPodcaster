@@ -24,13 +24,17 @@
         <TextView
             android:id="@+id/slidingUpPanelScriptTextView"
             android:textSize="16sp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:scrollbars = "vertical"
             android:layout_alignParentBottom="true"
-            android:layout_below="@+id/lower_shadow_bar" />
+            android:layout_below="@+id/lower_shadow_bar"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true" />
 
         <!--LOWER SHADOW BAR-->
         <View
@@ -39,7 +43,8 @@
             android:layout_height="5dp"
             android:background="@drawable/shadow_bar_lower"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true">
         </View>
     </RelativeLayout>
 

@@ -14,7 +14,8 @@
         android:layout_height="5dp"
         android:background="@drawable/shadow_bar_upper"
         android:layout_above="@+id/slidingUpPanelPlayer"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true">
     </View>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,7 +24,8 @@
         android:background="@color/colorPrimary"
         android:id="@+id/slidingUpPanelPlayer"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true">
 
         <ImageButton
             android:id="@+id/slidingUpPanelPlayButton"
@@ -42,7 +44,9 @@
             android:layout_height="40dp"
             android:layout_alignTop="@+id/slidingUpPanelPlayButton"
             android:layout_toStartOf="@+id/slidingUpPanelPlayButton"
-            android:layout_marginEnd="80dp" />
+            android:layout_marginEnd="80dp"
+            android:layout_toLeftOf="@+id/slidingUpPanelPlayButton"
+            android:layout_marginRight="80dp" />
 
         <ImageButton
             android:id="@+id/slidingUpPanelForwardButton"
@@ -52,7 +56,9 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginStart="80dp"
             android:layout_alignTop="@+id/slidingUpPanelPlayButton"
-            android:layout_toEndOf="@+id/slidingUpPanelPlayButton" />
+            android:layout_toEndOf="@+id/slidingUpPanelPlayButton"
+            android:layout_marginLeft="80dp"
+            android:layout_toRightOf="@+id/slidingUpPanelPlayButton" />
 
         <TextView
             android:id="@+id/slidingUpPanelCurrPosTextView"
@@ -64,7 +70,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="7dp"
             android:layout_alignBottom="@+id/slidingUpPanelSeekBar"
-            android:layout_toStartOf="@+id/slidingUpPanelSeekBar" />
+            android:layout_toStartOf="@+id/slidingUpPanelSeekBar"
+            android:layout_toLeftOf="@+id/slidingUpPanelSeekBar" />
 
         <SeekBar
             android:id="@+id/slidingUpPanelSeekBar"
@@ -74,7 +81,9 @@
             android:scrollbarStyle="outsideOverlay"
             android:layout_alignParentTop="true"
             android:layout_alignStart="@+id/slidingUpPanelReplayButton"
-            android:layout_alignEnd="@+id/slidingUpPanelForwardButton" />
+            android:layout_alignEnd="@+id/slidingUpPanelForwardButton"
+            android:layout_alignLeft="@+id/slidingUpPanelReplayButton"
+            android:layout_alignRight="@+id/slidingUpPanelForwardButton" />
 
         <TextView
             android:id="@+id/slidingUpPanelMaxPosTextView"
@@ -86,7 +95,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="7dp"
             android:layout_alignBottom="@+id/slidingUpPanelSeekBar"
-            android:layout_toEndOf="@+id/slidingUpPanelSeekBar" />
+            android:layout_toEndOf="@+id/slidingUpPanelSeekBar"
+            android:layout_toRightOf="@+id/slidingUpPanelSeekBar" />
 
     </RelativeLayout>
 

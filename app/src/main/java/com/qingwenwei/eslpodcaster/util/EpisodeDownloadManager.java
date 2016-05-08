@@ -28,7 +28,17 @@ public class EpisodeDownloadManager {
     }
 
     public void downloadEpisode(PodcastEpisode episode){
-        new DownloadEpisodeAsyncTask(episode).execute();
+
+        //check if episode already downloaded
+        SQLiteDatabaseManager db = new SQLiteDatabaseManager(context);
+        if (db.hasDownloadEpisode(episode)){ // if episode is downloaded
+            Toast.makeText(context,"Already downloaded", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //running in parallel with any other potential running AsyncTasks
+        Toast.makeText(context,"Downloading in the background......", Toast.LENGTH_LONG).show();
+        new DownloadEpisodeAsyncTask(episode).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void deleteEpisode(PodcastEpisode episode){
@@ -99,13 +109,18 @@ public class EpisodeDownloadManager {
 
     private void changeEpisodeDownloadStatus(Context context, PodcastEpisode episode, boolean downloaded){
         String title = episode.getTitle();
+        String audioLocation = episode.getLocalAudioFile();
+
         SQLiteDatabaseManager db = new SQLiteDatabaseManager(context);
+
         if(downloaded){
+            //add new episode entry to database
             db.addDownloadEpisode(episode);
             Toast.makeText(context, "Downloaded " + title, Toast.LENGTH_LONG).show();
             Log.i(TAG, "Downloaded changeEpisodeDownloadStatus() " + title);
 
-        }else{ // to delete the audio file
+        }else{
+            //remove database entry and audio file
             String file = episode.getLocalAudioFile();
             if(FileUtil.deleteFile(file)){
                 db.deleteDownloadEpisode(episode);

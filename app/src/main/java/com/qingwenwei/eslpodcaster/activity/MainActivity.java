@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import io.github.skyhacker2.sqliteonweb.SQLiteOnWeb;
-
 public class MainActivity extends AppCompatActivity
         implements OnEpisodeStatusChangeHandler, OnLoadPlayingEpisodeHandler{
 
@@ -111,18 +109,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //initialize fragments
-        podcastFragment = new PodcastFragment();
-        downloadFragment = new DownloadFragment();
-        favoriteFragment = new FavoriteFragment();
-
-        ((FavoriteFragment)favoriteFragment).setOnEpisodeStatusChangeHandler(this);
-        ((FavoriteFragment)favoriteFragment).setOnLoadPlayingEpisodeHandler(this);
-
-        ((DownloadFragment)downloadFragment).setOnEpisodeStatusChangeHandler(this);
-        ((DownloadFragment)downloadFragment).setOnLoadPlayingEpisodeHandler(this);
-
-//        //initialize database utility
-//        db = new SQLiteDatabaseManager(getApplicationContext());
+        initFragments();
 
         //orientation
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -215,7 +202,19 @@ public class MainActivity extends AppCompatActivity
 
 
         //SQLite browser
-        SQLiteOnWeb.init(this).start();
+//        SQLiteOnWeb.init(this).start();
+    }
+
+    private void initFragments(){
+        podcastFragment = new PodcastFragment();
+        downloadFragment = new DownloadFragment();
+        favoriteFragment = new FavoriteFragment();
+
+        ((FavoriteFragment)favoriteFragment).setOnEpisodeStatusChangeHandler(this);
+        ((FavoriteFragment)favoriteFragment).setOnLoadPlayingEpisodeHandler(this);
+
+        ((DownloadFragment)downloadFragment).setOnEpisodeStatusChangeHandler(this);
+        ((DownloadFragment)downloadFragment).setOnLoadPlayingEpisodeHandler(this);
     }
 
     //collapse and expand the sliding up panel
@@ -566,7 +565,7 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(final PodcastEpisode scriptedEpisode) {
 //            Log.i(TAG,"onPostExecute()" + episode.getContent());
 
-            //show episode scripts on the screen
+            //set episode scripts on the TextView
             slidingUpPanelScriptTextView.setText(Html.fromHtml(episode.getContent()));
             collapsedPanelPlayButton.setVisibility(View.INVISIBLE);
             collapsedPanelMenuButton.setVisibility(View.VISIBLE);
@@ -587,7 +586,8 @@ public class MainActivity extends AppCompatActivity
         slidingUpPanelScriptTextView.scrollTo(0,0);
 
         //download and update the script TextView
-        new DownloadEpisodeScriptAsyncTask(episode).execute();
+        //running in parallel with any other potential running AsyncTasks
+        new DownloadEpisodeScriptAsyncTask(episode).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         //toggle sliding-up panel
         toggleSlidingUpPanel();
@@ -628,9 +628,11 @@ public class MainActivity extends AppCompatActivity
             player = null;
         }
 
-        String targetPath = null;
+        // check if episode has a local audio file location
+        String targetPath;
+        if(episode.getLocalAudioFile() != ""
+                && episode.getLocalAudioFile() != null){
 
-        if(episode.getLocalAudioFile() != "" && episode.getLocalAudioFile() != null){
             targetPath = episode.getLocalAudioFile();
         }else{
             targetPath = episode.getAudioFileUrl();
@@ -690,7 +692,12 @@ public class MainActivity extends AppCompatActivity
         SQLiteDatabaseManager db = new SQLiteDatabaseManager(getApplicationContext());
         Context context = getApplicationContext();
         if(favor){
-            db.addFavoriteEpisode(episode);
+            long i = db.addFavoriteEpisode(episode);
+            // episode entry already exists in database
+            if(i == -2){
+                Toast.makeText(context, "Already in the favorite list", Toast.LENGTH_LONG).show();
+                return;
+            }
             Toast.makeText(context, "Favoured " + title, Toast.LENGTH_LONG).show();
         }else{
             db.deleteFavoriteEpisode(episode);
@@ -705,9 +712,10 @@ public class MainActivity extends AppCompatActivity
     public void setEpisodeDownloaded(PodcastEpisode episode, boolean downloaded) {
         Context context = getApplicationContext();
         if(downloaded){
-            Toast.makeText(context,"Downloading in the background......", Toast.LENGTH_LONG).show();
+            //download episode
             new EpisodeDownloadManager(context).downloadEpisode(episode);
         }else{
+            //delete episode
             new EpisodeDownloadManager(context).deleteEpisode(episode);
             Toast.makeText(context,"Deleted " + episode.getTitle(), Toast.LENGTH_LONG).show();
         }

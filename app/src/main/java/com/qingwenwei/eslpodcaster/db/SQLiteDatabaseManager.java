@@ -265,6 +265,7 @@ public class SQLiteDatabaseManager extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
+        Log.i(TAG,"hasDownloadEpisode() " + hasEpisode);
         return hasEpisode;
     }
 

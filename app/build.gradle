@@ -8,7 +8,7 @@ android {
         applicationId "com.qingwenwei.eslpodcaster"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
+        versionCode 3
         versionName "1.0"
     }
     buildTypes {
@@ -41,6 +41,6 @@ dependencies {
     compile 'org.jsoup:jsoup:1.9.1'
 
     //SQLite browser
-    debugCompile 'io.github.skyhacker2:sqliteonweb:1.0.1'
-    releaseCompile 'io.github.skyhacker2:sqliteonweb-no-op:1.0.2'
+//    debugCompile 'io.github.skyhacker2:sqliteonweb:1.0.1'
+//    releaseCompile 'io.github.skyhacker2:sqliteonweb-no-op:1.0.2'
 }

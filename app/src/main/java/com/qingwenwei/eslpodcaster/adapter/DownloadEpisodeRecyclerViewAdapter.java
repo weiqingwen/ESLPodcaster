@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +24,21 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     private List<PodcastEpisode> episodes;
     private Context context;
-    private OnEpisodeStatusChangeHandler handler;
+    private OnEpisodeStatusChangeHandler onEpisodeStatusChangeHandler;
+    private OnLoadPlayingEpisodeHandler onLoadPlayingEpisodeHandler;
 
     //adaptor constructor
     public DownloadEpisodeRecyclerViewAdapter() {
         episodes = new ArrayList<>();
     }
 
-    public void setHandler(OnEpisodeStatusChangeHandler handler) {
-        this.handler = handler;
+    //handler setters
+    public void setOnEpisodeStatusChangeHandler(OnEpisodeStatusChangeHandler handler) {
+        this.onEpisodeStatusChangeHandler = handler;
+    }
+
+    public void setOnLoadPlayingEpisodeHandler(OnLoadPlayingEpisodeHandler handler){
+        this.onLoadPlayingEpisodeHandler = handler;
     }
 
     public static class DownloadViewHolder extends RecyclerView.ViewHolder {
@@ -74,6 +81,13 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
                 return true;
             }
         });
+
+        ((DownloadViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLoadPlayingEpisodeHandler.loadPlayingEpisode(episode);
+            }
+        });
     }
 
     @Override
@@ -98,12 +112,12 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
                 Log.i(TAG,episode.getTitle() + " which:" + which);
                 switch (which){
                     case 0:{
-                        handler.setEpisodeFavoured(episode,true);
+                        onEpisodeStatusChangeHandler.setEpisodeFavoured(episode,true);
                         break;
                     }
 
                     case 1:{
-                        handler.setEpisodeDownloaded(episode,false);
+                        onEpisodeStatusChangeHandler.setEpisodeDownloaded(episode,false);
                         break;
                     }
                 }
@@ -111,6 +125,4 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         });
         builder.show();
     }
-
-
 }

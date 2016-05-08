@@ -17,6 +17,7 @@ import com.qingwenwei.eslpodcaster.activity.MainActivity;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.listener.OnEpisodeClickListener;
 import com.qingwenwei.eslpodcaster.util.PodcastEpisodeListParser;
 
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class PodcastFragment extends Fragment {
             episodes = new ArrayList<>();
             adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(),episodes,recyclerView);
             adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
-            adapter.setOnEpisodeClickListener(new OnEpisodeClickListener());
+            adapter.setOnEpisodeClickListener(new EpisodeClickListener());
             recyclerView.setAdapter(adapter);
             new DownloadEpisodesAsyncTask(false).execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
@@ -185,15 +186,13 @@ public class PodcastFragment extends Fragment {
         this.loadingMoreItems = false;
     }
 
-    private class OnEpisodeClickListener implements PodcastEpisodeRecyclerViewAdapter.OnEpisodeClickListener{
+    private class EpisodeClickListener implements OnEpisodeClickListener {
         private static final String TAG = "OnEpisodeClickListener";
-
         @Override
         public void onEpisodeClick(RecyclerView.ViewHolder holder) {
             Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
-
             PodcastEpisode episode = adapter.getEpisodes().get(holder.getAdapterPosition());
-            ((MainActivity)getActivity()).loadPlayingPodcast(episode);
+            ((MainActivity)getActivity()).loadPlayingEpisode(episode);
         }
     }
 }

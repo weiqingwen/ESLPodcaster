@@ -16,6 +16,7 @@ import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
 
 import java.util.ArrayList;
 
@@ -43,9 +44,15 @@ public class DownloadFragment extends Fragment {
         return recyclerView;
     }
 
-    public void setHandler(OnEpisodeStatusChangeHandler handler){
-        adapter.setHandler(handler);
+    //handler setters
+    public void setOnEpisodeStatusChangeHandler(OnEpisodeStatusChangeHandler handler){
+        adapter.setOnEpisodeStatusChangeHandler(handler);
     }
+
+    public void setOnLoadPlayingEpisodeHandler(OnLoadPlayingEpisodeHandler handler){
+        adapter.setOnLoadPlayingEpisodeHandler(handler);
+    }
+
 
     public void refresh(){
         new GetAllDownloadedEpisodesAsyncTask().execute();

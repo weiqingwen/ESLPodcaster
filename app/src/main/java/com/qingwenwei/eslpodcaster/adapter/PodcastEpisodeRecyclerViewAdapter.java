@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.listener.OnEpisodeClickListener;
 
 import java.util.List;
 
@@ -179,11 +180,6 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         this.episodes.clear();
         this.episodes.addAll(newEpisodes);
         this.notifyDataSetChanged();
-    }
-
-    // episode onClick event
-    public interface OnEpisodeClickListener{
-        void onEpisodeClick(RecyclerView.ViewHolder holder);
     }
 
     public OnEpisodeClickListener getOnEpisodeClickListener() {

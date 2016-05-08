@@ -36,6 +36,7 @@ import com.qingwenwei.eslpodcaster.fragment.DownloadFragment;
 import com.qingwenwei.eslpodcaster.fragment.FavoriteFragment;
 import com.qingwenwei.eslpodcaster.fragment.PodcastFragment;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EpisodeDownloadManager;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
@@ -52,7 +53,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.skyhacker2.sqliteonweb.SQLiteOnWeb;
 
-public class MainActivity extends AppCompatActivity implements OnEpisodeStatusChangeHandler {
+public class MainActivity extends AppCompatActivity
+        implements OnEpisodeStatusChangeHandler, OnLoadPlayingEpisodeHandler{
 
     private static final String TAG = "MainActivity";
 
@@ -112,8 +114,12 @@ public class MainActivity extends AppCompatActivity implements OnEpisodeStatusCh
         podcastFragment = new PodcastFragment();
         downloadFragment = new DownloadFragment();
         favoriteFragment = new FavoriteFragment();
-        ((FavoriteFragment)favoriteFragment).setHandler(this);
-        ((DownloadFragment)downloadFragment).setHandler(this);
+
+        ((FavoriteFragment)favoriteFragment).setOnEpisodeStatusChangeHandler(this);
+        ((FavoriteFragment)favoriteFragment).setOnLoadPlayingEpisodeHandler(this);
+
+        ((DownloadFragment)downloadFragment).setOnEpisodeStatusChangeHandler(this);
+        ((DownloadFragment)downloadFragment).setOnLoadPlayingEpisodeHandler(this);
 
 //        //initialize database utility
 //        db = new SQLiteDatabaseManager(getApplicationContext());
@@ -433,15 +439,9 @@ public class MainActivity extends AppCompatActivity implements OnEpisodeStatusCh
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-//        ((FavoriteFragment)favoriteFragment).setPodcastEpisodeStatusChangeHandler(this);
-
         adapter.addFragment(podcastFragment, "Podcast");
         adapter.addFragment(downloadFragment, "Download");
         adapter.addFragment(favoriteFragment, "Favorite");
-
-//        adapter.addFragment(new PodcastFragment(), "Podcast");
-//        adapter.addFragment(new DownloadFragment(), "Download");
-//        adapter.addFragment(new FavoriteFragment(), "Favorite");
 
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -494,27 +494,6 @@ public class MainActivity extends AppCompatActivity implements OnEpisodeStatusCh
                         if(playingEpisode != null) {
                             setEpisodeFavoured(playingEpisode,true);
                         }
-                        break;
-                    }
-
-                    //helpers
-                    case "get all episodes": {
-//                        Deprecated_SQLiteHelper db = new Deprecated_SQLiteHelper(getApplicationContext());
-//                        db.getAllEpisodes();
-                        break;
-                    }
-
-                    case "delete all episodes": {
-//                        Deprecated_SQLiteHelper db = new Deprecated_SQLiteHelper(getApplicationContext());
-//                        db.deleteAllEpisodes();
-                        break;
-                    }
-
-                    case "delete all downloads": {
-//                        Deprecated_SQLiteHelper db = new Deprecated_SQLiteHelper(getApplicationContext());
-//                        int i = (int) db.addEpisode(playingEpisode);
-//                        db.close();
-//                        Log.i(TAG, "add anyway " + i);
                         break;
                     }
                 }
@@ -596,11 +575,16 @@ public class MainActivity extends AppCompatActivity implements OnEpisodeStatusCh
     }
 
     //player helper method
-    public void loadPlayingPodcast(PodcastEpisode episode){
-        Log.i(TAG, "loadPlayingPodcast()" + episode.getTitle());
+    @Override
+    public void loadPlayingEpisode(PodcastEpisode episode){
+        Log.i(TAG, "loadPlayingEpisode()" + episode.getTitle());
 
         //reset script loaded state
         scriptLoaded = false;
+
+        //clear original scripts
+        slidingUpPanelScriptTextView.setText("");
+        slidingUpPanelScriptTextView.scrollTo(0,0);
 
         //download and update the script TextView
         new DownloadEpisodeScriptAsyncTask(episode).execute();
@@ -637,17 +621,26 @@ public class MainActivity extends AppCompatActivity implements OnEpisodeStatusCh
 
     //player helper method
     private void preparePlayer(PodcastEpisode episode){
-        Log.i(TAG,"preparePlayer() " + episode.getAudioFileUrl());
+        Log.i(TAG,"preparePlayer() URL: " + episode.getAudioFileUrl() + " LOCAL: " + episode.getLocalAudioFile());
 
         if(player != null){
             player.release();
             player = null;
         }
 
+        String targetPath = null;
+
+        if(episode.getLocalAudioFile() != "" && episode.getLocalAudioFile() != null){
+            targetPath = episode.getLocalAudioFile();
+        }else{
+            targetPath = episode.getAudioFileUrl();
+        }
+        Log.i(TAG,"preparePlayer() targetPath: " + targetPath);
+
         RendererBuilder rendererBuilder = new ExtractorRendererBuilder(
                 getBaseContext(),
                 Constants.USER_AGENT,
-                episode.getAudioFileUrl());
+                targetPath);
         player = new AudioPlayer(this, rendererBuilder);
         player.prepare();
     }
@@ -712,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements OnEpisodeStatusCh
     public void setEpisodeDownloaded(PodcastEpisode episode, boolean downloaded) {
         Context context = getApplicationContext();
         if(downloaded){
-            Toast.makeText(context,"Downloading " + episode.getTitle(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context,"Downloading in the background......", Toast.LENGTH_LONG).show();
             new EpisodeDownloadManager(context).downloadEpisode(episode);
         }else{
             new EpisodeDownloadManager(context).deleteEpisode(episode);

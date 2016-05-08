@@ -15,6 +15,7 @@ import com.qingwenwei.eslpodcaster.adapter.FavoriteEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
+import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,6 @@ public class FavoriteFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private FavoriteEpisodeRecyclerViewAdapter adapter;
-//    private SQLiteDatabaseManager db;
 
     public FavoriteFragment() {
         // Required empty public constructor
@@ -33,16 +33,18 @@ public class FavoriteFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
-//        db = new SQLiteDatabaseManager(getContext());
-
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_favorites, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
         return recyclerView;
     }
 
-    public void setHandler(OnEpisodeStatusChangeHandler handler){
-        adapter.setHandler(handler);
+    public void setOnEpisodeStatusChangeHandler(OnEpisodeStatusChangeHandler handler){
+        adapter.setOnEpisodeStatusChangeHandler(handler);
+    }
+
+    public void setOnLoadPlayingEpisodeHandler(OnLoadPlayingEpisodeHandler handler){
+        adapter.setOnLoadPlayingEpisodeHandler(handler);
     }
 
     public void refresh(){
@@ -64,5 +66,4 @@ public class FavoriteFragment extends Fragment {
             Log.i(TAG," data size:" + podcastEpisodes.size());
         }
     }
-
 }

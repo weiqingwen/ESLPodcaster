@@ -1,4 +1,4 @@
-package com.qingwenwei.eslpodcaster.util;
+package com.qingwenwei.eslpodcaster.deprecated;
 
 import android.content.ContentValues;
 import android.content.Context;

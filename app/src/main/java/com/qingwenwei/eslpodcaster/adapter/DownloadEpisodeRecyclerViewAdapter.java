@@ -103,8 +103,9 @@ public class DownloadEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
 
     private void showPopupMenu(final PodcastEpisode episode){
         CharSequence items[] = new CharSequence[] {
-                "Favour this episode",
+                "Archive this episode",
                 "Delete this episode"};
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setItems(items, new DialogInterface.OnClickListener(){
             @Override

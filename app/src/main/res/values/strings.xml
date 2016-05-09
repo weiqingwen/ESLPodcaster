@@ -3,4 +3,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--ui texts-->
+    <string name="archive_episode">Archive Episode</string>
+    <string name="download_episode">Download Episode</string>
+    <string name="unarchive_episode">Download Episode</string>
+    <string name="delete_episode">Download Episode</string>
+
 </resources>

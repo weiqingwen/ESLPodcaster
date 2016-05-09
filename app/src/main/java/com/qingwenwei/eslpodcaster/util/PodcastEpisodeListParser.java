@@ -18,7 +18,7 @@ public class PodcastEpisodeListParser {
         List<PodcastEpisode> episodes = new ArrayList<>();
         Document doc;
         try {
-            doc = Jsoup.connect(url).get();
+            doc = Jsoup.connect(url).timeout(5000).get();
 
             Elements pods = doc.select("table.podcast_table_home:has(span.date-header)");
             System.out.println("pod size: " + pods.size());

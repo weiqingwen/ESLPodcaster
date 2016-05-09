@@ -482,14 +482,14 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG,"onMenuItemClick() " + title);
 
                 switch (title){
-                    case "download":{
+                    case "download episode":{
                         if(playingEpisode != null) {
                             setEpisodeDownloaded(playingEpisode,true);
                         }
                         break;
                     }
 
-                    case "add to favorites": {
+                    case "archive episode":{
                         if(playingEpisode != null) {
                             setEpisodeFavoured(playingEpisode,true);
                         }
@@ -698,10 +698,10 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(context, "Already in the favorite list", Toast.LENGTH_LONG).show();
                 return;
             }
-            Toast.makeText(context, "Favoured " + title, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Archived " + title, Toast.LENGTH_LONG).show();
         }else{
             db.deleteFavoriteEpisode(episode);
-            Toast.makeText(context, "Disfavoured " + title, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Unarchived " + title, Toast.LENGTH_LONG).show();
         }
         db.close();
 

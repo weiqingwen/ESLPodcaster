@@ -105,7 +105,8 @@ public class FavoriteEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     private void showPopupMenu(final PodcastEpisode episode){
         CharSequence items[] = new CharSequence[] {
                 "Download this episode",
-                "Disfavour this episode"};
+                "Unarchive this episode"};
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setItems(items, new DialogInterface.OnClickListener(){
             @Override

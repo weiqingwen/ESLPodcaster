@@ -28,9 +28,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.stetho.Stetho;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
-import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
+import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.fragment.DownloadFragment;
 import com.qingwenwei.eslpodcaster.fragment.FavoriteFragment;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment favoriteFragment;
 
     //database
-//    private SQLiteDatabaseManager db;
+//    private Deprecated_SQLiteDatabaseManager db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +204,8 @@ public class MainActivity extends AppCompatActivity
 
         //SQLite browser
 //        SQLiteOnWeb.init(this).start();
+
+        Stetho.initializeWithDefaults(this);
     }
 
     private void initFragments(){
@@ -495,6 +498,12 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                     }
+
+                    case "delete all":{
+                        EpisodeDAO dao = new EpisodeDAO(getApplicationContext());
+                        dao.deleteAllEpisodes();
+                        break;
+                    }
                 }
 
                 return true;
@@ -689,21 +698,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void setEpisodeFavoured(PodcastEpisode episode, boolean favor) {
         String title = episode.getTitle();
-        SQLiteDatabaseManager db = new SQLiteDatabaseManager(getApplicationContext());
         Context context = getApplicationContext();
+        EpisodeDAO dao = new EpisodeDAO(context);
+
         if(favor){
-            long i = db.addFavoriteEpisode(episode);
+            long i = dao.createEpisode(episode);
+
             // episode entry already exists in database
             if(i == -2){
-                Toast.makeText(context, "Already in the favorite list", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Already archived", Toast.LENGTH_LONG).show();
                 return;
             }
+
             Toast.makeText(context, "Archived " + title, Toast.LENGTH_LONG).show();
         }else{
-            db.deleteFavoriteEpisode(episode);
+
+            dao.deleteEpisode(episode);
             Toast.makeText(context, "Unarchived " + title, Toast.LENGTH_LONG).show();
         }
-        db.close();
 
         ((FavoriteFragment)favoriteFragment).refresh();
     }
@@ -713,10 +725,10 @@ public class MainActivity extends AppCompatActivity
         Context context = getApplicationContext();
         if(downloaded){
             //download episode
-            new EpisodeDownloadManager(context).downloadEpisode(episode);
+            new EpisodeDownloadManager(context).startDownload(episode);
         }else{
             //delete episode
-            new EpisodeDownloadManager(context).deleteEpisode(episode);
+//            new EpisodeDownloadManager(context).deleteEpisode(episode);
             Toast.makeText(context,"Deleted " + episode.getTitle(), Toast.LENGTH_LONG).show();
         }
 

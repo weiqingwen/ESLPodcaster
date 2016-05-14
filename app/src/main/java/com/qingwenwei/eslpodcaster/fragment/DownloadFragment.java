@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
-import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
+import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
 import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
@@ -25,7 +25,6 @@ public class DownloadFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private DownloadEpisodeRecyclerViewAdapter adapter;
-//    private SQLiteDatabaseManager db;
 
     public DownloadFragment() {
         // Required empty public constructor
@@ -36,8 +35,6 @@ public class DownloadFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
-//        db = new SQLiteDatabaseManager(getContext());
-
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_downloads, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
@@ -55,22 +52,27 @@ public class DownloadFragment extends Fragment {
 
 
     public void refresh(){
-        new GetAllDownloadedEpisodesAsyncTask().execute();
+        new GetAllDownloadedEpisodesAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class GetAllDownloadedEpisodesAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>> {
         private static final String TAG = "GetAllDownloadedEpisodesAsyncTask";
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(Void... params) {
-            SQLiteDatabaseManager db = new SQLiteDatabaseManager(getContext());
-            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>) db.getAllDownloadEpisodes();
-            return episodes;
+//            SQLiteHelper db = new SQLiteHelper(getContext());
+//            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>) db.getAllDownloadedEpisodes();
+
+            EpisodeDAO dao = new EpisodeDAO(getContext());
+            ArrayList downloads = (ArrayList) dao.getAllDownloadedEpisodes();
+
+            return downloads;
         }
 
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
             adapter.updateEpisodes(podcastEpisodes);
-            Log.i(TAG," data size:" + podcastEpisodes.size());
+            Log.i(TAG,"Refreshed download list size: " + podcastEpisodes.size());
+
         }
     }
 

@@ -3,6 +3,7 @@ package com.qingwenwei.eslpodcaster.entity;
 import java.io.Serializable;
 
 public class PodcastEpisode implements Serializable {
+
     private String title;
     private String subtitle;
     private String content;
@@ -11,6 +12,7 @@ public class PodcastEpisode implements Serializable {
     private String webUrl;
     private String category;
     private String localAudioFile;
+    private String archived; // Y
 
     public PodcastEpisode(){
         super();
@@ -29,7 +31,8 @@ public class PodcastEpisode implements Serializable {
             String audioFileUrl,
             String webUrl,
             String category,
-            String localAudioFile){
+            String localAudioFile,
+            String archived){
 
         this.title = title;
         this.subtitle = subtitle;
@@ -39,6 +42,7 @@ public class PodcastEpisode implements Serializable {
         this.webUrl = webUrl;
         this.category = category;
         this.localAudioFile = localAudioFile;
+        this.archived = archived;
     }
 
     public String getTitle() {
@@ -103,6 +107,14 @@ public class PodcastEpisode implements Serializable {
 
     public void setLocalAudioFile(String localAudioFile) {
         this.localAudioFile = localAudioFile;
+    }
+
+    public String getArchived() {
+        return archived;
+    }
+
+    public void setArchived(String archived) {
+        this.archived = archived;
     }
 
     public String toString(){

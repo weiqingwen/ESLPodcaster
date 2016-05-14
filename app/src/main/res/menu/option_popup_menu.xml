@@ -8,4 +8,14 @@
         android:id="@+id/menuItemAddToFavorites"
         android:title="@string/archive_episode"
         android:visible="true" />
+
+    <item
+        android:id="@+id/menuItemDivider"
+        android:title="-----------------"
+        android:visible="true" />
+
+    <item
+        android:id="@+id/menuItemDeleteAll"
+        android:title="Delete All"
+        android:visible="true" />
 </menu>

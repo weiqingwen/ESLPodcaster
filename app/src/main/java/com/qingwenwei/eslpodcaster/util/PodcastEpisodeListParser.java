@@ -35,7 +35,18 @@ public class PodcastEpisodeListParser {
                 int end = pod.text().lastIndexOf("Tags:");
                 String subTitle= pod.text().substring(17 + start, end);
 
-                PodcastEpisode newEpisode = new PodcastEpisode(title, subTitle, "", date, file, web, cat, "");
+                PodcastEpisode newEpisode = new PodcastEpisode(
+                        title,
+                        subTitle,
+                        "", //content
+                        date,
+                        file,
+                        web,
+                        cat,
+                        "", //local audio file
+                        ""  //archived
+                );
+
                 episodes.add(newEpisode);
             }
 

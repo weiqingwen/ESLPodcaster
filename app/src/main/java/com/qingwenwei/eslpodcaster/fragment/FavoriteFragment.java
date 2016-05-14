@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.FavoriteEpisodeRecyclerViewAdapter;
-import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
+import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
 import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
@@ -48,22 +48,26 @@ public class FavoriteFragment extends Fragment {
     }
 
     public void refresh(){
-        new GetAllFavouredEpisodesAsyncTask().execute();
+        new GetAllFavouredEpisodesAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class GetAllFavouredEpisodesAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
         private static final String TAG = "GetAllFavouredEpisodesAsyncTask";
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(Void... params) {
-            SQLiteDatabaseManager db = new SQLiteDatabaseManager(getContext());
-            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>) db.getAllFavoriteEpisodes();
-            return episodes;
+//            SQLiteHelper db = new SQLiteHelper(getContext());
+//            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>) db.getAllArchivedEpisodes();
+
+            EpisodeDAO dao = new EpisodeDAO(getContext());
+            ArrayList archives = (ArrayList) dao.getAllDownloadedEpisodes();
+
+            return archives;
         }
 
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
             adapter.updateEpisodes(podcastEpisodes);
-            Log.i(TAG," data size:" + podcastEpisodes.size());
+            Log.i(TAG,"Refreshed archive list size: " + podcastEpisodes.size());
         }
     }
 }

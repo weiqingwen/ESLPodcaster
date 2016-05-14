@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.qingwenwei.eslpodcaster.db.SQLiteDatabaseManager;
+import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
 import java.io.BufferedInputStream;
@@ -27,12 +27,13 @@ public class EpisodeDownloadManager {
         this.context = context;
     }
 
-    public void downloadEpisode(PodcastEpisode episode){
+    public void startDownload(PodcastEpisode episode){
 
         //check if episode already downloaded
-        SQLiteDatabaseManager db = new SQLiteDatabaseManager(context);
-        if (db.hasDownloadEpisode(episode)){ // if episode is downloaded
+        EpisodeDAO dao = new EpisodeDAO(context);
+        if (dao.hasEpisode(episode)){ // if episode is downloaded
             Toast.makeText(context,"Already downloaded", Toast.LENGTH_LONG).show();
+            dao.close();
             return;
         }
 
@@ -43,13 +44,10 @@ public class EpisodeDownloadManager {
 
     public void deleteEpisode(PodcastEpisode episode){
 
-        //code to delete the local audio file ...
+        //delete the local audio file and ...
+        //if the episode is archived, only remove the local file column string
+        //otherwise, delete the episode entry in the database as well
 
-        changeEpisodeDownloadStatus(context,episode,false);
-
-        //To delete the episode audio file
-        //need to store the file path in database
-        //...
     }
 
     private class DownloadEpisodeAsyncTask extends AsyncTask<Void, Integer, String> {
@@ -99,39 +97,25 @@ public class EpisodeDownloadManager {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.i(TAG, "downloaded at: " + s);
-            episode.setLocalAudioFile(s);
-            changeEpisodeDownloadStatus(context,episode,true);
+        protected void onPostExecute(String localFile) {
+            super.onPostExecute(localFile);
+            episode.setLocalAudioFile(localFile);
+            postDownload(context,episode);
         }
     }
 
-    private void changeEpisodeDownloadStatus(Context context, PodcastEpisode episode, boolean downloaded){
-        String title = episode.getTitle();
-        String audioLocation = episode.getLocalAudioFile();
+    private void postDownload(Context context, PodcastEpisode episode){
+        String localFile = episode.getLocalAudioFile();
 
-        SQLiteDatabaseManager db = new SQLiteDatabaseManager(context);
-
-        if(downloaded){
-            //add new episode entry to database
-            db.addDownloadEpisode(episode);
-            Toast.makeText(context, "Downloaded " + title, Toast.LENGTH_LONG).show();
-            Log.i(TAG, "Downloaded changeEpisodeDownloadStatus() " + title);
-
+        EpisodeDAO dao = new EpisodeDAO(context);
+        if (dao.hasEpisode(episode)){
+            dao.updateEpisode(episode);
         }else{
-            //remove database entry and audio file
-            String file = episode.getLocalAudioFile();
-            if(FileUtil.deleteFile(file)){
-                db.deleteDownloadEpisode(episode);
-                Toast.makeText(context, "Deleted " + title, Toast.LENGTH_LONG).show();
-                Log.i(TAG, "changeEpisodeDownloadStatus() Deleted " + title);
-            }else{
-                Toast.makeText(context, "Failed to delete " + title, Toast.LENGTH_LONG).show();
-                Log.i(TAG, "changeEpisodeDownloadStatus() Failed to delete " + title);
-            }
-
+            dao.createEpisode(episode);
         }
-        db.close();
+        dao.close();
+
+        Toast.makeText(context, "Downloaded at " + localFile, Toast.LENGTH_LONG).show();
+        Log.i(TAG, "downloaded at: " + localFile);
     }
 }

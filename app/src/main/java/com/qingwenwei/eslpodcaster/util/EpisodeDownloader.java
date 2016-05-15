@@ -17,13 +17,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class EpisodeDownloadManager {
-    private static final String TAG = "EpisodeDownloadManager";
+public class EpisodeDownloader {
+    private static final String TAG = "EpisodeDownloader";
 
     private Context context;
 
     //constructor
-    public EpisodeDownloadManager(Context context){
+    public EpisodeDownloader(Context context){
         this.context = context;
     }
 
@@ -42,13 +42,14 @@ public class EpisodeDownloadManager {
         new DownloadEpisodeAsyncTask(episode).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void deleteEpisode(PodcastEpisode episode){
-
-        //delete the local audio file and ...
-        //if the episode is archived, only remove the local file column string
-        //otherwise, delete the episode entry in the database as well
-
-    }
+//    public void deleteEpisode(PodcastEpisode episode){
+//
+//        //delete the local audio file and ...
+//        //if the episode is archived, only remove the local file column string
+//        //otherwise, delete the episode entry in the database as well
+//
+//
+//    }
 
     private class DownloadEpisodeAsyncTask extends AsyncTask<Void, Integer, String> {
         private String fileName;

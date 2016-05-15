@@ -15,22 +15,21 @@ import android.view.ViewGroup;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.ArchiveEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
+import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.util.EpisodeStatusUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
 public class ArchiveFragment extends Fragment
-    implements View.OnLongClickListener, View.OnClickListener{
+        implements View.OnLongClickListener, View.OnClickListener{
 
     private static final String TAG = "ArchiveFragment";
 
     private RecyclerView recyclerView;
     private ArchiveEpisodeRecyclerViewAdapter adapter;
-
-//    public ArchiveFragment() {
-//        // Required empty public constructor
-//        this.adapter = new ArchiveEpisodeRecyclerViewAdapter();
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,21 +39,17 @@ public class ArchiveFragment extends Fragment
         adapter.setOnCardViewLongClickListener(this);
         adapter.setOnCardViewClickListener(this);
 
-        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_favorites, container, false);
+        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_archives, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
         return recyclerView;
-    }
-
-    public void refresh(){
-        new RefreshArchivedEpisodeListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
     public boolean onLongClick(View v) {
         //show dialog
         switch (v.getId()){
-            case R.id.favoriteCardView:
+            case R.id.archiveCardView:
                 showPopupMenu((PodcastEpisode) v.getTag());
                 break;
         }
@@ -66,10 +61,15 @@ public class ArchiveFragment extends Fragment
     public void onClick(View v) {
         //load playing episode
         switch (v.getId()){
-            case R.id.favoriteCardView:
-
+            case R.id.archiveCardView:
+                PodcastEpisode episode = (PodcastEpisode) v.getTag();
+                EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));
                 break;
         }
+    }
+
+    public void refresh(){
+        new RefreshArchivedEpisodeListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class RefreshArchivedEpisodeListAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
@@ -102,15 +102,14 @@ public class ArchiveFragment extends Fragment
                 switch (which){
                     //download
                     case 0:{
-//                        onEpisodeStatusChangeHandler.setEpisodeDownloaded(episode,true);
-
+                        EpisodeStatusUtil.downloadEpisode(episode, getContext());
                         break;
                     }
 
                     //unarchive
                     case 1:{
-//                        onEpisodeStatusChangeHandler.setEpisodeFavoured(episode,false);
-
+                        EpisodeStatusUtil.unarchiveEpisode(episode, getContext());
+                        refresh();
                         break;
                     }
                 }

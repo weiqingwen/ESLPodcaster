@@ -26,7 +26,7 @@
                 android:layout_height="60dp"
                 android:src="@drawable/ic_cast_white_36dp"
                 android:scaleType="center"
-                android:tint="@color/cardYellow"
+                android:tint="@color/generalYellow"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignBottom="@+id/downloadSubtitleTextView"
@@ -53,13 +53,27 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:paddingTop="4dp"
-                android:paddingBottom="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_below="@+id/downloadTitleTextView"
                 android:layout_toEndOf="@+id/downloadIconImageView"
                 android:layout_toRightOf="@+id/downloadIconImageView" />
+
+            <TextView
+                android:id="@+id/downloadDateTextView"
+                android:fontFamily="sans-serif"
+                android:text="download date"
+                android:textColor="@color/generalGreen"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/downloadSubtitleTextView"
+                android:layout_toRightOf="@+id/downloadIconImageView"
+                android:layout_toEndOf="@+id/downloadIconImageView" />
 
         </RelativeLayout>
 

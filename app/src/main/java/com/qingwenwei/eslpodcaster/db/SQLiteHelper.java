@@ -26,7 +26,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                     DBConstants.EpisodeColumn.KEY_AUDIO_URL         + " TEXT, " +
                     DBConstants.EpisodeColumn.KEY_WEB_URL           + " TEXT, " +
                     DBConstants.EpisodeColumn.KEY_ARCHIVED          + " TEXT, " +
-                    DBConstants.EpisodeColumn.KEY_LOCAL_AUDIO_FILE  + " TEXT )";
+                    DBConstants.EpisodeColumn.KEY_ARCHIVED_DATE     + " TEXT, " +
+                    DBConstants.EpisodeColumn.KEY_LOCAL_AUDIO_FILE  + " TEXT, " +
+                    DBConstants.EpisodeColumn.KEY_DOWNLOADED_DATE   + " TEXT )";
 
     public SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

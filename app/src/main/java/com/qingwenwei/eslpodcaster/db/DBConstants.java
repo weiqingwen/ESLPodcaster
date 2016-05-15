@@ -14,6 +14,8 @@ public class DBConstants {
         public static final String KEY_AUDIO_URL = "audio_url";
         public static final String KEY_WEB_URL = "web_url";
         public static final String KEY_ARCHIVED = "archived";
+        public static final String KEY_ARCHIVED_DATE = "archived_date";
         public static final String KEY_LOCAL_AUDIO_FILE = "local_audio_file";
+        public static final String KEY_DOWNLOADED_DATE = "downloaded_date";
     }
 }

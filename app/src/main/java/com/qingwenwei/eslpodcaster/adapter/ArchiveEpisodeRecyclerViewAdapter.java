@@ -36,17 +36,19 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         this.onCardViewClickListener = listener;
     }
 
-    public static class FavoritesViewHolder extends RecyclerView.ViewHolder {
+    public static class ArchiveViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
         public final CardView cardView;
         public final TextView titleTextView;
         public final TextView subtitleTextView;
+        public final TextView archivedDateTextView;
 
-        public FavoritesViewHolder(View view) {
+        public ArchiveViewHolder(View view) {
             super(view);
-            cardView = (CardView) view.findViewById(R.id.favoriteCardView);
-            titleTextView = (TextView) view.findViewById(R.id.favoriteTitleTextView);
-            subtitleTextView = (TextView) view.findViewById(R.id.favoriteSubtitleTextView);
+            cardView = (CardView) view.findViewById(R.id.archiveCardView);
+            titleTextView = (TextView) view.findViewById(R.id.archiveTitleTextView);
+            subtitleTextView = (TextView) view.findViewById(R.id.archiveSubtitleTextView);
+            archivedDateTextView = (TextView) view.findViewById(R.id.archiveDateTextView);
         }
 
         @Override
@@ -56,25 +58,25 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public FavoritesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ArchiveViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.i(TAG,"onCreateViewHolder()");
-
-//        this.context = parent.getContext();
-//        View view = LayoutInflater.from(context).inflate(R.layout.row_layout_favorites_list, parent, false);
-
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_layout_favorites_list, parent, false);
-        return new FavoritesViewHolder(view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.row_layout_archives_list,
+                parent,
+                false);
+        return new ArchiveViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final PodcastEpisode episode = episodes.get(position);
-        ((FavoritesViewHolder)holder).mBoundString = episode.getTitle();
-        ((FavoritesViewHolder)holder).titleTextView.setText(episode.getTitle());
-        ((FavoritesViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
-        ((FavoritesViewHolder)holder).cardView.setOnLongClickListener(onCardViewLongClickListener);
-        ((FavoritesViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
-        ((FavoritesViewHolder)holder).cardView.setTag(episode);
+        ((ArchiveViewHolder)holder).mBoundString = episode.getTitle();
+        ((ArchiveViewHolder)holder).titleTextView.setText(episode.getTitle());
+        ((ArchiveViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
+        ((ArchiveViewHolder)holder).archivedDateTextView.setText(episode.getArchivedDate());
+        ((ArchiveViewHolder)holder).cardView.setOnLongClickListener(onCardViewLongClickListener);
+        ((ArchiveViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
+        ((ArchiveViewHolder)holder).cardView.setTag(episode);
     }
 
     @Override

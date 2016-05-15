@@ -1,6 +1,11 @@
 package com.qingwenwei.eslpodcaster.entity;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
+import java.util.Date;
 
 public class PodcastEpisode implements Serializable {
 
@@ -11,8 +16,10 @@ public class PodcastEpisode implements Serializable {
     private String audioFileUrl;
     private String webUrl;
     private String category;
+    private String archived; // YES
+    private String archivedDate;
     private String localAudioFile;
-    private String archived; // Y
+    private String downloadedDate;
 
     public PodcastEpisode(){
         super();
@@ -117,15 +124,102 @@ public class PodcastEpisode implements Serializable {
         this.archived = archived;
     }
 
+    public String getArchivedDate() {
+        return archivedDate;
+    }
+
+    public void setArchivedDate(String archivedDate) {
+        this.archivedDate = archivedDate;
+    }
+
+    public String getDownloadedDate() {
+        return downloadedDate;
+    }
+
+    public void setDownloadedDate(String downloadedDate) {
+        this.downloadedDate = downloadedDate;
+    }
+
     public String toString(){
-        return "\n\n@============================================================" +
-                        "\nTitle: " + title +
-                        "\ndate: " + pubDate +
-                        "\nCat: " + category +
-                        "\nsub: " + subtitle +
+        return "\n@============================================================" +
+                        "\ntitle: " + title +
+                        "\npub_date: " + pubDate +
+                        "\ncategory: " + category +
+                        "\nsubtitle: " + subtitle +
                         "\naudio_url: " + audioFileUrl +
-                        "\nweb: " + webUrl +
+                        "\nweb_url: " + webUrl +
                         "\nlocal_audio: " + localAudioFile;
     }
+
+    public static String currentDateString(){
+        Date now = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        return format.format(now);
+    }
+
+    public static Comparator<PodcastEpisode> getComparatorByArchivedDate(){
+        Comparator comparator = new Comparator<PodcastEpisode>(){
+            @Override
+            public int compare(PodcastEpisode ep1, PodcastEpisode ep2) {
+                String downloadedDateString1 = ep1.getArchivedDate();
+                String downloadedDateString2 = ep2.getArchivedDate();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date downloadedDate1 = null;
+                Date downloadedDate2 = null;
+                try {
+                    downloadedDate1 = dateFormat.parse(downloadedDateString1);
+                    downloadedDate2 = dateFormat.parse(downloadedDateString2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return downloadedDate1.compareTo(downloadedDate2);
+            }
+        };
+        return comparator;
+    }
+
+    public static Comparator<PodcastEpisode> getComparatorByDownloadedDate(){
+        Comparator comparator = new Comparator<PodcastEpisode>(){
+            @Override
+            public int compare(PodcastEpisode ep1, PodcastEpisode ep2) {
+                String downloadedDateString1 = ep1.getDownloadedDate();
+                String downloadedDateString2 = ep2.getDownloadedDate();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date downloadedDate1 = null;
+                Date downloadedDate2 = null;
+                try {
+                    downloadedDate1 = dateFormat.parse(downloadedDateString1);
+                    downloadedDate2 = dateFormat.parse(downloadedDateString2);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return downloadedDate1.compareTo(downloadedDate2);
+            }
+        };
+        return comparator;
+    }
+
+//    public static void main(String[] args) throws InterruptedException {
+//        Date early = new Date();
+//        Thread.sleep(2000);
+//        Date late = new Date();
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//        String earlyString = format.format(early);
+//        String lateString = format.format(late);
+//
+////        System.out.println("early: " + earlyString);
+////        System.out.println("late: " + lateString);
+//
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//        try {
+//            Date newEarly = dateFormat.parse(earlyString);
+//            Date newLate = dateFormat.parse(lateString);
+//            System.out.println(newEarly.compareTo(newLate));
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

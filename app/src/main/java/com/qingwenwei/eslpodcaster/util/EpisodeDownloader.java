@@ -23,15 +23,15 @@ public class EpisodeDownloader {
     private Context context;
 
     //constructor
-    public EpisodeDownloader(Context context){
+    public EpisodeDownloader(Context context) {
         this.context = context;
     }
 
-    public void startDownload(PodcastEpisode episode){
-
+    public void startDownload(PodcastEpisode episode) {
         //check if episode already downloaded
         EpisodeDAO dao = new EpisodeDAO(context);
-        if (dao.hasEpisode(episode)){ // if episode is downloaded
+        if (dao.isDownloaded(episode)) {
+            // if episode is downloaded
             Toast.makeText(context,"Already downloaded", Toast.LENGTH_LONG).show();
             dao.close();
             return;
@@ -42,20 +42,30 @@ public class EpisodeDownloader {
         new DownloadEpisodeAsyncTask(episode).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-//    public void deleteEpisode(PodcastEpisode episode){
-//
-//        //delete the local audio file and ...
-//        //if the episode is archived, only remove the local file column string
-//        //otherwise, delete the episode entry in the database as well
-//
-//
-//    }
+    //store or change episode status in the database
+    private void postDownload(Context context, PodcastEpisode episode) {
+        String localFile = episode.getLocalAudioFile();
+        String downloadedDate = episode.getDownloadedDate();
+
+        EpisodeDAO dao = new EpisodeDAO(context);
+        if (dao.isArchived(episode)) {
+            PodcastEpisode oldEpisode = dao.getEpisode(episode);
+            oldEpisode.setLocalAudioFile(localFile);
+            oldEpisode.setDownloadedDate(downloadedDate);
+            dao.updateEpisode(oldEpisode);
+        } else {
+            dao.createEpisode(episode);
+        }
+
+        Toast.makeText(context, "Downloaded at " + localFile, Toast.LENGTH_LONG).show();
+        Log.i(TAG, "downloaded at: " + localFile);
+    }
 
     private class DownloadEpisodeAsyncTask extends AsyncTask<Void, Integer, String> {
         private String fileName;
         private PodcastEpisode episode;
 
-        public DownloadEpisodeAsyncTask(PodcastEpisode episode){
+        public DownloadEpisodeAsyncTask(PodcastEpisode episode) {
             this.episode = episode;
         }
 
@@ -100,23 +110,11 @@ public class EpisodeDownloader {
         @Override
         protected void onPostExecute(String localFile) {
             super.onPostExecute(localFile);
+
+            //setup local audio file location and downloaded date
             episode.setLocalAudioFile(localFile);
+            episode.setDownloadedDate(PodcastEpisode.currentDateString());
             postDownload(context,episode);
         }
-    }
-
-    private void postDownload(Context context, PodcastEpisode episode){
-        String localFile = episode.getLocalAudioFile();
-
-        EpisodeDAO dao = new EpisodeDAO(context);
-        if (dao.hasEpisode(episode)){
-            dao.updateEpisode(episode);
-        }else{
-            dao.createEpisode(episode);
-        }
-        dao.close();
-
-        Toast.makeText(context, "Downloaded at " + localFile, Toast.LENGTH_LONG).show();
-        Log.i(TAG, "downloaded at: " + localFile);
     }
 }

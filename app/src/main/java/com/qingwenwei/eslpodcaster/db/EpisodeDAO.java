@@ -9,6 +9,7 @@ import android.util.Log;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class EpisodeDAO {
@@ -18,7 +19,7 @@ public class EpisodeDAO {
     private SQLiteDatabase database;
 
     public EpisodeDAO(Context context){
-        sqliteHelper = new SQLiteHelper(context.getApplicationContext());
+        sqliteHelper = new SQLiteHelper(context);
     }
 
     public void open(){
@@ -47,6 +48,25 @@ public class EpisodeDAO {
         return hasEpisode;
     }
 
+    public boolean isArchived(PodcastEpisode episode){
+        PodcastEpisode ep = getEpisode(episode);
+        if (ep != null){
+            return ep.getArchived() != null && !ep.getArchived().equals("");
+        }
+
+        return false;
+    }
+
+    public boolean isDownloaded(PodcastEpisode episode){
+        PodcastEpisode ep = getEpisode(episode);
+        if (ep != null){
+            return ep.getLocalAudioFile() != null && !ep.getLocalAudioFile().equals("");
+        }
+
+        return false;
+    }
+
+
     public long createEpisode(PodcastEpisode episode){
 
         //return -2 if the episode already exist
@@ -66,7 +86,9 @@ public class EpisodeDAO {
         values.put(DBConstants.EpisodeColumn.KEY_AUDIO_URL, episode.getAudioFileUrl());
         values.put(DBConstants.EpisodeColumn.KEY_WEB_URL, episode.getWebUrl());
         values.put(DBConstants.EpisodeColumn.KEY_ARCHIVED, episode.getArchived());
+        values.put(DBConstants.EpisodeColumn.KEY_ARCHIVED_DATE, episode.getArchivedDate());
         values.put(DBConstants.EpisodeColumn.KEY_LOCAL_AUDIO_FILE, episode.getLocalAudioFile());
+        values.put(DBConstants.EpisodeColumn.KEY_DOWNLOADED_DATE, episode.getDownloadedDate());
 
         //new primary key
         long newRowId;
@@ -90,7 +112,9 @@ public class EpisodeDAO {
                 DBConstants.EpisodeColumn.KEY_AUDIO_URL,
                 DBConstants.EpisodeColumn.KEY_WEB_URL,
                 DBConstants.EpisodeColumn.KEY_ARCHIVED,
-                DBConstants.EpisodeColumn.KEY_LOCAL_AUDIO_FILE
+                DBConstants.EpisodeColumn.KEY_ARCHIVED_DATE,
+                DBConstants.EpisodeColumn.KEY_LOCAL_AUDIO_FILE,
+                DBConstants.EpisodeColumn.KEY_DOWNLOADED_DATE
         };
 
         Cursor cursor = database.query(DBConstants.EpisodeColumn.TABLE_EPISODES,projection,"title = ?",new String[]{episode.getTitle()},null,null,null);
@@ -108,12 +132,15 @@ public class EpisodeDAO {
             ep.setAudioFileUrl(cursor.getString(6));
             ep.setWebUrl(cursor.getString(7));
             ep.setArchived(cursor.getString(8));
-            ep.setLocalAudioFile(cursor.getString(9));
+            ep.setArchivedDate(cursor.getString(9));
+            ep.setLocalAudioFile(cursor.getString(10));
+            ep.setDownloadedDate(cursor.getString(11));
+
+            Log.i(TAG, "getEpisode() title:" + cursor.getString(1));
 
             cursor.close();
             close();
 
-            Log.i(TAG, "getEpisode() title:" + cursor.getString(1));
             return ep;
         }else{
             cursor.close();
@@ -135,14 +162,16 @@ public class EpisodeDAO {
         values.put(DBConstants.EpisodeColumn.KEY_AUDIO_URL, episode.getAudioFileUrl());
         values.put(DBConstants.EpisodeColumn.KEY_WEB_URL, episode.getWebUrl());
         values.put(DBConstants.EpisodeColumn.KEY_ARCHIVED, episode.getArchived());
+        values.put(DBConstants.EpisodeColumn.KEY_ARCHIVED_DATE, episode.getArchivedDate());
         values.put(DBConstants.EpisodeColumn.KEY_LOCAL_AUDIO_FILE, episode.getLocalAudioFile());
+        values.put(DBConstants.EpisodeColumn.KEY_DOWNLOADED_DATE, episode.getDownloadedDate());
 
         int i = database.update(
                 DBConstants.EpisodeColumn.TABLE_EPISODES, //table
                 values, // column/value
                 DBConstants.EpisodeColumn.KEY_TITLE + " = ?", // selections
                 new String[] {episode.getTitle()}); //selection args
-        close();;
+        close();
 
         Log.i("updateEpisode() ", episode.getTitle());
         return i;
@@ -184,7 +213,9 @@ public class EpisodeDAO {
                 episode.setAudioFileUrl(cursor.getString(6));
                 episode.setWebUrl(cursor.getString(7));
                 episode.setArchived(cursor.getString(8));
-                episode.setLocalAudioFile(cursor.getString(9));
+                episode.setArchivedDate(cursor.getString(9));
+                episode.setLocalAudioFile(cursor.getString(10));
+                episode.setDownloadedDate(cursor.getString(11));
 
                 // add episode to list
                 episodes.add(episode);
@@ -219,6 +250,10 @@ public class EpisodeDAO {
             }
         }
 
+        //re-order archivedEpisodes list in decreasing archived date order
+        Collections.sort(archivedEpisodes,PodcastEpisode.getComparatorByArchivedDate());
+        Collections.reverse(archivedEpisodes);
+
         Log.i(TAG, "getAllArchivedEpisodes() size: " + archivedEpisodes.size());
         return archivedEpisodes;
     }
@@ -233,6 +268,10 @@ public class EpisodeDAO {
                 downloadedEpisodes.add(ep);
             }
         }
+
+        //re-order downloadedEpisodes list in decreasing downloaded date order
+        Collections.sort(downloadedEpisodes,PodcastEpisode.getComparatorByDownloadedDate());
+        Collections.reverse(downloadedEpisodes);
 
         Log.i(TAG, "getAllDownloadedEpisodes() size: " + downloadedEpisodes.size());
         return downloadedEpisodes;

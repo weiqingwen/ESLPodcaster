@@ -16,9 +16,12 @@ import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.activity.MainActivity;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
+import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeClickListener;
 import com.qingwenwei.eslpodcaster.util.PodcastEpisodeListParser;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -192,7 +195,7 @@ public class PodcastFragment extends Fragment {
         public void onEpisodeClick(RecyclerView.ViewHolder holder) {
             Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
             PodcastEpisode episode = adapter.getEpisodes().get(holder.getAdapterPosition());
-            ((MainActivity)getActivity()).loadPlayingEpisode(episode);
+            EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));
         }
     }
 }

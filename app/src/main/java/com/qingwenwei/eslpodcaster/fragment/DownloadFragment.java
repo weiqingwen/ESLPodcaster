@@ -1,9 +1,11 @@
 package com.qingwenwei.eslpodcaster.fragment;
 
 
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,57 +16,67 @@ import android.view.ViewGroup;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
+import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.listener.OnEpisodeStatusChangeHandler;
-import com.qingwenwei.eslpodcaster.listener.OnLoadPlayingEpisodeHandler;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
-public class DownloadFragment extends Fragment {
+public class DownloadFragment extends Fragment
+        implements View.OnClickListener, View.OnLongClickListener{
+
     private static final String TAG = "DownloadFragment";
 
     private RecyclerView recyclerView;
     private DownloadEpisodeRecyclerViewAdapter adapter;
 
-    public DownloadFragment() {
-        // Required empty public constructor
-        adapter = new DownloadEpisodeRecyclerViewAdapter();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
+
+        adapter = new DownloadEpisodeRecyclerViewAdapter();
+        adapter.setOnCardViewClickListener(this);
+        adapter.setOnCardViewLongClickListener(this);
+
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_downloads, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
         return recyclerView;
     }
 
-    //handler setters
-    public void setOnEpisodeStatusChangeHandler(OnEpisodeStatusChangeHandler handler){
-        adapter.setOnEpisodeStatusChangeHandler(handler);
+    @Override
+    public boolean onLongClick(View v) {
+        switch (v.getId()){
+            case R.id.downloadCardView:
+                showPopupMenu((PodcastEpisode) v.getTag());
+                break;
+        }
+        return false;
     }
 
-    public void setOnLoadPlayingEpisodeHandler(OnLoadPlayingEpisodeHandler handler){
-        adapter.setOnLoadPlayingEpisodeHandler(handler);
+    @Override
+    public void onClick(View v) {
+        //load playing episode
+        switch (v.getId()){
+            case R.id.downloadCardView:
+                PodcastEpisode episode = (PodcastEpisode) v.getTag();
+                EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));
+                break;
+        }
     }
-
 
     public void refresh(){
-        new GetAllDownloadedEpisodesAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new RefreshDownloadedEpisodesListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private class GetAllDownloadedEpisodesAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>> {
-        private static final String TAG = "GetAllDownloadedEpisodesAsyncTask";
+    private class RefreshDownloadedEpisodesListAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>> {
+        private static final String TAG = "RefreshDownloadedEpisodesListAsyncTask";
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(Void... params) {
-//            SQLiteHelper db = new SQLiteHelper(getContext());
-//            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>) db.getAllDownloadedEpisodes();
-
             EpisodeDAO dao = new EpisodeDAO(getContext());
             ArrayList downloads = (ArrayList) dao.getAllDownloadedEpisodes();
-
             return downloads;
         }
 
@@ -74,6 +86,34 @@ public class DownloadFragment extends Fragment {
             Log.i(TAG,"Refreshed download list size: " + podcastEpisodes.size());
 
         }
+    }
+
+    private void showPopupMenu(final PodcastEpisode episode){
+        CharSequence items[] = new CharSequence[] {
+                "Archive this episode",
+                "Delete this episode"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setItems(items, new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.i(TAG,episode.getTitle() + " which:" + which);
+                switch (which){
+                    //archive
+                    case 0:{
+
+                        break;
+                    }
+
+                    //delete
+                    case 1:{
+
+                        break;
+                    }
+                }
+            }
+        });
+        builder.show();
     }
 
 }

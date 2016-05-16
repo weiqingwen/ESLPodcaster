@@ -1,8 +1,5 @@
 package com.qingwenwei.eslpodcaster.constant;
 
-/**
- * Created by qingwenwei on 2016-04-09.
- */
 public class Constants {
     public static String USER_AGENT = "ESLPODCASTER";
 
@@ -17,4 +14,9 @@ public class Constants {
     public static final String ROOT_DIRECTORY_NAME = "ESLPodcaster";
 
     public static final String AUDIO_DIRECTORY_NAME = "Audio";
+
+    //event messages
+    public static final String ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT = "ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT";
+
+    public static final String ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT = "ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT";
 }

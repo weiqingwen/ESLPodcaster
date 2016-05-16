@@ -22,6 +22,9 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     private View.OnLongClickListener onCardViewLongClickListener;
     private View.OnClickListener onCardViewClickListener;
 
+    private final int VIEW_ITEM = 1;
+    private final int VIEW_EMPTY = 0;
+
     //adaptor constructor
     public ArchiveEpisodeRecyclerViewAdapter() {
         this.episodes = new ArrayList<>();
@@ -57,26 +60,58 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
+    public static class NoDataViewHolder extends RecyclerView.ViewHolder {
+        public final TextView noDataHintTextView;
+
+        public NoDataViewHolder(View view) {
+            super(view);
+            noDataHintTextView = (TextView) view.findViewById(R.id.noDataHintTextView);
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + " '" + noDataHintTextView.getText();
+        }
+    }
+
     @Override
-    public ArchiveViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public int getItemViewType(int position) {
+        return episodes.get(position) != null ? VIEW_ITEM : VIEW_EMPTY;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.i(TAG,"onCreateViewHolder()");
-        View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.row_layout_archives_list,
-                parent,
-                false);
-        return new ArchiveViewHolder(view);
+
+//        View view = LayoutInflater.from(parent.getContext()).inflate(
+//                R.layout.row_layout_archives_list, parent, false);
+//        return new ArchiveViewHolder(view);
+
+        RecyclerView.ViewHolder viewHolder;
+        if(viewType == VIEW_ITEM){
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.row_layout_archives_list, parent, false);
+            viewHolder = new ArchiveViewHolder(view);
+        }else{
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.layout_no_date_item, parent, false);
+            viewHolder = new NoDataViewHolder(view);
+        }
+        return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        final PodcastEpisode episode = episodes.get(position);
-        ((ArchiveViewHolder)holder).mBoundString = episode.getTitle();
-        ((ArchiveViewHolder)holder).titleTextView.setText(episode.getTitle());
-        ((ArchiveViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
-        ((ArchiveViewHolder)holder).archivedDateTextView.setText(episode.getArchivedDate());
-        ((ArchiveViewHolder)holder).cardView.setOnLongClickListener(onCardViewLongClickListener);
-        ((ArchiveViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
-        ((ArchiveViewHolder)holder).cardView.setTag(episode);
+        if(holder instanceof ArchiveViewHolder){
+            final PodcastEpisode episode = episodes.get(position);
+            ((ArchiveViewHolder)holder).mBoundString = episode.getTitle();
+            ((ArchiveViewHolder)holder).titleTextView.setText(episode.getTitle());
+            ((ArchiveViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
+            ((ArchiveViewHolder)holder).archivedDateTextView.setText(episode.getArchivedDate());
+            ((ArchiveViewHolder)holder).cardView.setOnLongClickListener(onCardViewLongClickListener);
+            ((ArchiveViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
+            ((ArchiveViewHolder)holder).cardView.setTag(episode);
+        }
     }
 
     @Override

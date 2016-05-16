@@ -1,12 +1,19 @@
 package com.qingwenwei.eslpodcaster.util;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.qingwenwei.eslpodcaster.R;
+import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
+import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -21,10 +28,18 @@ public class EpisodeDownloader {
     private static final String TAG = "EpisodeDownloader";
 
     private Context context;
+    private NotificationManager mNotifyManager;
+    private NotificationCompat.Builder builder;
+    private int id = 1;
 
     //constructor
     public EpisodeDownloader(Context context) {
         this.context = context;
+        mNotifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        builder = new NotificationCompat.Builder(context);
+        builder.setContentTitle("Download")
+                .setContentText("downloading...")
+                .setSmallIcon(R.drawable.ic_file_download_white_36dp);
     }
 
     public void startDownload(PodcastEpisode episode) {
@@ -38,26 +53,31 @@ public class EpisodeDownloader {
         }
 
         //running in parallel with any other potential running AsyncTasks
-        Toast.makeText(context,"Downloading in the background......", Toast.LENGTH_LONG).show();
+        Toast.makeText(context,"Episode is being downloaded...", Toast.LENGTH_LONG).show();
         new DownloadEpisodeAsyncTask(episode).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    //store or change episode status in the database
+    //create or modify episode entry status in the database
     private void postDownload(Context context, PodcastEpisode episode) {
         String localFile = episode.getLocalAudioFile();
-        String downloadedDate = episode.getDownloadedDate();
+//        String downloadedDate = episode.getDownloadedDate();
 
         EpisodeDAO dao = new EpisodeDAO(context);
         if (dao.isArchived(episode)) {
-            PodcastEpisode oldEpisode = dao.getEpisode(episode);
-            oldEpisode.setLocalAudioFile(localFile);
-            oldEpisode.setDownloadedDate(downloadedDate);
-            dao.updateEpisode(oldEpisode);
+//            PodcastEpisode oldEpisode = dao.getEpisode(episode);
+//            oldEpisode.setLocalAudioFile(localFile);
+//            oldEpisode.setDownloadedDate(downloadedDate);
+//            dao.updateEpisode(oldEpisode);
+            dao.updateEpisode(episode);
         } else {
             dao.createEpisode(episode);
         }
 
-        Toast.makeText(context, "Downloaded at " + localFile, Toast.LENGTH_LONG).show();
+        EventBus.getDefault().post(
+                new OnEpisodeListRefreshEvent(
+                        Constants.ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT));
+
+        Toast.makeText(context, "downloaded at " + localFile, Toast.LENGTH_LONG).show();
         Log.i(TAG, "downloaded at: " + localFile);
     }
 
@@ -67,6 +87,14 @@ public class EpisodeDownloader {
 
         public DownloadEpisodeAsyncTask(PodcastEpisode episode) {
             this.episode = episode;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            builder.setContentTitle(episode.getTitle());
+            builder.setProgress(100, 0, false);
+            mNotifyManager.notify(id, builder.build());
         }
 
         @Override
@@ -85,10 +113,17 @@ public class EpisodeDownloader {
                 byte data[] = new byte[1024];
                 long total = 0;
                 int count;
+                int percentage = 0;
                 while ((count = input.read(data)) != -1) {
                     total += count;
-                    publishProgress((int)((total * 100) / lengthOfFile));
                     output.write(data, 0, count);
+
+                    //calculate current file download percentage
+                    int currPercentage = (int)((total * 100) / lengthOfFile);
+                    if(currPercentage > percentage){
+                        percentage = currPercentage;
+                        publishProgress(percentage);
+                    }
                 }
                 output.flush();
                 output.close();
@@ -103,6 +138,12 @@ public class EpisodeDownloader {
 
         @Override
         protected void onProgressUpdate(Integer... progress) {
+            //update notification progress bar
+            builder.setProgress(100,progress[0],false)
+                    .setContentText("downloading...")
+                    .setContentInfo(progress[0] + "%");
+            mNotifyManager.notify(id, builder.build());
+
             super.onProgressUpdate(progress);
             Log.i(TAG, fileName + " downloading... " + progress[0] + "%");
         }
@@ -115,6 +156,11 @@ public class EpisodeDownloader {
             episode.setLocalAudioFile(localFile);
             episode.setDownloadedDate(PodcastEpisode.currentDateString());
             postDownload(context,episode);
+
+            //finish download and update notification progress bar
+            builder.setContentText("Download complete");
+            builder.setProgress(0, 0, false);
+            mNotifyManager.notify(id, builder.build());
         }
     }
 }

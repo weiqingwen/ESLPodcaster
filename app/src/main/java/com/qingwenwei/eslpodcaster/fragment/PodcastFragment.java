@@ -38,13 +38,9 @@ public class PodcastFragment extends Fragment {
     private int currNumEpisodes = 0;
 
     //load more items
-//    private OnLoadMoreListener onLoadMoreListener;
     private boolean loadingMoreItems;
     private int lastVisibleItem, totalItemCount;
     private int visibleThreshold = 1;// The minimum amount of items to have below your current scroll position before loading more.
-
-    //MainActivity
-//    private Context context;
 
     public PodcastFragment(){
         Log.i(TAG,"PodcastFragment()");
@@ -66,7 +62,6 @@ public class PodcastFragment extends Fragment {
 
         recyclerView = (RecyclerView) mSwipeRefreshLayout.findViewById(R.id.podcastRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-//        recyclerView.setHasFixedSize(true);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -157,8 +152,8 @@ public class PodcastFragment extends Fragment {
 
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
-            ArrayList<PodcastEpisode> episodes =
-                    (ArrayList<PodcastEpisode>) new PodcastEpisodeListParser().parseEpisodes(urls[0] + currNumEpisodes);
+            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>)
+                    new PodcastEpisodeListParser().parseEpisodes(urls[0] + currNumEpisodes);
             return episodes;
         }
 

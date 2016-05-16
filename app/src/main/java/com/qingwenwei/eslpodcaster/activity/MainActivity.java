@@ -31,6 +31,7 @@ import com.facebook.stetho.Stetho;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
+import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.fragment.ArchiveFragment;
@@ -209,7 +210,6 @@ public class MainActivity extends AppCompatActivity{
 
         setupSlidingUpPanelPlayerListeners();
         setupInterceptOnTouchListeners();
-
 
         //SQLite browser
 //        SQLiteOnWeb.init(this).start();
@@ -467,12 +467,16 @@ public class MainActivity extends AppCompatActivity{
                 switch(position){
                     case 1:{
                         //refresh the download list
-                        ((DownloadFragment)downloadFragment).refresh();
+                        EventBus.getDefault().post(
+                                new OnEpisodeListRefreshEvent(
+                                        Constants.ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT));
                         break;
                     }
                     case 2:{
                         //refresh the favorite list
-                        ((ArchiveFragment) archiveFragment).refresh();
+                        EventBus.getDefault().post(
+                                new OnEpisodeListRefreshEvent(
+                                        Constants.ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT));
                         break;
                     }
                 }
@@ -495,14 +499,14 @@ public class MainActivity extends AppCompatActivity{
 
                 switch (title){
                     case "download episode":{
-                        if(playingEpisode != null) {
+                        if(playingEpisode != null){
                             EpisodeStatusUtil.downloadEpisode(playingEpisode, getApplicationContext());
                         }
                         break;
                     }
 
                     case "archive episode":{
-                        if(playingEpisode != null) {
+                        if(playingEpisode != null){
                             EpisodeStatusUtil.archiveEpisode(playingEpisode, getApplicationContext());
                         }
                         break;
@@ -703,51 +707,5 @@ public class MainActivity extends AppCompatActivity{
         slidingUpPanelSeekBar.setProgress(currPos);
     }
 
-
-
-
-    /*
-    PodcastEpisodeOnStatusChangeListener override methods
-     */
-//    @Override
-//    public void setEpisodeFavoured(PodcastEpisode episode, boolean favor) {
-//        String title = episode.getTitle();
-//        Context context = getApplicationContext();
-//        EpisodeDAO dao = new EpisodeDAO(context);
-//
-//        if(favor){
-//            episode.setArchived("YES");
-//            long i = dao.createEpisode(episode);
-//
-//            // episode entry already exists in database
-//            if(i == -2){
-//                Toast.makeText(context, "Already archived", Toast.LENGTH_LONG).show();
-//                return;
-//            }
-//
-//            Toast.makeText(context, "Archived " + title, Toast.LENGTH_LONG).show();
-//        }else{
-//
-//            dao.deleteEpisode(episode);
-//            Toast.makeText(context, "Unarchived " + title, Toast.LENGTH_LONG).show();
-//        }
-//
-//        ((ArchiveFragment)archiveFragment).refresh();
-//    }
-//
-//    @Override
-//    public void setEpisodeDownloaded(PodcastEpisode episode, boolean downloaded) {
-//        Context context = getApplicationContext();
-//        if(downloaded){
-//            //download episode
-//            new EpisodeDownloader(context).startDownload(episode);
-//        }else{
-//            //delete episode
-////            new EpisodeDownloader(context).deleteEpisode(episode);
-//            Toast.makeText(context,"Deleted " + episode.getTitle(), Toast.LENGTH_LONG).show();
-//        }
-//
-//        ((DownloadFragment)downloadFragment).refresh();
-//    }
 }
 

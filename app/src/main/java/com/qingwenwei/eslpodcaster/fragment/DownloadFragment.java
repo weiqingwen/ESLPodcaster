@@ -15,11 +15,15 @@ import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
+import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
+import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.util.EpisodeStatusUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -30,6 +34,18 @@ public class DownloadFragment extends Fragment
 
     private RecyclerView recyclerView;
     private DownloadEpisodeRecyclerViewAdapter adapter;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,8 +83,10 @@ public class DownloadFragment extends Fragment
         }
     }
 
-    public void refresh(){
-        new RefreshDownloadedEpisodesListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    @Subscribe
+    public void refresh(OnEpisodeListRefreshEvent event){
+        if(event.message.equals(Constants.ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT))
+            new RefreshDownloadedEpisodesListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class RefreshDownloadedEpisodesListAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>> {
@@ -82,8 +100,9 @@ public class DownloadFragment extends Fragment
 
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
-            adapter.updateEpisodes(podcastEpisodes);
             Log.i(TAG,"Refreshed download list size: " + podcastEpisodes.size());
+            if (podcastEpisodes.size() == 0) podcastEpisodes.add(null);
+            adapter.updateEpisodes(podcastEpisodes);
 
         }
     }
@@ -101,13 +120,16 @@ public class DownloadFragment extends Fragment
                 switch (which){
                     //archive
                     case 0:{
-
+                        EpisodeStatusUtil.archiveEpisode(episode, getContext());
                         break;
                     }
 
                     //delete
                     case 1:{
-
+                        EpisodeStatusUtil.deleteEpisode(episode, getContext());
+                        EventBus.getDefault().post(
+                                new OnEpisodeListRefreshEvent(
+                                        Constants.ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT));
                         break;
                     }
                 }

@@ -53,6 +53,7 @@ public class EpisodeStatusUtil {
             if(dao.isDownloaded(episode)){
                 PodcastEpisode oldEpisode = dao.getEpisode(episode);
                 oldEpisode.setArchived(null);
+                oldEpisode.setArchivedDate(null);
                 dao.updateEpisode(oldEpisode);
                 Toast.makeText(context, "Unarchived " + oldEpisode.getTitle(), Toast.LENGTH_LONG).show();
             }
@@ -70,12 +71,26 @@ public class EpisodeStatusUtil {
     }
 
     public static void deleteEpisode(PodcastEpisode episode, Context context){
+        EpisodeDAO dao = new EpisodeDAO(context);
+        if(dao.isDownloaded(episode)){
+            if(dao.isArchived(episode)){
+                PodcastEpisode oldEpisode = dao.getEpisode(episode);
+                //delete the local audio file
+                if(FileUtil.deleteFile(oldEpisode.getLocalAudioFile()))
+                    Toast.makeText(context, "Deleted " + oldEpisode.getTitle(), Toast.LENGTH_LONG).show();
 
-        //delete the local audio file and ...
-        //if the episode is archived, only remove the local file column string
-        //otherwise, delete the episode entry in the database as well
+                oldEpisode.setLocalAudioFile(null);
+                oldEpisode.setDownloadedDate(null);
+                dao.updateEpisode(oldEpisode);
+            }
 
+            if(!dao.isArchived(episode)){
+                //delete the local audio file
+                if(FileUtil.deleteFile(episode.getLocalAudioFile()))
+                    Toast.makeText(context, "Deleted " + episode.getTitle(), Toast.LENGTH_LONG).show();
 
-
+                dao.deleteEpisode(episode);
+            }
+        }
     }
 }

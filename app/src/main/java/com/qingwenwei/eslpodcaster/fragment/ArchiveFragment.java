@@ -14,12 +14,15 @@ import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.ArchiveEpisodeRecyclerViewAdapter;
+import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
+import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.util.EpisodeStatusUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -30,6 +33,18 @@ public class ArchiveFragment extends Fragment
 
     private RecyclerView recyclerView;
     private ArchiveEpisodeRecyclerViewAdapter adapter;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,11 +83,14 @@ public class ArchiveFragment extends Fragment
         }
     }
 
-    public void refresh(){
-        new RefreshArchivedEpisodeListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    @Subscribe
+    public void refresh(OnEpisodeListRefreshEvent event){
+        if(event.message.equals(Constants.ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT))
+            new RefreshArchivedEpisodeListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private class RefreshArchivedEpisodeListAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
+    private class RefreshArchivedEpisodeListAsyncTask
+            extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
         private static final String TAG = "RefreshArchivedEpisodeListAsyncTask";
 
         @Override
@@ -84,8 +102,9 @@ public class ArchiveFragment extends Fragment
 
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
-            adapter.updateEpisodes(podcastEpisodes);
             Log.i(TAG,"Refreshed archive list size: " + podcastEpisodes.size());
+            if (podcastEpisodes.size() == 0) podcastEpisodes.add(null);
+            adapter.updateEpisodes(podcastEpisodes);
         }
     }
 
@@ -109,7 +128,9 @@ public class ArchiveFragment extends Fragment
                     //unarchive
                     case 1:{
                         EpisodeStatusUtil.unarchiveEpisode(episode, getContext());
-                        refresh();
+                        EventBus.getDefault().post(
+                                new OnEpisodeListRefreshEvent(
+                                        Constants.ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT));
                         break;
                     }
                 }

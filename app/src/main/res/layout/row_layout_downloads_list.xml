@@ -22,22 +22,23 @@
 
             <ImageView
                 android:id="@+id/downloadIconImageView"
+                android:paddingLeft="6dp"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/ic_cast_white_36dp"
                 android:scaleType="center"
-                android:tint="@color/generalYellow"
+                android:tint="@color/generalGray"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:layout_alignBottom="@+id/downloadSubtitleTextView"
-                android:layout_alignParentLeft="true" />
+                android:layout_alignParentLeft="true"
+                android:layout_alignBottom="@+id/downloadDateTextView" />
 
             <TextView
                 android:id="@+id/downloadTitleTextView"
                 android:fontFamily="sans-serif-medium"
                 android:text="title"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:paddingTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,8 +51,8 @@
                 android:id="@+id/downloadSubtitleTextView"
                 android:fontFamily="sans-serif"
                 android:text="subtitle"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:paddingTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,11 +63,11 @@
 
             <TextView
                 android:id="@+id/downloadDateTextView"
-                android:fontFamily="sans-serif"
-                android:text="download date"
-                android:textColor="@color/generalGreen"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
+                android:text="downloaded date"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="italic"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
                 android:layout_width="match_parent"

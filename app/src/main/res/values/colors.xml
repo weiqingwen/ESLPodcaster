@@ -14,16 +14,20 @@
     <color name="colorPlayerPanelText">#f3faf5</color>
 
     <!--colors-->
-    <color name="generalRed">#DE576C</color>
+    <color name="generalPink">#DE576C</color>
+    <color name="generalRed">#E5492A</color>
     <color name="generalGreen">#5ACF9C</color>
+    <color name="generalDarkGreen">#012113</color>
     <color name="generalPurple">#7B8BC6</color>
     <color name="generalYellow">#F1B136</color>
-    <color name="generalGray">#A7C3CB</color>
+    <color name="generalGray">#a7a8a9</color>
     <color name="generalOrange">#FF8C66</color>
+    <color name="generalDarkGray">#454646</color>
+    <color name="generalBlack">#000000</color>
 
     <!--tab icons color-->
     <color name="colorTabIconSelected">#fafcfa</color>
-    <color name="colorTabIconUnSelected">#c2edc7</color>
+    <color name="colorTabIconUnSelected">#3e5e37</color>
 
 
 </resources>

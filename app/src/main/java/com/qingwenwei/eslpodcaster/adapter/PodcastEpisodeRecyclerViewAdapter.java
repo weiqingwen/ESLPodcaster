@@ -58,8 +58,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
             return super.toString() + " '" + titleTextView.getText();
         }
     }
-
-    ///
+    
     // load more items
     public static class ProgressViewHolder extends RecyclerView.ViewHolder {
         public ProgressBar progressBar;

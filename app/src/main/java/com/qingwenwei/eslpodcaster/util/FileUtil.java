@@ -72,7 +72,12 @@ public class FileUtil {
     }
 
     public static boolean deleteFile(String path){
-        File file = new File(path);
-        return file.delete();
+        System.out.println("deleteFile() " + path);
+        if(path != null && !path.equals("")) {
+            File file = new File(path);
+            file.delete();
+            return true;
+        }
+        return false;
     }
 }

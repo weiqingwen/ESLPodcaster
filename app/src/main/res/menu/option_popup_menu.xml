@@ -9,13 +9,13 @@
         android:title="@string/archive_episode"
         android:visible="true" />
 
-    <item
-        android:id="@+id/menuItemDivider"
-        android:title="-----------------"
-        android:visible="true" />
+    <!--<item-->
+        <!--android:id="@+id/menuItemDivider"-->
+        <!--android:title="-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;"-->
+        <!--android:visible="true" />-->
 
-    <item
-        android:id="@+id/menuItemDeleteAll"
-        android:title="Delete All"
-        android:visible="true" />
+    <!--<item-->
+        <!--android:id="@+id/menuItemDeleteAll"-->
+        <!--android:title="Delete All"-->
+        <!--android:visible="true" />-->
 </menu>

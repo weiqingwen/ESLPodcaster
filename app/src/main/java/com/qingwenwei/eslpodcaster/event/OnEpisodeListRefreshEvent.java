@@ -1,4 +1,4 @@
-package com.qingwenwei.eslpodcaster.entity;
+package com.qingwenwei.eslpodcaster.event;
 
 public class OnEpisodeListRefreshEvent {
     public final String message;

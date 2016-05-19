@@ -1,4 +1,6 @@
-package com.qingwenwei.eslpodcaster.entity;
+package com.qingwenwei.eslpodcaster.event;
+
+import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
 public class OnLoadPlayingEpisodeEvent {
     public final PodcastEpisode playingEpisode;

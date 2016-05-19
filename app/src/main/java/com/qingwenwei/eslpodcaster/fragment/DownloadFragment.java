@@ -17,9 +17,9 @@ import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
-import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
-import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.event.OnEpisodeListRefreshEvent;
+import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.util.EpisodeStatusUtil;
 
 import org.greenrobot.eventbus.EventBus;

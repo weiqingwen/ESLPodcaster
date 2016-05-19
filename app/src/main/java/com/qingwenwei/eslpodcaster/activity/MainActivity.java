@@ -1,5 +1,6 @@
 package com.qingwenwei.eslpodcaster.activity;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
@@ -14,8 +15,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -31,9 +32,9 @@ import com.facebook.stetho.Stetho;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
-import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
-import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.event.OnEpisodeListRefreshEvent;
+import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.fragment.ArchiveFragment;
 import com.qingwenwei.eslpodcaster.fragment.DownloadFragment;
 import com.qingwenwei.eslpodcaster.fragment.PodcastFragment;
@@ -54,7 +55,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity
+        implements View.OnClickListener{
 
     private static final String TAG = "MainActivity";
 
@@ -209,7 +211,7 @@ public class MainActivity extends AppCompatActivity{
         slidingUpPanelForwardButton = (ImageButton)findViewById(R.id.slidingUpPanelForwardButton);
 
         setupSlidingUpPanelPlayerListeners();
-        setupInterceptOnTouchListeners();
+        setupScriptTextViewListeners();
 
         //SQLite browser
 //        SQLiteOnWeb.init(this).start();
@@ -221,12 +223,6 @@ public class MainActivity extends AppCompatActivity{
         podcastFragment = new PodcastFragment();
         downloadFragment = new DownloadFragment();
         archiveFragment = new ArchiveFragment();
-
-//        ((ArchiveFragment)archiveFragment).setOnEpisodeStatusChangeHandler(this);
-//        ((ArchiveFragment)archiveFragment).setOnLoadPlayingEpisodeHandler(this);
-//
-//        ((DownloadFragment)downloadFragment).setOnEpisodeStatusChangeHandler(this);
-//        ((DownloadFragment)downloadFragment).setOnLoadPlayingEpisodeHandler(this);
     }
 
     //collapse and expand the sliding up panel
@@ -238,26 +234,66 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    //intercept TextView scrolling
-    private void setupInterceptOnTouchListeners(){
-        slidingUpPanelScriptTextView.setMovementMethod(new ScrollingMovementMethod());
+    private void setupScriptTextViewListeners(){
+        slidingUpPanelScriptTextView.setCustomSelectionActionModeCallback(new android.view.ActionMode.Callback() {
+            int DEFINITION = 0;
+            @Override
+            public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+                menu.add(0, DEFINITION, 0, "Definition");
+                //add icon
+//                menu.add(0, DEFINITION, 0, "Definition").setIcon(R.drawable.ic_action_book);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+                mode.setTitle("");
+                menu.removeItem(android.R.id.cut);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+                if(item.getItemId() == DEFINITION) {
+                    int min = 0;
+                    int max = slidingUpPanelScriptTextView.getText().length();
+                    if (slidingUpPanelScriptTextView.isFocused()) {
+                        final int selStart = slidingUpPanelScriptTextView.getSelectionStart();
+                        final int selEnd = slidingUpPanelScriptTextView.getSelectionEnd();
+
+                        min = Math.max(0, Math.min(selStart, selEnd));
+                        max = Math.max(0, Math.max(selStart, selEnd));
+                    }
+                    CharSequence selectedText = slidingUpPanelScriptTextView.getText().subSequence(min, max);
+                    mode.finish();
+                    Log.i(TAG, "onActionItemClicked() start: " + min + " end: " + max + " selectedText: " + selectedText);
+                    loadDictionaryActivity(""+selectedText);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(android.view.ActionMode mode) {
+
+            }
+        });
+
+        //intercept TextView scrolling
         slidingUpPanelScriptTextView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
-                        // Disallow ScrollView to intercept touch events.
                         v.getParent().requestDisallowInterceptTouchEvent(true);
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        // Allow ScrollView to intercept touch events.
                         v.getParent().requestDisallowInterceptTouchEvent(false);
                         break;
                 }
-
-                // Handle ListView touch events.
+                // Handle touch events.
                 v.onTouchEvent(event);
                 return true;
             }
@@ -316,94 +352,101 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        slidingUpPanelPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"slidingUpPanelPlayButton.OnClickListener()");
-                if(player != null){
-                    if (!player.isPlaying()) {
-                        player.setPlayWhenReady(true);
-                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
-                        updateSlidingUpPanelSeekBar();
-                    } else {
-                        player.setPlayWhenReady(false);
-                    }
-                }else{
-                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        slidingUpPanelPlayButton.setOnClickListener(this);
+        slidingUpPanelReplayButton.setOnClickListener(this);
+        slidingUpPanelForwardButton.setOnClickListener(this);
+        collapsedPanelPlayButton.setOnClickListener(this);
+        collapsedPanelMenuButton.setOnClickListener(this);
 
-        slidingUpPanelReplayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(player != null){
-                    long currPos = player.getCurrentPosition();
-                    if(currPos - 10000 < 0){
-                        player.seekTo(0);
-                    }else{
-                        player.seekTo(currPos - 10000);
-                    }
+//        slidingUpPanelPlayButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i(TAG,"slidingUpPanelPlayButton.OnClickListener()");
+//                if(player != null){
+//                    if (!player.isPlaying()) {
+//                        player.setPlayWhenReady(true);
+//                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+//                        updateSlidingUpPanelSeekBar();
+//                    } else {
+//                        player.setPlayWhenReady(false);
+//                    }
+//                }else{
+//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
-                    if(!player.isPlaying()){
-                        updateSlidingUpPanelSeekBar();
-                    }
-                }else{
-                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        slidingUpPanelReplayButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(player != null){
+//                    long currPos = player.getCurrentPosition();
+//                    if(currPos - 10000 < 0){
+//                        player.seekTo(0);
+//                    }else{
+//                        player.seekTo(currPos - 10000);
+//                    }
+//
+//                    if(!player.isPlaying()){
+//                        updateSlidingUpPanelSeekBar();
+//                    }
+//                }else{
+//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
-        slidingUpPanelForwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(player != null){
-                    long currPos = player.getCurrentPosition();
-                    long duration = player.getDuration();
-                    if(currPos + 10000 >= duration) {
-                        player.seekTo(duration);
-                    }else{
-                        player.seekTo(currPos + 10000);
-                    }
+//        slidingUpPanelForwardButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(player != null){
+//                    long currPos = player.getCurrentPosition();
+//                    long duration = player.getDuration();
+//                    if(currPos + 10000 >= duration) {
+//                        player.seekTo(duration);
+//                    }else{
+//                        player.seekTo(currPos + 10000);
+//                    }
+//
+//                    if(!player.isPlaying()){
+//                        updateSlidingUpPanelSeekBar();
+//                    }
+//                }else{
+//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
-                    if(!player.isPlaying()){
-                        updateSlidingUpPanelSeekBar();
-                    }
-                }else{
-                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        collapsedPanelPlayButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i(TAG,"collapsedPanelPlayButton.OnClickListener()");
+//                if(player != null){
+//                    if (!player.isPlaying()) {
+//                        player.setPlayWhenReady(true);
+//                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+//                        updateSlidingUpPanelSeekBar();
+//                    } else {
+//                        player.setPlayWhenReady(false);
+//                    }
+//                }else{
+//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
 
-        collapsedPanelPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"collapsedPanelPlayButton.OnClickListener()");
-                if(player != null){
-                    if (!player.isPlaying()) {
-                        player.setPlayWhenReady(true);
-                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
-                        updateSlidingUpPanelSeekBar();
-                    } else {
-                        player.setPlayWhenReady(false);
-                    }
-                }else{
-                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//        collapsedPanelMenuButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
+//
+//                if(optionPopupMenu == null){
+//                    setupOptionPopupMenu(v);
+//                }
+//                optionPopupMenu.show();
+//            }
+//        });
 
-        collapsedPanelMenuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
-
-                if(optionPopupMenu == null){
-                    setupOptionPopupMenu(v);
-                }
-                optionPopupMenu.show();
-            }
-        });
     }
 
     //setup tab icons and their color
@@ -556,6 +599,85 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.slidingUpPanelPlayButton:
+                Log.i(TAG,"slidingUpPanelPlayButton.OnClickListener()");
+                if(player != null){
+                    if (!player.isPlaying()) {
+                        player.setPlayWhenReady(true);
+                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                        updateSlidingUpPanelSeekBar();
+                    } else {
+                        player.setPlayWhenReady(false);
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.slidingUpPanelReplayButton:
+                if(player != null){
+                    long currPos = player.getCurrentPosition();
+                    if(currPos - 10000 < 0){
+                        player.seekTo(0);
+                    }else{
+                        player.seekTo(currPos - 10000);
+                    }
+
+                    if(!player.isPlaying()){
+                        updateSlidingUpPanelSeekBar();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.slidingUpPanelForwardButton:
+                if(player != null){
+                    long currPos = player.getCurrentPosition();
+                    long duration = player.getDuration();
+                    if(currPos + 10000 >= duration) {
+                        player.seekTo(duration);
+                    }else{
+                        player.seekTo(currPos + 10000);
+                    }
+
+                    if(!player.isPlaying()){
+                        updateSlidingUpPanelSeekBar();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.collapsedPanelPlayButton:
+                Log.i(TAG,"collapsedPanelPlayButton.OnClickListener()");
+                if(player != null){
+                    if (!player.isPlaying()) {
+                        player.setPlayWhenReady(true);
+                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                        updateSlidingUpPanelSeekBar();
+                    } else {
+                        player.setPlayWhenReady(false);
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.collapsedPanelMenuButton:
+                Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
+
+                if(optionPopupMenu == null){
+                    setupOptionPopupMenu(v);
+                }
+                optionPopupMenu.show();
+                break;
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if (slidingUpPanelLayout != null
                 && (slidingUpPanelLayout.getPanelState() == PanelState.EXPANDED
@@ -631,6 +753,12 @@ public class MainActivity extends AppCompatActivity{
 
         //setup the current playing episode
         this.playingEpisode = episode;
+    }
+
+    public void loadDictionaryActivity(String word){
+        Intent intent = new Intent(this, DictionaryActivity.class);
+        intent.putExtra(Constants.MESSAGE_START_DICTIONARY_ACTIVITY, word);
+        startActivity(intent);
     }
 
     //player helper method

@@ -10,8 +10,8 @@ import android.widget.Toast;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
-import com.qingwenwei.eslpodcaster.entity.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.event.OnEpisodeListRefreshEvent;
 
 import org.greenrobot.eventbus.EventBus;
 

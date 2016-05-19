@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#5cbc6b</color>
-    <color name="colorPrimaryDark">#43a047</color>
+    <!--<color name="colorPrimary">#5cbc6b</color>-->
+    <!--<color name="colorPrimaryDark">#43a047</color>-->
+
+    <color name="colorPrimaryDark">#0b8043</color>
+    <color name="colorPrimary">#0f9d58</color>
 
     <color name="colorAccent">#f3faf5</color>
 
@@ -27,7 +30,7 @@
 
     <!--tab icons color-->
     <color name="colorTabIconSelected">#fafcfa</color>
-    <color name="colorTabIconUnSelected">#3e5e37</color>
+    <color name="colorTabIconUnSelected">#19613c</color>
 
 
 </resources>

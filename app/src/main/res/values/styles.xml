@@ -12,4 +12,10 @@
         <item name="android:windowActionBarOverlay">true</item>
     </style>
 
+    <!--them for scripts TextView-->
+    <style name="TextView" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/generalGray</item>
+        <item name="colorControlActivated">@color/generalYellow</item>
+    </style>
+
 </resources>

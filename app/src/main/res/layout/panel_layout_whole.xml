@@ -22,6 +22,11 @@
 
         <!--SCRIPTS-->
         <TextView
+            android:theme="@style/TextView"
+            android:clickable="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:textIsSelectable="true"
             android:id="@+id/slidingUpPanelScriptTextView"
             android:textSize="18sp"
             android:textColor="@color/generalDarkGray"

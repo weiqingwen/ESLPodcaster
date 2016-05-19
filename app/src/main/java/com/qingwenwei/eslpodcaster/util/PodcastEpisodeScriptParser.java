@@ -18,15 +18,18 @@ public class PodcastEpisodeScriptParser {
         try {
             doc = Jsoup.connect(Constants.ESLPOD_BASE_EPISODE_URL + episode.getWebUrl()).get();
             Elements pods = doc.select("table.podcast_table_home:has(span.pod_body)");
+
+            String content = "";
             for(Element pod : pods){
                 if (pod.text().contains("Audio Index:")){
                     String audioIndex = pod.html();
                     if(audioIndex.toLowerCase().contains("slow dialog"))
-                        episode.setContent(episode.getContent() + audioIndex + "<br>");
+                        content += audioIndex + "<br>";
                 }else{
-                    episode.setContent(episode.getContent() + pod.html());
+                    content += pod.html();
                 }
             }
+            episode.setContent(content);
 
         } catch (IOException e) {
             e.printStackTrace();

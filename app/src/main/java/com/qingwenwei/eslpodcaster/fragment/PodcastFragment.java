@@ -16,8 +16,8 @@ import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.activity.MainActivity;
 import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
-import com.qingwenwei.eslpodcaster.entity.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
+import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.listener.OnEpisodeClickListener;
 import com.qingwenwei.eslpodcaster.util.PodcastEpisodeListParser;
 

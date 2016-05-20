@@ -68,11 +68,24 @@
                 android:fontFamily="sans-serif"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingBottom="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@+id/cardViewPubDateTextView"
+                android:layout_alignParentRight="true" />
+
+            <TextView
+                android:id="@+id/cardViewCategoryTextView"
+                android:fontFamily="sans-serif-medium"
+                android:textStyle="normal|italic"
+                android:textColor="@color/generalDarkGreen"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/cardViewSubtitleTextView"
                 android:layout_alignParentRight="true" />
 
         </RelativeLayout>

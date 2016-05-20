@@ -5,14 +5,9 @@
         android:title="@string/download_episode"
         android:visible="true" />
     <item
-        android:id="@+id/menuItemAddToFavorites"
+        android:id="@+id/menuItemArchive"
         android:title="@string/archive_episode"
         android:visible="true" />
-
-    <!--<item-->
-        <!--android:id="@+id/menuItemDivider"-->
-        <!--android:title="-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;"-->
-        <!--android:visible="true" />-->
 
     <!--<item-->
         <!--android:id="@+id/menuItemDeleteAll"-->

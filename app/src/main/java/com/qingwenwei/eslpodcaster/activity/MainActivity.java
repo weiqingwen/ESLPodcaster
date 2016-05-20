@@ -31,7 +31,6 @@ import android.widget.Toast;
 import com.facebook.stetho.Stetho;
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.constant.Constants;
-import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.event.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
@@ -219,6 +218,27 @@ public class MainActivity extends AppCompatActivity
         Stetho.initializeWithDefaults(this);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_option_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menuItemAbout:
+                Log.i(TAG,"menuItemAbout");
+                startActivity(new Intent(this, AboutActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void initFragments(){
         podcastFragment = new PodcastFragment();
         downloadFragment = new DownloadFragment();
@@ -239,7 +259,7 @@ public class MainActivity extends AppCompatActivity
             int DEFINITION = 0;
             @Override
             public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
-                menu.add(0, DEFINITION, 0, "Definition");
+                menu.add(0, DEFINITION, 0, "Define");
                 //add icon
 //                menu.add(0, DEFINITION, 0, "Definition").setIcon(R.drawable.ic_action_book);
                 return true;
@@ -247,6 +267,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+                Log.i(TAG,"onPrepareActionMode()");
                 mode.setTitle("");
                 menu.removeItem(android.R.id.cut);
                 return true;
@@ -314,8 +335,7 @@ public class MainActivity extends AppCompatActivity
                         v.getParent().requestDisallowInterceptTouchEvent(false);
                         break;
                 }
-
-                // Handle ListView touch events.
+                //Handle ListView touch events.
                 v.onTouchEvent(event);
                 return true;
             }
@@ -357,96 +377,6 @@ public class MainActivity extends AppCompatActivity
         slidingUpPanelForwardButton.setOnClickListener(this);
         collapsedPanelPlayButton.setOnClickListener(this);
         collapsedPanelMenuButton.setOnClickListener(this);
-
-//        slidingUpPanelPlayButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.i(TAG,"slidingUpPanelPlayButton.OnClickListener()");
-//                if(player != null){
-//                    if (!player.isPlaying()) {
-//                        player.setPlayWhenReady(true);
-//                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
-//                        updateSlidingUpPanelSeekBar();
-//                    } else {
-//                        player.setPlayWhenReady(false);
-//                    }
-//                }else{
-//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-//        slidingUpPanelReplayButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(player != null){
-//                    long currPos = player.getCurrentPosition();
-//                    if(currPos - 10000 < 0){
-//                        player.seekTo(0);
-//                    }else{
-//                        player.seekTo(currPos - 10000);
-//                    }
-//
-//                    if(!player.isPlaying()){
-//                        updateSlidingUpPanelSeekBar();
-//                    }
-//                }else{
-//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-//        slidingUpPanelForwardButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(player != null){
-//                    long currPos = player.getCurrentPosition();
-//                    long duration = player.getDuration();
-//                    if(currPos + 10000 >= duration) {
-//                        player.seekTo(duration);
-//                    }else{
-//                        player.seekTo(currPos + 10000);
-//                    }
-//
-//                    if(!player.isPlaying()){
-//                        updateSlidingUpPanelSeekBar();
-//                    }
-//                }else{
-//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-//        collapsedPanelPlayButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.i(TAG,"collapsedPanelPlayButton.OnClickListener()");
-//                if(player != null){
-//                    if (!player.isPlaying()) {
-//                        player.setPlayWhenReady(true);
-//                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
-//                        updateSlidingUpPanelSeekBar();
-//                    } else {
-//                        player.setPlayWhenReady(false);
-//                    }
-//                }else{
-//                    Toast.makeText(MainActivity.this,"Please select an episode to play", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-//        collapsedPanelMenuButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.i(TAG,"collapsedPanelMenuButton.setOnClickListener()");
-//
-//                if(optionPopupMenu == null){
-//                    setupOptionPopupMenu(v);
-//                }
-//                optionPopupMenu.show();
-//            }
-//        });
-
     }
 
     //setup tab icons and their color
@@ -537,18 +467,18 @@ public class MainActivity extends AppCompatActivity
         optionPopupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                String title = item.getTitle().toString().toLowerCase();
-                Log.i(TAG,"onMenuItemClick() " + title);
+                Log.i(TAG,"onMenuItemClick() " + item.getTitle());
 
-                switch (title){
-                    case "download episode":{
+
+                switch (item.getItemId()){
+                    case R.id.menuItemDownload:{
                         if(playingEpisode != null){
                             EpisodeStatusUtil.downloadEpisode(playingEpisode, getApplicationContext());
                         }
                         break;
                     }
 
-                    case "archive episode":{
+                    case R.id.menuItemArchive:{
                         if(playingEpisode != null){
                             EpisodeStatusUtil.archiveEpisode(playingEpisode, getApplicationContext());
                         }
@@ -556,11 +486,11 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     //test code
-                    case "delete all":{
-                        EpisodeDAO dao = new EpisodeDAO(getApplicationContext());
-                        dao.deleteAllEpisodes();
-                        break;
-                    }
+//                    case R.id.menuItemDeleteAll:{
+//                        EpisodeDAO dao = new EpisodeDAO(getApplicationContext());
+//                        dao.deleteAllEpisodes();
+//                        break;
+//                    }
                 }
 
                 return true;
@@ -606,7 +536,8 @@ public class MainActivity extends AppCompatActivity
                 if(player != null){
                     if (!player.isPlaying()) {
                         player.setPlayWhenReady(true);
-                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+//                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                        slidingUpPanelSeekBar.postDelayed(new EverySecond(), 1000);
                         updateSlidingUpPanelSeekBar();
                     } else {
                         player.setPlayWhenReady(false);
@@ -656,7 +587,8 @@ public class MainActivity extends AppCompatActivity
                 if(player != null){
                     if (!player.isPlaying()) {
                         player.setPlayWhenReady(true);
-                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+//                        slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                        slidingUpPanelSeekBar.postDelayed(new EverySecond(), 1000);
                         updateSlidingUpPanelSeekBar();
                     } else {
                         player.setPlayWhenReady(false);
@@ -708,8 +640,6 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(final PodcastEpisode scriptedEpisode) {
-//            Log.i(TAG,"onPostExecute()" + episode.getContent());
-
             //set episode scripts on the TextView
             slidingUpPanelScriptTextView.setText(Html.fromHtml(episode.getContent()));
             collapsedPanelPlayButton.setVisibility(View.INVISIBLE);
@@ -809,17 +739,16 @@ public class MainActivity extends AppCompatActivity
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
     }
 
-    //player helper method
-    private Runnable onEverySecond = new Runnable() {
+    private class EverySecond implements Runnable{
         @Override
         public void run() {
             if(player.isPlaying()){
                 slidingUpPanelCurrPosTextView.setText(toMinuteFormat(player.getCurrentPosition()));
                 slidingUpPanelSeekBar.setProgress((int)player.getCurrentPosition());
-                slidingUpPanelSeekBar.postDelayed(onEverySecond, 1000);
+                slidingUpPanelSeekBar.postDelayed(this, 1000);
             }
         }
-    };
+    }
 
     //player helper method
     private void updateSlidingUpPanelSeekBar(){

@@ -12,4 +12,60 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:layout_height="?attr/actionBarSize" />
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/dictionaryIndicatorTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="24sp"
+            android:textColor="@color/generalGray"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/dictionaryProgressBar"/>
+
+        <ProgressBar
+            android:id="@+id/dictionaryProgressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/layout_endless_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fillViewport="true"
+        android:layout_below="@+id/dictionaryToolBar">
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/dictionaryTextView"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/generalDarkGray"
+                android:paddingLeft="6dp"
+                android:paddingRight="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+    </ScrollView>
+
 </RelativeLayout>

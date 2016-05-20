@@ -1,5 +1,7 @@
 package com.qingwenwei.eslpodcaster.util;
 
+import android.util.Log;
+
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
 import org.jsoup.Jsoup;
@@ -51,14 +53,14 @@ public class PodcastEpisodeListParser {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            Log.i(TAG, "Failed to load podcast list");
         }
         return episodes;
     }
 
-    public static void main(String args[]){
+//    public static void main(String args[]){
 //        new PodcastEpisodeListParser().parseEpisodes("http://www.eslpod.com/website/show_all.php?low_rec=0");
-    }
-
+//    }
 }
 

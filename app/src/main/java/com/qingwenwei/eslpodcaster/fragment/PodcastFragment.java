@@ -26,7 +26,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PodcastFragment extends Fragment {
+public class PodcastFragment extends Fragment{
+
     private final static String TAG = "PodcastFragment";
     private boolean dataInitialized = false;
 
@@ -98,7 +99,7 @@ public class PodcastFragment extends Fragment {
         }else {
             //first time download the episode data
             episodes = new ArrayList<>();
-            adapter = new PodcastEpisodeRecyclerViewAdapter(getContext(),episodes,recyclerView);
+            adapter = new PodcastEpisodeRecyclerViewAdapter(episodes);
             adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
             adapter.setOnEpisodeClickListener(new EpisodeClickListener());
             recyclerView.setAdapter(adapter);
@@ -175,7 +176,6 @@ public class PodcastFragment extends Fragment {
             Log.i(TAG, "onLoadMore()");
             episodes.add(null);
             adapter.updateEpisodes(episodes);
-//            adapter.notifyItemInserted(episodes.size());
             new DownloadMoreEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
     }

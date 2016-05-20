@@ -8,8 +8,8 @@ android {
         applicationId "com.qingwenwei.eslpodcaster"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.0"
+        versionCode 5
+        versionName "1.0.1"
     }
     buildTypes {
         release {

@@ -38,7 +38,7 @@ public class MerriamWebsterDictLookUpAsyncTask {
             @Override
             protected Void doInBackground(String... params) {
                 String targetWord = params[0];
-                System.out.println("targetWord" + targetWord);
+                System.out.println("parse targetWord: " + targetWord);
                 String url = baseUrl + targetWord + keyPrefix + key;
                 try {
                     SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -47,6 +47,7 @@ public class MerriamWebsterDictLookUpAsyncTask {
                     saxParser.parse(input, new SaxParserHandler(targetWord));
                 } catch (ParserConfigurationException | SAXException | IOException e) {
                     Log.i(TAG, "Can't find the word");
+                    EventBus.getDefault().post(new OnLoadWordDefinitionEvent(null, OnLoadWordDefinitionEvent.MSG_FAIL));
                 }
                 return null;
             }
@@ -191,9 +192,7 @@ public class MerriamWebsterDictLookUpAsyncTask {
         @Override
         public void endDocument() throws SAXException {
             super.endDocument();
-//            System.out.println("===endDocument=== size:" + word.getEntries().size());
-//            System.out.println(word);
-            EventBus.getDefault().post(new OnLoadWordDefinitionEvent(word));
+            EventBus.getDefault().post(new OnLoadWordDefinitionEvent(word, OnLoadWordDefinitionEvent.MSG_SUCCESS));
         }
     }
 

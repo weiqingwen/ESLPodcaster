@@ -18,7 +18,6 @@ import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
-import com.qingwenwei.eslpodcaster.listener.OnEpisodeClickListener;
 import com.qingwenwei.eslpodcaster.util.PodcastEpisodeListParser;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,7 +25,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PodcastFragment extends Fragment{
+public class PodcastFragment extends Fragment
+        implements View.OnClickListener{
 
     private final static String TAG = "PodcastFragment";
     private boolean dataInitialized = false;
@@ -42,10 +42,6 @@ public class PodcastFragment extends Fragment{
     private boolean loadingMoreItems;
     private int lastVisibleItem, totalItemCount;
     private int visibleThreshold = 1;// The minimum amount of items to have below your current scroll position before loading more.
-
-    public PodcastFragment(){
-        Log.i(TAG,"PodcastFragment()");
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,12 +78,10 @@ public class PodcastFragment extends Fragment{
                     Log.i(TAG,"onScrolled() totalItemCount:" + totalItemCount + "   lastVisibleItem:" + lastVisibleItem);
                     if (!loadingMoreItems){
                         if( totalItemCount <= lastVisibleItem + visibleThreshold) {
-                             Log.i(TAG,"End has been reached");
-                             if (adapter.getOnLoadMoreListener() != null) {
-                                 adapter.getOnLoadMoreListener().onLoadMore();
-                             }
-                             loadingMoreItems = true;
-                         }
+                            Log.i(TAG,"End has been reached, start to load more...");
+                            new LoadMoreEpisodesListener().onLoadMore();
+                            loadingMoreItems = true;
+                        }
                     }
                 }
             }
@@ -100,8 +94,7 @@ public class PodcastFragment extends Fragment{
             //first time download the episode data
             episodes = new ArrayList<>();
             adapter = new PodcastEpisodeRecyclerViewAdapter(episodes);
-            adapter.setOnLoadMoreListener(new LoadMoreEpisodesListener());
-            adapter.setOnEpisodeClickListener(new EpisodeClickListener());
+            adapter.setOnCardViewClickListener(this);
             recyclerView.setAdapter(adapter);
             new DownloadEpisodesAsyncTask(false).execute(Constants.ESLPOD_ALL_EPISODE_URL);
         }
@@ -114,6 +107,17 @@ public class PodcastFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         if (((MainActivity)getActivity()).getSlidingUpPanelLayout().getChildAt(1).hasOnClickListeners()) {
             ((MainActivity)getActivity()).getSlidingUpPanelLayout().getChildAt(1).setOnClickListener(null);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            //load playing episode
+            case R.id.podcastCardView:
+                PodcastEpisode episode = (PodcastEpisode) v.getTag();
+                EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));
+                break;
         }
     }
 
@@ -169,7 +173,11 @@ public class PodcastFragment extends Fragment{
         }
     }
 
-    private class LoadMoreEpisodesListener implements PodcastEpisodeRecyclerViewAdapter.OnLoadMoreListener {
+    public interface OnLoadMoreListener {
+        void onLoadMore();
+    }
+
+    private class LoadMoreEpisodesListener implements OnLoadMoreListener {
         private static final String TAG = "LoadMoreEpisodesListener";
         @Override
         public void onLoadMore() {
@@ -184,13 +192,4 @@ public class PodcastFragment extends Fragment{
         this.loadingMoreItems = false;
     }
 
-    private class EpisodeClickListener implements OnEpisodeClickListener {
-        private static final String TAG = "OnEpisodeClickListener";
-        @Override
-        public void onEpisodeClick(RecyclerView.ViewHolder holder) {
-            Log.i(TAG," Clicked On : " + adapter.getEpisodes().get(holder.getAdapterPosition()).getTitle());
-            PodcastEpisode episode = adapter.getEpisodes().get(holder.getAdapterPosition());
-            EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));
-        }
-    }
 }

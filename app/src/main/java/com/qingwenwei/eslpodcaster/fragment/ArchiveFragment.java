@@ -74,8 +74,8 @@ public class ArchiveFragment extends Fragment
 
     @Override
     public void onClick(View v) {
-        //load playing episode
         switch (v.getId()){
+            //load playing episode
             case R.id.archiveCardView:
                 PodcastEpisode episode = (PodcastEpisode) v.getTag();
                 EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));

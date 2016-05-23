@@ -12,12 +12,22 @@ import android.widget.TextView;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
-import com.qingwenwei.eslpodcaster.listener.OnEpisodeClickListener;
 
 import java.util.List;
 
 public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     private final static String TAG = "PodcastEpisodeRecyclerViewAdapter";
+
+    private final int ICON_RELATIONSHIP = R.drawable.category_icon_relationship;
+    private final int ICON_DINING = R.drawable.category_icon_dining;
+    private final int ICON_ENGLISH_CAFE = R.drawable.category_icon_coffee;
+    private final int ICON_DAILY_LIFE = R.drawable.category_icon_daily;
+    private final int ICON_SHOPPING = R.drawable.category_icon_shopping;
+    private final int ICON_HEALTH = R.drawable.category_icon_health;
+    private final int ICON_TRAVEL = R.drawable.category_icon_travel;
+    private final int ICON_TRANSPORTATION = R.drawable.category_icon_transportation;
+    private final int ICON_BUSINESS = R.drawable.category_icon_business;
+    private final int ICON_ENTERTAINMENT = R.drawable.category_icon_entertainment;
 
     private final TypedValue mTypedValue = new TypedValue();
     private int mBackground;
@@ -27,8 +37,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     private final int VIEW_ITEM = 1;
     private final int VIEW_PROG = 0;
 
-    private OnLoadMoreListener onLoadMoreListener;
-    private OnEpisodeClickListener onEpisodeClickListener;
+    private View.OnClickListener onCardViewClickListener;
 
     public static class EpisodeViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
@@ -96,42 +105,39 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof EpisodeViewHolder) {
-            ((EpisodeViewHolder)holder).mBoundString = episodes.get(position).getTitle();
-            ((EpisodeViewHolder)holder).titleTextView.setText(episodes.get(position).getTitle());
-            ((EpisodeViewHolder)holder).subtitleTextView.setText(episodes.get(position).getSubtitle());
-            ((EpisodeViewHolder)holder).pubDateTextView.setText(episodes.get(position).getPubDate());
-            ((EpisodeViewHolder)holder).categoryTextView.setText("Tags: "+episodes.get(position).getCategory());
+            PodcastEpisode episode = episodes.get(position);
+            ((EpisodeViewHolder)holder).mBoundString = episode.getTitle();
+            ((EpisodeViewHolder)holder).titleTextView.setText(episode.getTitle());
+            ((EpisodeViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
+            ((EpisodeViewHolder)holder).pubDateTextView.setText(episode.getPubDate());
+            ((EpisodeViewHolder)holder).categoryTextView.setText("Tags: " + episode.getCategory());
 
-            if(episodes.get(position).getCategory().toLowerCase().contains("relationships")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_relationship);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("dining")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_dining);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("english caf")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_coffee);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("daily life")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_daily);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("shopping")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_shopping);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("health/medicine")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_health);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("travel")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_travel);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("transportation")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_transportation);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("business")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_business);
-            }else if(episodes.get(position).getCategory().toLowerCase().contains("entertainment")) {
-                ((EpisodeViewHolder) holder).iconImageView.setImageResource(R.drawable.category_icon_entertainment);
+            String category = episode.getCategory();
+            int iconToSet = 0;
+            if(match("relationships",category)){
+                iconToSet = ICON_RELATIONSHIP;
+            }else if(match("dining",category)){
+                iconToSet = ICON_DINING;
+            }else if(match("english caf",category)){
+                iconToSet = ICON_ENGLISH_CAFE;
+            }else if(match("daily life",category)){
+                iconToSet = ICON_DAILY_LIFE;
+            }else if(match("shopping",category)){
+                iconToSet = ICON_SHOPPING;
+            }else if(match("health/medicine",category)){
+                iconToSet = ICON_HEALTH;
+            }else if(match("travel",category)){
+                iconToSet = ICON_TRAVEL;
+            }else if(match("transportation",category)){
+                iconToSet = ICON_TRANSPORTATION;
+            }else if(match("business",category)){
+                iconToSet = ICON_BUSINESS;
+            }else if(match("entertainment",category)){
+                iconToSet = ICON_ENTERTAINMENT;
             }
-
-            ((EpisodeViewHolder)holder).cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(getOnEpisodeClickListener() != null) {
-                        getOnEpisodeClickListener().onEpisodeClick(holder);
-                    }
-                }
-            });
+            ((EpisodeViewHolder) holder).iconImageView.setImageResource(iconToSet);
+            ((EpisodeViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
+            ((EpisodeViewHolder)holder).cardView.setTag(episode);
 
         }else {
             ((ProgressViewHolder)holder).progressBar.setIndeterminate(true);
@@ -143,21 +149,14 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         return episodes.size();
     }
 
-    public List<PodcastEpisode> getEpisodes() {
-        return episodes;
-    }
-
-    // load more items
-    public interface OnLoadMoreListener {
-        void onLoadMore();
-    }
-
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener;
-    }
-
-    public OnLoadMoreListener getOnLoadMoreListener() {
-        return onLoadMoreListener;
+    //helper match
+    private boolean match(String str1, String str2){
+        if(str1.toLowerCase().contains(str2.toLowerCase())){
+            return true;
+        }else if(str2.toLowerCase().contains(str1.toLowerCase())){
+            return true;
+        }
+        return false;
     }
 
     public void updateEpisodes(List<PodcastEpisode> newEpisodes){
@@ -166,11 +165,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
         this.notifyDataSetChanged();
     }
 
-    public OnEpisodeClickListener getOnEpisodeClickListener() {
-        return onEpisodeClickListener;
-    }
-
-    public void setOnEpisodeClickListener(OnEpisodeClickListener onEpisodeClickListener) {
-        this.onEpisodeClickListener = onEpisodeClickListener;
+    public void setOnCardViewClickListener(View.OnClickListener listener) {
+        this.onCardViewClickListener = listener;
     }
 }

@@ -30,15 +30,6 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         this.episodes = new ArrayList<>();
     }
 
-    //handler setters
-    public void setOnCardViewLongClickListener(View.OnLongClickListener listener) {
-        this.onCardViewLongClickListener = listener;
-    }
-
-    public void setOnCardViewClickListener(View.OnClickListener listener) {
-        this.onCardViewClickListener = listener;
-    }
-
     public static class ArchiveViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
         public final CardView cardView;
@@ -83,16 +74,12 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.i(TAG,"onCreateViewHolder()");
 
-//        View view = LayoutInflater.from(parent.getContext()).inflate(
-//                R.layout.row_layout_archives_list, parent, false);
-//        return new ArchiveViewHolder(view);
-
         RecyclerView.ViewHolder viewHolder;
         if(viewType == VIEW_ITEM){
             View view = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.row_layout_archives_list, parent, false);
             viewHolder = new ArchiveViewHolder(view);
-        }else{
+        }else{ // no data available
             View view = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.layout_no_date_item, parent, false);
             viewHolder = new NoDataViewHolder(view);
@@ -103,7 +90,7 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ArchiveViewHolder){
-            final PodcastEpisode episode = episodes.get(position);
+            PodcastEpisode episode = episodes.get(position);
             ((ArchiveViewHolder)holder).mBoundString = episode.getTitle();
             ((ArchiveViewHolder)holder).titleTextView.setText(episode.getTitle());
             ((ArchiveViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
@@ -124,4 +111,13 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         this.episodes.addAll(newEpisodes);
         this.notifyDataSetChanged();
     }
+
+    public void setOnCardViewLongClickListener(View.OnLongClickListener listener) {
+        this.onCardViewLongClickListener = listener;
+    }
+
+    public void setOnCardViewClickListener(View.OnClickListener listener) {
+        this.onCardViewClickListener = listener;
+    }
+
 }

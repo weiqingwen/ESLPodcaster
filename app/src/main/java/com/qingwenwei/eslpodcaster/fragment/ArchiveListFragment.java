@@ -1,6 +1,5 @@
 package com.qingwenwei.eslpodcaster.fragment;
 
-
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
-import com.qingwenwei.eslpodcaster.adapter.DownloadEpisodeRecyclerViewAdapter;
+import com.qingwenwei.eslpodcaster.adapter.ArchiveListAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.db.EpisodeDAO;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
@@ -27,13 +26,13 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
-public class DownloadFragment extends Fragment
-        implements View.OnClickListener, View.OnLongClickListener{
+public class ArchiveListFragment extends Fragment
+        implements View.OnLongClickListener, View.OnClickListener{
 
-    private static final String TAG = "DownloadFragment";
+    private static final String TAG = "ArchiveListFragment";
 
     private RecyclerView recyclerView;
-    private DownloadEpisodeRecyclerViewAdapter adapter;
+    private ArchiveListAdapter adapter;
 
     @Override
     public void onStart() {
@@ -48,15 +47,14 @@ public class DownloadFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView()");
 
-        adapter = new DownloadEpisodeRecyclerViewAdapter();
-        adapter.setOnCardViewClickListener(this);
+        adapter = new ArchiveListAdapter();
         adapter.setOnCardViewLongClickListener(this);
+        adapter.setOnCardViewClickListener(this);
 
-        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_downloads, container, false);
+        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_archives, container, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
         return recyclerView;
@@ -64,19 +62,21 @@ public class DownloadFragment extends Fragment
 
     @Override
     public boolean onLongClick(View v) {
+        //show dialog
         switch (v.getId()){
-            case R.id.downloadCardView:
+            case R.id.archiveCardView:
                 showPopupMenu((PodcastEpisode) v.getTag());
                 break;
         }
+
         return false;
     }
 
     @Override
     public void onClick(View v) {
-        //load playing episode
         switch (v.getId()){
-            case R.id.downloadCardView:
+            //load playing episode
+            case R.id.archiveCardView:
                 PodcastEpisode episode = (PodcastEpisode) v.getTag();
                 EventBus.getDefault().post(new OnLoadPlayingEpisodeEvent(episode));
                 break;
@@ -85,32 +85,33 @@ public class DownloadFragment extends Fragment
 
     @Subscribe
     public void refresh(OnEpisodeListRefreshEvent event){
-        if(event.message.equals(Constants.ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT))
-            new RefreshDownloadedEpisodesListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if(event.message.equals(Constants.ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT))
+            new RefreshArchivedEpisodeListAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private class RefreshDownloadedEpisodesListAsyncTask extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>> {
-        private static final String TAG = "RefreshDownloadedEpisodesListAsyncTask";
+    private class RefreshArchivedEpisodeListAsyncTask
+            extends AsyncTask<Void, Void, ArrayList<PodcastEpisode>>{
+        private static final String TAG = "RefreshArchivedEpisodeListAsyncTask";
+
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(Void... params) {
             EpisodeDAO dao = new EpisodeDAO(getContext());
-            ArrayList downloads = (ArrayList) dao.getAllDownloadedEpisodes();
-            return downloads;
+            ArrayList archives = (ArrayList) dao.getAllArchivedEpisodes();
+            return archives;
         }
 
         @Override
         protected void onPostExecute(ArrayList<PodcastEpisode> podcastEpisodes) {
-            Log.i(TAG,"Refreshed download list size: " + podcastEpisodes.size());
+            Log.i(TAG,"Refreshed archive list size: " + podcastEpisodes.size());
             if (podcastEpisodes.size() == 0) podcastEpisodes.add(null);
             adapter.updateEpisodes(podcastEpisodes);
-
         }
     }
 
     private void showPopupMenu(final PodcastEpisode episode){
         CharSequence items[] = new CharSequence[] {
-                "Archive this episode",
-                "Delete this episode"};
+            "Download this episode",
+            "Unarchive this episode"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setItems(items, new DialogInterface.OnClickListener(){
@@ -118,18 +119,18 @@ public class DownloadFragment extends Fragment
             public void onClick(DialogInterface dialog, int which) {
                 Log.i(TAG,episode.getTitle() + " which:" + which);
                 switch (which){
-                    //archive
+                    //download
                     case 0:{
-                        EpisodeStatusUtil.archiveEpisode(episode, getContext());
+                        EpisodeStatusUtil.downloadEpisode(episode, getContext());
                         break;
                     }
 
-                    //delete
+                    //unarchive
                     case 1:{
-                        EpisodeStatusUtil.deleteEpisode(episode, getContext());
+                        EpisodeStatusUtil.unarchiveEpisode(episode, getContext());
                         EventBus.getDefault().post(
                                 new OnEpisodeListRefreshEvent(
-                                        Constants.ON_DOWNLOADED_EPISODE_LIST_REFRESH_EVENT));
+                                        Constants.ON_ARCHIVED_EPISODE_LIST_REFRESH_EVENT));
                         break;
                     }
                 }

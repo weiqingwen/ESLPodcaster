@@ -34,9 +34,9 @@ import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.event.OnEpisodeListRefreshEvent;
 import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
-import com.qingwenwei.eslpodcaster.fragment.ArchiveFragment;
-import com.qingwenwei.eslpodcaster.fragment.DownloadFragment;
-import com.qingwenwei.eslpodcaster.fragment.PodcastFragment;
+import com.qingwenwei.eslpodcaster.fragment.ArchiveListFragment;
+import com.qingwenwei.eslpodcaster.fragment.DownloadListFragment;
+import com.qingwenwei.eslpodcaster.fragment.PodcastListFragment;
 import com.qingwenwei.eslpodcaster.util.AudioPlayer;
 import com.qingwenwei.eslpodcaster.util.EpisodeStatusUtil;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
@@ -240,9 +240,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initFragments(){
-        podcastFragment = new PodcastFragment();
-        downloadFragment = new DownloadFragment();
-        archiveFragment = new ArchiveFragment();
+        podcastFragment = new PodcastListFragment();
+        downloadFragment = new DownloadListFragment();
+        archiveFragment = new ArchiveListFragment();
     }
 
     //collapse and expand the sliding up panel

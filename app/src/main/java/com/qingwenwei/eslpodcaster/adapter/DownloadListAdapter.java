@@ -14,8 +14,8 @@ import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
-    private final static String TAG = "ArchiveEpisodeRecyclerViewAdapter";
+public class DownloadListAdapter extends RecyclerView.Adapter{
+    private final static String TAG = "DownloadListAdapter";
 
     private List<PodcastEpisode> episodes;
 
@@ -25,24 +25,32 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     private final int VIEW_ITEM = 1;
     private final int VIEW_EMPTY = 0;
 
-    //adaptor constructor
-    public ArchiveEpisodeRecyclerViewAdapter() {
-        this.episodes = new ArrayList<>();
+    public DownloadListAdapter() {
+        episodes = new ArrayList<>();
     }
 
-    public static class ArchiveViewHolder extends RecyclerView.ViewHolder {
+    //listener setters
+    public void setOnCardViewClickListener(View.OnClickListener listener) {
+        this.onCardViewClickListener = listener;
+    }
+
+    public void setOnCardViewLongClickListener(View.OnLongClickListener listener) {
+        this.onCardViewLongClickListener = listener;
+    }
+
+    public static class DownloadViewHolder extends RecyclerView.ViewHolder {
         public String mBoundString;
         public final CardView cardView;
         public final TextView titleTextView;
         public final TextView subtitleTextView;
-        public final TextView archivedDateTextView;
+        public final TextView downloadedDateTextView;
 
-        public ArchiveViewHolder(View view) {
+        public DownloadViewHolder(View view) {
             super(view);
-            cardView = (CardView) view.findViewById(R.id.archiveCardView);
-            titleTextView = (TextView) view.findViewById(R.id.archiveTitleTextView);
-            subtitleTextView = (TextView) view.findViewById(R.id.archiveSubtitleTextView);
-            archivedDateTextView = (TextView) view.findViewById(R.id.archiveDateTextView);
+            cardView = (CardView) view.findViewById(R.id.downloadCardView);
+            titleTextView = (TextView) view.findViewById(R.id.downloadTitleTextView);
+            subtitleTextView = (TextView) view.findViewById(R.id.downloadSubtitleTextView);
+            downloadedDateTextView = (TextView) view.findViewById(R.id.downloadDateTextView);
         }
 
         @Override
@@ -73,13 +81,16 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.i(TAG,"onCreateViewHolder()");
+//        View view = LayoutInflater.from(parent.getContext()).inflate(
+//                R.layout.row_layout_downloads_list, parent, false);
+//        return new DownloadViewHolder(view);
 
         RecyclerView.ViewHolder viewHolder;
         if(viewType == VIEW_ITEM){
             View view = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.row_layout_archives_list, parent, false);
-            viewHolder = new ArchiveViewHolder(view);
-        }else{ // no data available
+                    R.layout.row_layout_downloads_list, parent, false);
+            viewHolder = new DownloadViewHolder(view);
+        }else{
             View view = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.layout_no_date_item, parent, false);
             viewHolder = new NoDataViewHolder(view);
@@ -88,16 +99,16 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof ArchiveViewHolder){
-            PodcastEpisode episode = episodes.get(position);
-            ((ArchiveViewHolder)holder).mBoundString = episode.getTitle();
-            ((ArchiveViewHolder)holder).titleTextView.setText(episode.getTitle());
-            ((ArchiveViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
-            ((ArchiveViewHolder)holder).archivedDateTextView.setText(episode.getArchivedDate());
-            ((ArchiveViewHolder)holder).cardView.setOnLongClickListener(onCardViewLongClickListener);
-            ((ArchiveViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
-            ((ArchiveViewHolder)holder).cardView.setTag(episode);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position){
+        if(holder instanceof DownloadViewHolder){
+            final PodcastEpisode episode = episodes.get(position);
+            ((DownloadViewHolder)holder).mBoundString = episode.getTitle();
+            ((DownloadViewHolder)holder).titleTextView.setText(episode.getTitle());
+            ((DownloadViewHolder)holder).subtitleTextView.setText(episode.getSubtitle());
+            ((DownloadViewHolder)holder).downloadedDateTextView.setText(episode.getDownloadedDate());
+            ((DownloadViewHolder)holder).cardView.setOnLongClickListener(onCardViewLongClickListener);
+            ((DownloadViewHolder)holder).cardView.setOnClickListener(onCardViewClickListener);
+            ((DownloadViewHolder)holder).cardView.setTag(episode);
         }
     }
 
@@ -111,13 +122,4 @@ public class ArchiveEpisodeRecyclerViewAdapter extends RecyclerView.Adapter {
         this.episodes.addAll(newEpisodes);
         this.notifyDataSetChanged();
     }
-
-    public void setOnCardViewLongClickListener(View.OnLongClickListener listener) {
-        this.onCardViewLongClickListener = listener;
-    }
-
-    public void setOnCardViewClickListener(View.OnClickListener listener) {
-        this.onCardViewClickListener = listener;
-    }
-
 }

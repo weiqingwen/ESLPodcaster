@@ -15,8 +15,8 @@ import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 
 import java.util.List;
 
-public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
-    private final static String TAG = "PodcastEpisodeRecyclerViewAdapter";
+public class PodcastListAdapter extends RecyclerView.Adapter{
+    private final static String TAG = "PodcastListAdapter";
 
     private final int ICON_RELATIONSHIP = R.drawable.category_icon_relationship;
     private final int ICON_DINING = R.drawable.category_icon_dining;
@@ -76,7 +76,7 @@ public class PodcastEpisodeRecyclerViewAdapter extends RecyclerView.Adapter{
     }
 
     //adaptor constructor
-    public PodcastEpisodeRecyclerViewAdapter(List<PodcastEpisode> items) {
+    public PodcastListAdapter(List<PodcastEpisode> items) {
         this.mBackground = mTypedValue.resourceId;
         this.episodes = items;
     }

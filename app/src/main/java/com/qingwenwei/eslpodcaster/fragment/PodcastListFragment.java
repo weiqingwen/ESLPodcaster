@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.qingwenwei.eslpodcaster.R;
 import com.qingwenwei.eslpodcaster.activity.MainActivity;
-import com.qingwenwei.eslpodcaster.adapter.PodcastEpisodeRecyclerViewAdapter;
+import com.qingwenwei.eslpodcaster.adapter.PodcastListAdapter;
 import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
@@ -25,16 +25,16 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PodcastFragment extends Fragment
+public class PodcastListFragment extends Fragment
         implements View.OnClickListener{
 
-    private final static String TAG = "PodcastFragment";
+    private final static String TAG = "PodcastListFragment";
     private boolean dataInitialized = false;
 
     private RecyclerView recyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private PodcastEpisodeRecyclerViewAdapter adapter;
+    private PodcastListAdapter adapter;
     private List<PodcastEpisode> episodes;
     private int currNumEpisodes = 0;
 
@@ -93,7 +93,7 @@ public class PodcastFragment extends Fragment
         }else {
             //first time download the episode data
             episodes = new ArrayList<>();
-            adapter = new PodcastEpisodeRecyclerViewAdapter(episodes);
+            adapter = new PodcastListAdapter(episodes);
             adapter.setOnCardViewClickListener(this);
             recyclerView.setAdapter(adapter);
             new DownloadEpisodesAsyncTask(false).execute(Constants.ESLPOD_ALL_EPISODE_URL);

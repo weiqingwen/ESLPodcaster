@@ -9,6 +9,11 @@
         android:title="@string/archive_episode"
         android:visible="true" />
 
+    <item
+        android:id="@+id/menuItemLookUp"
+        android:title="Look Up"
+        android:visible="true" />
+
     <!--<item-->
         <!--android:id="@+id/menuItemDeleteAll"-->
         <!--android:title="Delete All"-->

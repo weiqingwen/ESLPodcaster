@@ -26,4 +26,10 @@ public class Constants {
 
     //start DictionaryActivity message
     public static final String MESSAGE_START_DICTIONARY_ACTIVITY = "MESSAGE_START_DICTIONARY_ACTIVITY";
+
+    //Round Table URL
+    public static String ROUND_TABLE_INDEX_URL = "http://english.cri.cn/4926/more/11680/more11680.htm";
+    public static String ROUND_TABLE_WEB_PAGE_BASE_URL = "http://english.cri.cn/";
+
+
 }

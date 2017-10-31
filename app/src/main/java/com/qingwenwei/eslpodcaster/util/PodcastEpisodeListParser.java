@@ -31,7 +31,7 @@ public class PodcastEpisodeListParser {
                 String cat = pod.select("a[href*=show_all.php?cat_id=]").text();
                 String web = pod.select("a[href*=show_podcast.php?issue_id=]").attr("href");
                 String date = pod.select("span.date-header").text();
-                String file = pod.select("a[href$=.mp3]").attr("href");
+                String audioURL = pod.select("a[href$=.mp3]").attr("href");
 
                 int start = pod.text().indexOf("Download Podcast ");
                 int end = pod.text().lastIndexOf("Tags:");
@@ -42,7 +42,7 @@ public class PodcastEpisodeListParser {
                         subTitle,
                         "", //content
                         date,
-                        file,
+                        audioURL,
                         web,
                         cat,
                         "", //local audio file
@@ -53,7 +53,6 @@ public class PodcastEpisodeListParser {
             }
 
         } catch (IOException e) {
-//            e.printStackTrace();
             Log.i(TAG, "Failed to load podcast list");
         }
         return episodes;

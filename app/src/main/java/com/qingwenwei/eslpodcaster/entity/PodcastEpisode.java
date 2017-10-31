@@ -16,7 +16,7 @@ public class PodcastEpisode implements Serializable {
     private String audioFileUrl;
     private String webUrl;
     private String category;
-    private String archived; // YES
+    private String archived; // YES - episode is archived
     private String archivedDate;
     private String localAudioFile;
     private String downloadedDate;
@@ -39,8 +39,8 @@ public class PodcastEpisode implements Serializable {
             String webUrl,
             String category,
             String localAudioFile,
-            String archived){
-
+            String archived
+    ){
         this.title = title;
         this.subtitle = subtitle;
         this.content = content;
@@ -141,14 +141,15 @@ public class PodcastEpisode implements Serializable {
     }
 
     public String toString(){
-        return "\n@============================================================" +
+        return "\n@Episode================================================" +
                         "\ntitle: " + title +
+                        "\nsubtitle: " + subtitle +
                         "\npub_date: " + pubDate +
                         "\ncategory: " + category +
-                        "\nsubtitle: " + subtitle +
                         "\naudio_url: " + audioFileUrl +
                         "\nweb_url: " + webUrl +
-                        "\nlocal_audio: " + localAudioFile;
+                        "\nlocal_audio: " + localAudioFile +
+                        "\narchived: " + archived;
     }
 
     public static String currentDateString(){

@@ -1,5 +1,7 @@
 package com.qingwenwei.eslpodcaster.activity;
 
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
@@ -42,6 +44,7 @@ import com.qingwenwei.eslpodcaster.util.EpisodeStatusUtil;
 import com.qingwenwei.eslpodcaster.util.ExtractorRendererBuilder;
 import com.qingwenwei.eslpodcaster.util.PodcastEpisodeScriptParser;
 import com.qingwenwei.eslpodcaster.util.RendererBuilder;
+import com.qingwenwei.eslpodcaster.util.RoundTableEpScriptParser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState;
@@ -485,6 +488,16 @@ public class MainActivity extends AppCompatActivity
                         break;
                     }
 
+                    case R.id.menuItemLookUp:{
+                        if(playingEpisode != null){
+                            //look up word definition
+                            String word = readFromClipboard();
+                            loadDictionaryActivity(word);
+                            Log.i(TAG,"clipboard:" + word);
+                        }
+                        break;
+                    }
+
                     //test code
 //                    case R.id.menuItemDeleteAll:{
 //                        EpisodeDAO dao = new EpisodeDAO(getApplicationContext());
@@ -499,6 +512,18 @@ public class MainActivity extends AppCompatActivity
 
         MenuInflater inflater = optionPopupMenu.getMenuInflater();
         inflater.inflate(R.menu.option_popup_menu, optionPopupMenu.getMenu());
+    }
+
+    //helper method
+    public String readFromClipboard() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(this.CLIPBOARD_SERVICE);
+        if (clipboard.hasPrimaryClip()) {
+            android.content.ClipDescription description = clipboard.getPrimaryClipDescription();
+            android.content.ClipData data = clipboard.getPrimaryClip();
+            if (data != null && description != null && description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))
+                return String.valueOf(data.getItemAt(0).getText());
+        }
+        return null;
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -634,7 +659,10 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected PodcastEpisode doInBackground(String... urls) {
-            new PodcastEpisodeScriptParser().getEpisodeScript(episode);
+//            new PodcastEpisodeScriptParser().getEpisodeScript(episode);
+
+            //poop
+            new RoundTableEpScriptParser().getEpisodeScript(episode);
             return this.episode;
         }
 

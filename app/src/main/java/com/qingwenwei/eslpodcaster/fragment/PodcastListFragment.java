@@ -19,6 +19,7 @@ import com.qingwenwei.eslpodcaster.constant.Constants;
 import com.qingwenwei.eslpodcaster.entity.PodcastEpisode;
 import com.qingwenwei.eslpodcaster.event.OnLoadPlayingEpisodeEvent;
 import com.qingwenwei.eslpodcaster.util.PodcastEpisodeListParser;
+import com.qingwenwei.eslpodcaster.util.RoundTableEpListParser;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -63,7 +64,10 @@ public class PodcastListFragment extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new DownloadEpisodesAsyncTask(true).execute(Constants.ESLPOD_ALL_EPISODE_URL);
+//                new DownloadEpisodesAsyncTask(true).execute(Constants.ESLPOD_ALL_EPISODE_URL);
+
+                //poop
+                new DownloadEpisodesAsyncTask(true).execute(Constants.ROUND_TABLE_INDEX_URL);
             }
         });
 
@@ -96,7 +100,9 @@ public class PodcastListFragment extends Fragment
             adapter = new PodcastListAdapter(episodes);
             adapter.setOnCardViewClickListener(this);
             recyclerView.setAdapter(adapter);
-            new DownloadEpisodesAsyncTask(false).execute(Constants.ESLPOD_ALL_EPISODE_URL);
+
+            //poop
+            new DownloadEpisodesAsyncTask(false).execute(Constants.ROUND_TABLE_INDEX_URL);
         }
 
         return mSwipeRefreshLayout;
@@ -133,8 +139,15 @@ public class PodcastListFragment extends Fragment
 
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
+//            ArrayList<PodcastEpisode> episodes =
+//                    (ArrayList<PodcastEpisode>) new PodcastEpisodeListParser().parseEpisodes(urls[0] + 0);
+
+            //poop
+            Log.i("poop","downloading...");
+            Log.i("poop",urls[0]);
             ArrayList<PodcastEpisode> episodes =
-                    (ArrayList<PodcastEpisode>) new PodcastEpisodeListParser().parseEpisodes(urls[0] + 0);
+                    (ArrayList<PodcastEpisode>) new RoundTableEpListParser().parseEpisodes(urls[0]);
+            Log.i("poop","size " + episodes.size());
             return episodes;
         }
 
@@ -157,8 +170,12 @@ public class PodcastListFragment extends Fragment
 
         @Override
         protected ArrayList<PodcastEpisode> doInBackground(String... urls) {
+//            ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>)
+//                    new PodcastEpisodeListParser().parseEpisodes(urls[0] + currNumEpisodes);
+
+            //poop
             ArrayList<PodcastEpisode> episodes = (ArrayList<PodcastEpisode>)
-                    new PodcastEpisodeListParser().parseEpisodes(urls[0] + currNumEpisodes);
+                    new RoundTableEpListParser().parseEpisodes("http://english.cri.cn/4926/more/11680/more11680_2.htm");
             return episodes;
         }
 
@@ -184,7 +201,11 @@ public class PodcastListFragment extends Fragment
             Log.i(TAG, "onLoadMore()");
             episodes.add(null);
             adapter.updateEpisodes(episodes);
-            new DownloadMoreEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
+
+//            new DownloadMoreEpisodesAsyncTask().execute(Constants.ESLPOD_ALL_EPISODE_URL);
+
+            //poop
+            new DownloadMoreEpisodesAsyncTask().execute(Constants.ROUND_TABLE_INDEX_URL);
         }
     }
 

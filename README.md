@@ -1,7 +1,11 @@
 ## ESLPodcaster
 ESLPodcaster is an Android application for audio streaming, downloading and podcast content display, it is designed for English as a Second Language learner all around the world.
 
-[![Download from Google Play](http://www.android.com/images/brand/android_app_on_play_large.png "Download from Google Play")](https://play.google.com/store/apps/details?id=com.qingwenwei.eslpodcaster)
+<img src="screenshots/screenshot_1.png" style="zoom:30%" />
+<img src="screenshots/screenshot_2.png" style="zoom:30%" />
+<img src="screenshots/screenshot_3.png" style="zoom:30%" />
+<img src="screenshots/screenshot_4.png" style="zoom:30%" />
+<img src="screenshots/screenshot_5.png" style="zoom:30%" />
 
 ## Used Libraries
 + ExoPlayer
